@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://solidanalysis.local/schemas/ast-artifact.json",
+  "title": "AstArtifact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["sourceFile", "primaryType"],
+  "properties": {
+    "sourceFile": {
+      "type": "string",
+      "description": "Absolute path to the source .java file"
+    },
+    "primaryType": { "$ref": "#/$defs/typeSummary" }
+  },
+  "$defs": {
+    "typeSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "name",
+        "abstract",
+        "superclass",
+        "implementedInterfaces",
+        "fields",
+        "methods"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["class", "interface"]
+        },
+        "name": { "type": "string" },
+        "abstract": { "type": "boolean" },
+        "superclass": { "type": ["string", "null"] },
+        "implementedInterfaces": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "fields": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/fieldSummary" }
+        },
+        "methods": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/methodSummary" }
+        }
+      }
+    },
+    "fieldSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "type"],
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" }
+      }
+    },
+    "parameterSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "type"],
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" }
+      }
+    },
+    "methodCallSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["expression", "resolved"],
+      "properties": {
+        "expression": { "type": "string" },
+        "resolved": { "type": "boolean" },
+        "declaringType": { "type": ["string", "null"] },
+        "signature": { "type": ["string", "null"] }
+      }
+    },
+    "controlFlowStatementSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "description": "if, while, doWhile, for, foreach, switch, synchronized, try, catch, …"
+        },
+        "condition": { "type": ["string", "null"] },
+        "line": { "type": ["integer", "null"] }
+      }
+    },
+    "methodSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "returnType", "parameters", "methodCalls", "controlFlowStatements"],
+      "properties": {
+        "name": { "type": "string" },
+        "returnType": { "type": "string" },
+        "parameters": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/parameterSummary" }
+        },
+        "methodCalls": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/methodCallSummary" }
+        },
+        "controlFlowStatements": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/controlFlowStatementSummary" }
+        }
+      }
+    }
+  }
+}
