@@ -1,0 +1,141 @@
+{
+  "sourceFile" : "/home/felipe/Documents/AS/solid-static-analysis/target/test-classes/java-fixtures/ContaCorrente.java",
+  "primaryType" : {
+    "kind" : "class",
+    "name" : "ContaCorrente",
+    "abstract" : false,
+    "superclass" : "ContaBancaria",
+    "implementedInterfaces" : [ ],
+    "fields" : [ {
+      "name" : "plano",
+      "type" : "String"
+    }, {
+      "name" : "taxaMensal",
+      "type" : "double"
+    }, {
+      "name" : "transacoesMes",
+      "type" : "int"
+    } ],
+    "methods" : [ {
+      "name" : "resolverTaxa",
+      "returnType" : "double",
+      "parameters" : [ {
+        "name" : "plano",
+        "type" : "String"
+      } ],
+      "methodCalls" : [ ],
+      "controlFlowStatements" : [ {
+        "kind" : "switch",
+        "condition" : "plano",
+        "line" : 15,
+        "endLine" : 20,
+        "cases" : [ {
+          "label" : "\"basico\"",
+          "line" : 16
+        }, {
+          "label" : "\"premium\"",
+          "line" : 17
+        }, {
+          "label" : "\"empresarial\"",
+          "line" : 18
+        }, {
+          "label" : "default",
+          "line" : 19
+        } ]
+      } ],
+      "fieldAccesses" : [ ]
+    }, {
+      "name" : "registrarTransacoes",
+      "returnType" : "void",
+      "parameters" : [ {
+        "name" : "valores",
+        "type" : "int[]"
+      } ],
+      "methodCalls" : [ ],
+      "controlFlowStatements" : [ {
+        "kind" : "foreach",
+        "condition" : "int v : valores",
+        "line" : 24,
+        "thenLine" : 24,
+        "endLine" : 29
+      }, {
+        "kind" : "if",
+        "condition" : "v > 0",
+        "line" : 25,
+        "thenLine" : 25,
+        "endLine" : 28
+      } ],
+      "fieldAccesses" : [ {
+        "fieldName" : "saldo",
+        "ownerClass" : "ContaBancaria",
+        "accessType" : "write"
+      }, {
+        "fieldName" : "transacoesMes",
+        "ownerClass" : "ContaCorrente",
+        "accessType" : "read"
+      } ]
+    }, {
+      "name" : "cobrarTaxa",
+      "returnType" : "void",
+      "parameters" : [ ],
+      "methodCalls" : [ ],
+      "controlFlowStatements" : [ {
+        "kind" : "if",
+        "condition" : "ativa && saldo >= taxaMensal",
+        "line" : 33,
+        "thenLine" : 33,
+        "endLine" : 35
+      } ],
+      "fieldAccesses" : [ {
+        "fieldName" : "ativa",
+        "ownerClass" : "ContaBancaria",
+        "accessType" : "read"
+      }, {
+        "fieldName" : "saldo",
+        "ownerClass" : "ContaBancaria",
+        "accessType" : "read"
+      }, {
+        "fieldName" : "taxaMensal",
+        "ownerClass" : "ContaCorrente",
+        "accessType" : "read"
+      }, {
+        "fieldName" : "saldo",
+        "ownerClass" : "ContaBancaria",
+        "accessType" : "write"
+      }, {
+        "fieldName" : "taxaMensal",
+        "ownerClass" : "ContaCorrente",
+        "accessType" : "read"
+      } ]
+    }, {
+      "name" : "calcularRendimento",
+      "returnType" : "double",
+      "parameters" : [ ],
+      "methodCalls" : [ ],
+      "controlFlowStatements" : [ ],
+      "fieldAccesses" : [ ]
+    }, {
+      "name" : "getPlano",
+      "returnType" : "String",
+      "parameters" : [ ],
+      "methodCalls" : [ ],
+      "controlFlowStatements" : [ ],
+      "fieldAccesses" : [ {
+        "fieldName" : "plano",
+        "ownerClass" : "ContaCorrente",
+        "accessType" : "read"
+      } ]
+    }, {
+      "name" : "getTransacoesMes",
+      "returnType" : "int",
+      "parameters" : [ ],
+      "methodCalls" : [ ],
+      "controlFlowStatements" : [ ],
+      "fieldAccesses" : [ {
+        "fieldName" : "transacoesMes",
+        "ownerClass" : "ContaCorrente",
+        "accessType" : "read"
+      } ]
+    } ]
+  }
+}

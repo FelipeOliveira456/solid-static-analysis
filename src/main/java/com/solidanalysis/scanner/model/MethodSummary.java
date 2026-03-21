@@ -25,6 +25,10 @@ public class MethodSummary {
     @JsonProperty("controlFlowStatements")
     private List<ControlFlowStatementSummary> controlFlowStatements = new ArrayList<>();
 
+    /** Resolved field reads/writes ({@code FieldAccessExpr} and {@code NameExpr} fields). */
+    @JsonProperty("fieldAccesses")
+    private List<FieldAccessSummary> fieldAccesses = new ArrayList<>();
+
     public String getName() {
         return name;
     }
@@ -63,5 +67,13 @@ public class MethodSummary {
 
     public void setControlFlowStatements(List<ControlFlowStatementSummary> controlFlowStatements) {
         this.controlFlowStatements = controlFlowStatements;
+    }
+
+    public List<FieldAccessSummary> getFieldAccesses() {
+        return fieldAccesses;
+    }
+
+    public void setFieldAccesses(List<FieldAccessSummary> fieldAccesses) {
+        this.fieldAccesses = fieldAccesses;
     }
 }

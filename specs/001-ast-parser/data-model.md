@@ -40,8 +40,17 @@ JavaParser; é um **DTO estável** para etapas seguintes.
 | `name` | string | sim | |
 | `returnType` | string | sim | Inclui `void` |
 | `parameters` | `ParameterSummary[]` | sim | Ordem de declaração |
-| `methodCalls` | `MethodCallSummary[]` | sim | Chamadas diretamente no corpo deste método (não aninhadas em lambdas opcional — **implementação: visitar corpo com visitor; incluir calls em bloco do método**) |
+| `methodCalls` | `MethodCallSummary[]` | sim | Chamadas (`MethodCallExpr`) e construtores (`new ...` / `ObjectCreationExpr`) no corpo do método, ordenados por posição no fonte; mesma forma `expression` / `resolved` / assinatura |
 | `controlFlowStatements` | `ControlFlowStatementSummary[]` | sim | Estruturas de fluxo no corpo (`if`, `while`, `for`, `try`, …), ordenadas por posição no ficheiro |
+| `fieldAccesses` | `FieldAccessSummary[]` | sim | Acessos a campos resolvidos (`FieldAccessExpr` e `NameExpr` campo); omitidos quando o symbol solver não resolve |
+
+### `FieldAccessSummary`
+
+| Campo | Tipo | Obrigatório | Regras |
+|-------|------|-------------|--------|
+| `fieldName` | string | sim | Nome do campo |
+| `ownerClass` | string | sim | Nome qualificado do tipo declarante |
+| `accessType` | string | sim | `read` ou `write` (alvo de `AssignExpr`) |
 
 ### `ControlFlowStatementSummary`
 
@@ -50,6 +59,18 @@ JavaParser; é um **DTO estável** para etapas seguintes.
 | `kind` | string | sim | Ex.: `if`, `while`, `doWhile`, `for`, `foreach`, `switch`, `synchronized`, `try`, `catch` |
 | `condition` | string \| null | não | Texto da condição / selector / tipo em `catch`; `null` em `try` |
 | `line` | int \| null | não | Linha aproximada no fonte (1-based) |
+| `thenLine` | int \| null | não | Início do ramo then / corpo do loop (`if`, `while`, `for`, `foreach`); omitido quando não aplicável |
+| `elseLine` | int \| null | não | Início do `else` em `if`; omitido se não houver `else` |
+| `endLine` | int \| null | não | Fim do constructo (`if`, `while`, `for`, `foreach`, `switch`) |
+| `cases` | `SwitchCaseSummary[]` | não | Só em `switch`: cada entrada com `label` e `line` |
+| `chainedElseIf` | `ControlFlowStatementSummary` | não | Só em `if`: ramo `else if (...)` seguinte, encadeado (mutuamente exclusivo com o `if` anterior); recursivo para `else if` múltiplos |
+
+### `SwitchCaseSummary`
+
+| Campo | Tipo | Obrigatório | Regras |
+|-------|------|-------------|--------|
+| `label` | string | sim | Rótulo(s) do `case` ou `default` |
+| `line` | int \| null | não | Linha da entrada no fonte |
 
 ### `ParameterSummary`
 

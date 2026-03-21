@@ -45,6 +45,8 @@ Saída típica no fim: `Parsed: N, Failed: M` em stdout. O diretório `output/` 
 mvn test
 ```
 
+Fontes de exemplo para integração ficam em `src/test/resources/java-fixtures/`. Ao correr os testes, o scan dessas fontes gera JSON em **`src/test/resources/java-fixtures/output/`** (para inspecionar o artefacto sem apontar o JAR a pastas externas).
+
 ## Argumentos e códigos de saída
 
 | Situação | Exit code | Onde mensagens |

@@ -1,0 +1,122 @@
+{
+  "sourceFile" : "/home/felipe/Documents/AS/solid-static-analysis/target/test-classes/java-fixtures/ContaPoupanca.java",
+  "primaryType" : {
+    "kind" : "class",
+    "name" : "ContaPoupanca",
+    "abstract" : false,
+    "superclass" : "ContaBancaria",
+    "implementedInterfaces" : [ "Tributavel" ],
+    "fields" : [ {
+      "name" : "taxaRendimento",
+      "type" : "double"
+    }, {
+      "name" : "mesesAplicados",
+      "type" : "int"
+    } ],
+    "methods" : [ {
+      "name" : "aplicarRendimentosMensais",
+      "returnType" : "void",
+      "parameters" : [ {
+        "name" : "meses",
+        "type" : "int"
+      } ],
+      "methodCalls" : [ ],
+      "controlFlowStatements" : [ {
+        "kind" : "while",
+        "condition" : "i < meses",
+        "line" : 14,
+        "thenLine" : 14,
+        "endLine" : 18
+      } ],
+      "fieldAccesses" : [ {
+        "fieldName" : "saldo",
+        "ownerClass" : "ContaBancaria",
+        "accessType" : "write"
+      }, {
+        "fieldName" : "saldo",
+        "ownerClass" : "ContaBancaria",
+        "accessType" : "read"
+      }, {
+        "fieldName" : "taxaRendimento",
+        "ownerClass" : "ContaPoupanca",
+        "accessType" : "read"
+      }, {
+        "fieldName" : "mesesAplicados",
+        "ownerClass" : "ContaPoupanca",
+        "accessType" : "read"
+      } ]
+    }, {
+      "name" : "calcularRendimento",
+      "returnType" : "double",
+      "parameters" : [ ],
+      "methodCalls" : [ ],
+      "controlFlowStatements" : [ ],
+      "fieldAccesses" : [ {
+        "fieldName" : "saldo",
+        "ownerClass" : "ContaBancaria",
+        "accessType" : "read"
+      }, {
+        "fieldName" : "taxaRendimento",
+        "ownerClass" : "ContaPoupanca",
+        "accessType" : "read"
+      } ]
+    }, {
+      "name" : "calcularImposto",
+      "returnType" : "double",
+      "parameters" : [ ],
+      "methodCalls" : [ {
+        "expression" : "isIsento()",
+        "resolved" : true,
+        "declaringType" : "ContaPoupanca",
+        "signature" : "ContaPoupanca.isIsento()"
+      }, {
+        "expression" : "calcularRendimento()",
+        "resolved" : true,
+        "declaringType" : "ContaPoupanca",
+        "signature" : "ContaPoupanca.calcularRendimento()"
+      } ],
+      "controlFlowStatements" : [ {
+        "kind" : "if",
+        "condition" : "isIsento()",
+        "line" : 28,
+        "thenLine" : 28,
+        "elseLine" : 30,
+        "endLine" : 32
+      } ],
+      "fieldAccesses" : [ ]
+    }, {
+      "name" : "isIsento",
+      "returnType" : "boolean",
+      "parameters" : [ ],
+      "methodCalls" : [ ],
+      "controlFlowStatements" : [ ],
+      "fieldAccesses" : [ {
+        "fieldName" : "mesesAplicados",
+        "ownerClass" : "ContaPoupanca",
+        "accessType" : "read"
+      } ]
+    }, {
+      "name" : "getTaxaRendimento",
+      "returnType" : "double",
+      "parameters" : [ ],
+      "methodCalls" : [ ],
+      "controlFlowStatements" : [ ],
+      "fieldAccesses" : [ {
+        "fieldName" : "taxaRendimento",
+        "ownerClass" : "ContaPoupanca",
+        "accessType" : "read"
+      } ]
+    }, {
+      "name" : "getMesesAplicados",
+      "returnType" : "int",
+      "parameters" : [ ],
+      "methodCalls" : [ ],
+      "controlFlowStatements" : [ ],
+      "fieldAccesses" : [ {
+        "fieldName" : "mesesAplicados",
+        "ownerClass" : "ContaPoupanca",
+        "accessType" : "read"
+      } ]
+    } ]
+  }
+}

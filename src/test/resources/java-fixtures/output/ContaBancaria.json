@@ -1,0 +1,151 @@
+{
+  "sourceFile" : "/home/felipe/Documents/AS/solid-static-analysis/target/test-classes/java-fixtures/ContaBancaria.java",
+  "primaryType" : {
+    "kind" : "class",
+    "name" : "ContaBancaria",
+    "abstract" : true,
+    "superclass" : null,
+    "implementedInterfaces" : [ ],
+    "fields" : [ {
+      "name" : "titular",
+      "type" : "String"
+    }, {
+      "name" : "saldo",
+      "type" : "double"
+    }, {
+      "name" : "ativa",
+      "type" : "boolean"
+    } ],
+    "methods" : [ {
+      "name" : "depositar",
+      "returnType" : "void",
+      "parameters" : [ {
+        "name" : "valor",
+        "type" : "double"
+      } ],
+      "methodCalls" : [ ],
+      "controlFlowStatements" : [ {
+        "kind" : "if",
+        "condition" : "valor > 0",
+        "line" : 14,
+        "thenLine" : 14,
+        "endLine" : 16
+      } ],
+      "fieldAccesses" : [ {
+        "fieldName" : "saldo",
+        "ownerClass" : "ContaBancaria",
+        "accessType" : "write"
+      } ]
+    }, {
+      "name" : "sacar",
+      "returnType" : "boolean",
+      "parameters" : [ {
+        "name" : "valor",
+        "type" : "double"
+      } ],
+      "methodCalls" : [ {
+        "expression" : "System.out.println(\"Conta inativa.\")",
+        "resolved" : true,
+        "declaringType" : "java.io.PrintStream",
+        "signature" : "java.io.PrintStream.println(java.lang.String)"
+      }, {
+        "expression" : "System.out.println(\"Saldo insuficiente.\")",
+        "resolved" : true,
+        "declaringType" : "java.io.PrintStream",
+        "signature" : "java.io.PrintStream.println(java.lang.String)"
+      } ],
+      "controlFlowStatements" : [ {
+        "kind" : "if",
+        "condition" : "!ativa",
+        "line" : 20,
+        "thenLine" : 20,
+        "elseLine" : 23,
+        "endLine" : 29,
+        "chainedElseIf" : {
+          "kind" : "if",
+          "condition" : "valor > saldo",
+          "line" : 23,
+          "thenLine" : 23,
+          "elseLine" : 26,
+          "endLine" : 29
+        }
+      } ],
+      "fieldAccesses" : [ {
+        "fieldName" : "ativa",
+        "ownerClass" : "ContaBancaria",
+        "accessType" : "read"
+      }, {
+        "fieldName" : "out",
+        "ownerClass" : "java.lang.System",
+        "accessType" : "read"
+      }, {
+        "fieldName" : "saldo",
+        "ownerClass" : "ContaBancaria",
+        "accessType" : "read"
+      }, {
+        "fieldName" : "out",
+        "ownerClass" : "java.lang.System",
+        "accessType" : "read"
+      }, {
+        "fieldName" : "saldo",
+        "ownerClass" : "ContaBancaria",
+        "accessType" : "write"
+      } ]
+    }, {
+      "name" : "encerrar",
+      "returnType" : "void",
+      "parameters" : [ ],
+      "methodCalls" : [ ],
+      "controlFlowStatements" : [ ],
+      "fieldAccesses" : [ {
+        "fieldName" : "ativa",
+        "ownerClass" : "ContaBancaria",
+        "accessType" : "write"
+      }, {
+        "fieldName" : "saldo",
+        "ownerClass" : "ContaBancaria",
+        "accessType" : "write"
+      } ]
+    }, {
+      "name" : "calcularRendimento",
+      "returnType" : "double",
+      "parameters" : [ ],
+      "methodCalls" : [ ],
+      "controlFlowStatements" : [ ],
+      "fieldAccesses" : [ ]
+    }, {
+      "name" : "getTitular",
+      "returnType" : "String",
+      "parameters" : [ ],
+      "methodCalls" : [ ],
+      "controlFlowStatements" : [ ],
+      "fieldAccesses" : [ {
+        "fieldName" : "titular",
+        "ownerClass" : "ContaBancaria",
+        "accessType" : "read"
+      } ]
+    }, {
+      "name" : "getSaldo",
+      "returnType" : "double",
+      "parameters" : [ ],
+      "methodCalls" : [ ],
+      "controlFlowStatements" : [ ],
+      "fieldAccesses" : [ {
+        "fieldName" : "saldo",
+        "ownerClass" : "ContaBancaria",
+        "accessType" : "read"
+      } ]
+    }, {
+      "name" : "isAtiva",
+      "returnType" : "boolean",
+      "parameters" : [ ],
+      "methodCalls" : [ ],
+      "controlFlowStatements" : [ ],
+      "fieldAccesses" : [ {
+        "fieldName" : "ativa",
+        "ownerClass" : "ContaBancaria",
+        "accessType" : "read"
+      } ]
+    } ]
+  }
+}

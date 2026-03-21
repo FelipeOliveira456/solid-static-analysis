@@ -76,6 +76,25 @@
         "signature": { "type": ["string", "null"] }
       }
     },
+    "fieldAccessSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fieldName", "ownerClass", "accessType"],
+      "properties": {
+        "fieldName": { "type": "string" },
+        "ownerClass": { "type": "string", "description": "Declaring type qualified name" },
+        "accessType": { "type": "string", "enum": ["read", "write"] }
+      }
+    },
+    "switchCaseSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "line"],
+      "properties": {
+        "label": { "type": "string", "description": "Case expression(s) or default" },
+        "line": { "type": ["integer", "null"] }
+      }
+    },
     "controlFlowStatementSummary": {
       "type": "object",
       "additionalProperties": false,
@@ -86,13 +105,32 @@
           "description": "if, while, doWhile, for, foreach, switch, synchronized, try, catch, …"
         },
         "condition": { "type": ["string", "null"] },
-        "line": { "type": ["integer", "null"] }
+        "line": { "type": ["integer", "null"] },
+        "thenLine": { "type": ["integer", "null"] },
+        "elseLine": { "type": ["integer", "null"] },
+        "endLine": { "type": ["integer", "null"] },
+        "cases": {
+          "type": "array",
+          "description": "switch only: each case/default arm",
+          "items": { "$ref": "#/$defs/switchCaseSummary" }
+        },
+        "chainedElseIf": {
+          "description": "if only: nested else-if as a single logical chain",
+          "$ref": "#/$defs/controlFlowStatementSummary"
+        }
       }
     },
     "methodSummary": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["name", "returnType", "parameters", "methodCalls", "controlFlowStatements"],
+      "required": [
+        "name",
+        "returnType",
+        "parameters",
+        "methodCalls",
+        "controlFlowStatements",
+        "fieldAccesses"
+      ],
       "properties": {
         "name": { "type": "string" },
         "returnType": { "type": "string" },
@@ -107,6 +145,10 @@
         "controlFlowStatements": {
           "type": "array",
           "items": { "$ref": "#/$defs/controlFlowStatementSummary" }
+        },
+        "fieldAccesses": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/fieldAccessSummary" }
         }
       }
     }

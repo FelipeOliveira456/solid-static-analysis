@@ -29,8 +29,20 @@ class TypeResolutionIntegrationTest {
                         .filter(x -> x.getName().equals("m"))
                         .findFirst()
                         .orElseThrow();
-        boolean anyResolved =
-                m.getMethodCalls().stream().anyMatch(MethodCallSummary::isResolved);
-        assertTrue(anyResolved || !m.getMethodCalls().isEmpty());
+        assertTrue(
+                m.getMethodCalls().stream()
+                        .anyMatch(
+                                c ->
+                                        c.getExpression().contains("new Foo()")
+                                                && c.isResolved()
+                                                && "p.Foo".equals(c.getDeclaringType())),
+                "ObjectCreationExpr (new) deve aparecer em methodCalls com tipo resolvido");
+        assertTrue(
+                m.getMethodCalls().stream()
+                        .anyMatch(
+                                c ->
+                                        c.getExpression().contains("hello()")
+                                                && c.isResolved()),
+                "chamada de método após o new");
     }
 }

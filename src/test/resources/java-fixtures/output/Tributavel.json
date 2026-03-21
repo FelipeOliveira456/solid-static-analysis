@@ -1,0 +1,26 @@
+{
+  "sourceFile" : "/home/felipe/Documents/AS/solid-static-analysis/target/test-classes/java-fixtures/Tributavel.java",
+  "primaryType" : {
+    "kind" : "interface",
+    "name" : "Tributavel",
+    "abstract" : true,
+    "superclass" : null,
+    "implementedInterfaces" : [ ],
+    "fields" : [ ],
+    "methods" : [ {
+      "name" : "calcularImposto",
+      "returnType" : "double",
+      "parameters" : [ ],
+      "methodCalls" : [ ],
+      "controlFlowStatements" : [ ],
+      "fieldAccesses" : [ ]
+    }, {
+      "name" : "isIsento",
+      "returnType" : "boolean",
+      "parameters" : [ ],
+      "methodCalls" : [ ],
+      "controlFlowStatements" : [ ],
+      "fieldAccesses" : [ ]
+    } ]
+  }
+}
