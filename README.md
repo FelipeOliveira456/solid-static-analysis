@@ -1,0 +1,67 @@
+# solid-static-analysis
+
+Ferramenta de análise estática em Java: percorre um projeto fonte, parseia cada `.java` com
+[JavaParser](https://github.com/javaparser/javaparser) e grava um JSON por ficheiro em `output/`
+(métodos, chamadas, estruturas de fluxo como `if` / `while` / `try`, etc.).
+
+## Requisitos
+
+- **JDK 17+** (o `pom.xml` fixa `maven.compiler.source` / `target` em 17)
+- **Maven 3.9+**
+
+## Como compilar
+
+Na raiz do repositório:
+
+```bash
+mvn clean package
+```
+
+O JAR executável (shade) fica em:
+
+```text
+target/solid-static-analysis.jar
+```
+
+## Como executar o scanner
+
+1. Compila com o comando acima (o JAR só existe após `package`).
+2. Corre o JAR com **um argumento**: caminho **absoluto** para a raiz do projeto Java a analisar.
+3. Os JSON são escritos em **`./output/`** relativo ao diretório onde corres o comando (`user.dir`), não relativos ao projeto analisado.
+
+Exemplo (ajusta os caminhos):
+
+```bash
+cd /caminho/para/solid-static-analysis
+mvn -q clean package
+java -jar target/solid-static-analysis.jar /caminho/absoluto/para/o/projeto-java
+```
+
+Saída típica no fim: `Parsed: N, Failed: M` em stdout. O diretório `output/` passa a conter um `.json` por ficheiro `.java` (nomes derivados do caminho para evitar colisões).
+
+## Como correr os testes
+
+```bash
+mvn test
+```
+
+## Argumentos e códigos de saída
+
+| Situação | Exit code | Onde mensagens |
+|----------|-----------|----------------|
+| Scan terminado (com ou sem falhas parciais por ficheiro) | `0` | Falhas por ficheiro em **stdout**; resumo `Parsed: N, Failed: M` |
+| Argumentos inválidos, caminho não absoluto, diretório inexistente, erro fatal de I/O | `≠ 0` (hoje `1`) | **stderr** |
+
+Falhas de parse por ficheiro **não** abortam o lote. Detalhe em [specs/001-ast-parser/contracts/cli.md](specs/001-ast-parser/contracts/cli.md).
+
+## Limitações
+
+- Resolução de tipos via `CombinedTypeSolver` com fontes sob a raiz indicada e JDK no classpath;
+  dependências Maven externas **não** são resolvidas automaticamente nesta versão.
+- Por ficheiro: exporta o **primeiro** tipo `class` / `interface` top-level.
+
+## Documentação da feature
+
+- Especificação: [specs/001-ast-parser/spec.md](specs/001-ast-parser/spec.md)
+- Plano / tarefas: [specs/001-ast-parser/plan.md](specs/001-ast-parser/plan.md),
+  [specs/001-ast-parser/tasks.md](specs/001-ast-parser/tasks.md)

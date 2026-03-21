@@ -1,0 +1,23 @@
+# Maven / build
+target/
+*.class
+
+# JARs (build output; keep Maven wrapper jar if added later)
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+# IDE / OS
+.idea/
+*.iml
+.DS_Store
+*.log
+
+# Generated scanner output (keep directory via output/.gitkeep)
+output/*.json
+
+# Speckit / Cursor tooling (not part of source tree)
+.cursor/
+.specify/
+
+# Local iteration notes (not versioned)
+ITERACAO.md
