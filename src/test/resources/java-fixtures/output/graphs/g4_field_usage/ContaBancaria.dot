@@ -1,0 +1,24 @@
+digraph G4_field_ContaBancaria {
+  f_ContaBancaria_ativa [label="ContaBancaria.ativa", shape=ellipse];
+  f_ContaBancaria_saldo [label="ContaBancaria.saldo", shape=ellipse];
+  f_ContaBancaria_titular [label="ContaBancaria.titular", shape=ellipse];
+  m_ContaBancaria__init_ [label="ContaBancaria.<init>", shape=box];
+  m_ContaBancaria_depositar [label="ContaBancaria.depositar", shape=box];
+  m_ContaBancaria_encerrar [label="ContaBancaria.encerrar", shape=box];
+  m_ContaBancaria_getSaldo [label="ContaBancaria.getSaldo", shape=box];
+  m_ContaBancaria_getTitular [label="ContaBancaria.getTitular", shape=box];
+  m_ContaBancaria_isAtiva [label="ContaBancaria.isAtiva", shape=box];
+  m_ContaBancaria_sacar [label="ContaBancaria.sacar", shape=box];
+  m_ContaBancaria__init_ -> f_ContaBancaria_ativa [label="write"];
+  m_ContaBancaria__init_ -> f_ContaBancaria_saldo [label="write"];
+  m_ContaBancaria__init_ -> f_ContaBancaria_titular [label="write"];
+  m_ContaBancaria_depositar -> f_ContaBancaria_saldo [label="write"];
+  m_ContaBancaria_encerrar -> f_ContaBancaria_ativa [label="write"];
+  m_ContaBancaria_encerrar -> f_ContaBancaria_saldo [label="write"];
+  m_ContaBancaria_getSaldo -> f_ContaBancaria_saldo [label="read"];
+  m_ContaBancaria_getTitular -> f_ContaBancaria_titular [label="read"];
+  m_ContaBancaria_isAtiva -> f_ContaBancaria_ativa [label="read"];
+  m_ContaBancaria_sacar -> f_ContaBancaria_ativa [label="read"];
+  m_ContaBancaria_sacar -> f_ContaBancaria_saldo [label="read"];
+  m_ContaBancaria_sacar -> f_ContaBancaria_saldo [label="write"];
+}

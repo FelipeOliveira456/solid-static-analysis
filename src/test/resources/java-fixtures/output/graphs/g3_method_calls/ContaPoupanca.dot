@@ -1,0 +1,11 @@
+digraph G3_ContaPoupanca {
+  ContaPoupanca__init_ [label="ContaPoupanca.<init>"];
+  ContaPoupanca_aplicarRendimentosMensais [label="ContaPoupanca.aplicarRendimentosMensais"];
+  ContaPoupanca_calcularImposto [label="ContaPoupanca.calcularImposto"];
+  ContaPoupanca_calcularRendimento [label="ContaPoupanca.calcularRendimento"];
+  ContaPoupanca_getMesesAplicados [label="ContaPoupanca.getMesesAplicados"];
+  ContaPoupanca_getTaxaRendimento [label="ContaPoupanca.getTaxaRendimento"];
+  ContaPoupanca_isIsento [label="ContaPoupanca.isIsento"];
+  ContaPoupanca_calcularImposto -> ContaPoupanca_calcularRendimento;
+  ContaPoupanca_calcularImposto -> ContaPoupanca_isIsento;
+}

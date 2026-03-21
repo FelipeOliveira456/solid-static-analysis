@@ -1,0 +1,16 @@
+digraph G4_field_GerenciadorContas {
+  f_GerenciadorContas_agencia [label="GerenciadorContas.agencia", shape=ellipse];
+  f_GerenciadorContas_contas [label="GerenciadorContas.contas", shape=ellipse];
+  m_GerenciadorContas__init_ [label="GerenciadorContas.<init>", shape=box];
+  m_GerenciadorContas_abrirContaCorrente [label="GerenciadorContas.abrirContaCorrente", shape=box];
+  m_GerenciadorContas_abrirContaPoupanca [label="GerenciadorContas.abrirContaPoupanca", shape=box];
+  m_GerenciadorContas_gerarRelatorio [label="GerenciadorContas.gerarRelatorio", shape=box];
+  m_GerenciadorContas_totalContas [label="GerenciadorContas.totalContas", shape=box];
+  m_GerenciadorContas__init_ -> f_GerenciadorContas_agencia [label="write"];
+  m_GerenciadorContas__init_ -> f_GerenciadorContas_contas [label="write"];
+  m_GerenciadorContas_abrirContaCorrente -> f_GerenciadorContas_contas [label="read"];
+  m_GerenciadorContas_abrirContaPoupanca -> f_GerenciadorContas_contas [label="read"];
+  m_GerenciadorContas_gerarRelatorio -> f_GerenciadorContas_agencia [label="read"];
+  m_GerenciadorContas_gerarRelatorio -> f_GerenciadorContas_contas [label="read"];
+  m_GerenciadorContas_totalContas -> f_GerenciadorContas_contas [label="read"];
+}

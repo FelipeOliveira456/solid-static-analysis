@@ -1,0 +1,4 @@
+digraph G3_Tributavel {
+  Tributavel_calcularImposto [label="Tributavel.calcularImposto"];
+  Tributavel_isIsento [label="Tributavel.isIsento"];
+}

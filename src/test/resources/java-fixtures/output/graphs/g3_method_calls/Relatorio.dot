@@ -1,0 +1,12 @@
+digraph G3_Relatorio {
+  ContaBancaria_getSaldo [label="ContaBancaria.getSaldo"];
+  Relatorio__init_ [label="Relatorio.<init>"];
+  Relatorio_adicionarConta [label="Relatorio.adicionarConta"];
+  Relatorio_calcularTotalImpostos [label="Relatorio.calcularTotalImpostos"];
+  Relatorio_getAgencia [label="Relatorio.getAgencia"];
+  Relatorio_getTotalSaldo [label="Relatorio.getTotalSaldo"];
+  Relatorio_imprimirResumo [label="Relatorio.imprimirResumo"];
+  Tributavel_calcularImposto [label="Tributavel.calcularImposto"];
+  Relatorio_adicionarConta -> ContaBancaria_getSaldo;
+  Relatorio_calcularTotalImpostos -> Tributavel_calcularImposto;
+}

@@ -1,0 +1,10 @@
+digraph G3_ContaCorrente {
+  ContaCorrente__init_ [label="ContaCorrente.<init>"];
+  ContaCorrente_calcularRendimento [label="ContaCorrente.calcularRendimento"];
+  ContaCorrente_cobrarTaxa [label="ContaCorrente.cobrarTaxa"];
+  ContaCorrente_getPlano [label="ContaCorrente.getPlano"];
+  ContaCorrente_getTransacoesMes [label="ContaCorrente.getTransacoesMes"];
+  ContaCorrente_registrarTransacoes [label="ContaCorrente.registrarTransacoes"];
+  ContaCorrente_resolverTaxa [label="ContaCorrente.resolverTaxa"];
+  ContaCorrente__init_ -> ContaCorrente_resolverTaxa;
+}

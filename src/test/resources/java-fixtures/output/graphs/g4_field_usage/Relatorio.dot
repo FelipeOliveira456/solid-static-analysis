@@ -1,0 +1,22 @@
+digraph G4_field_Relatorio {
+  f_Relatorio_agencia [label="Relatorio.agencia", shape=ellipse];
+  f_Relatorio_contas [label="Relatorio.contas", shape=ellipse];
+  f_Relatorio_totalSaldo [label="Relatorio.totalSaldo", shape=ellipse];
+  m_Relatorio__init_ [label="Relatorio.<init>", shape=box];
+  m_Relatorio_adicionarConta [label="Relatorio.adicionarConta", shape=box];
+  m_Relatorio_calcularTotalImpostos [label="Relatorio.calcularTotalImpostos", shape=box];
+  m_Relatorio_getAgencia [label="Relatorio.getAgencia", shape=box];
+  m_Relatorio_getTotalSaldo [label="Relatorio.getTotalSaldo", shape=box];
+  m_Relatorio_imprimirResumo [label="Relatorio.imprimirResumo", shape=box];
+  m_Relatorio__init_ -> f_Relatorio_agencia [label="write"];
+  m_Relatorio__init_ -> f_Relatorio_contas [label="write"];
+  m_Relatorio__init_ -> f_Relatorio_totalSaldo [label="write"];
+  m_Relatorio_adicionarConta -> f_Relatorio_contas [label="read"];
+  m_Relatorio_adicionarConta -> f_Relatorio_totalSaldo [label="write"];
+  m_Relatorio_calcularTotalImpostos -> f_Relatorio_contas [label="read"];
+  m_Relatorio_getAgencia -> f_Relatorio_agencia [label="read"];
+  m_Relatorio_getTotalSaldo -> f_Relatorio_totalSaldo [label="read"];
+  m_Relatorio_imprimirResumo -> f_Relatorio_agencia [label="read"];
+  m_Relatorio_imprimirResumo -> f_Relatorio_contas [label="read"];
+  m_Relatorio_imprimirResumo -> f_Relatorio_totalSaldo [label="read"];
+}

@@ -1,0 +1,12 @@
+digraph CFG_Relatorio_calcularTotalImpostos {
+  entry [label="entry", shape=point];
+  s_1 [label="foreach: ContaBancaria c : contas"];
+  s_3 [label="if: c instanceof Tributavel"];
+  then_23_2 [label="then", shape=box];
+  then_24_4 [label="then", shape=box];
+  entry -> s_1;
+  s_1 -> s_1 [label="loop"];
+  s_1 -> then_23_2 [label="then"];
+  s_3 -> then_24_4 [label="then"];
+  then_23_2 -> s_3;
+}

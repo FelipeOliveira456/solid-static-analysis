@@ -1,0 +1,17 @@
+graph G4_proj_GerenciadorContas {
+  GerenciadorContas__init_ [label="GerenciadorContas.<init>"];
+  GerenciadorContas_abrirContaCorrente [label="GerenciadorContas.abrirContaCorrente"];
+  GerenciadorContas_abrirContaPoupanca [label="GerenciadorContas.abrirContaPoupanca"];
+  GerenciadorContas_gerarRelatorio [label="GerenciadorContas.gerarRelatorio"];
+  GerenciadorContas_totalContas [label="GerenciadorContas.totalContas"];
+  GerenciadorContas__init_ -- GerenciadorContas_abrirContaCorrente;
+  GerenciadorContas__init_ -- GerenciadorContas_abrirContaPoupanca;
+  GerenciadorContas__init_ -- GerenciadorContas_gerarRelatorio;
+  GerenciadorContas__init_ -- GerenciadorContas_totalContas;
+  GerenciadorContas_abrirContaCorrente -- GerenciadorContas_abrirContaPoupanca;
+  GerenciadorContas_abrirContaCorrente -- GerenciadorContas_gerarRelatorio;
+  GerenciadorContas_abrirContaCorrente -- GerenciadorContas_totalContas;
+  GerenciadorContas_abrirContaPoupanca -- GerenciadorContas_gerarRelatorio;
+  GerenciadorContas_abrirContaPoupanca -- GerenciadorContas_totalContas;
+  GerenciadorContas_gerarRelatorio -- GerenciadorContas_totalContas;
+}

@@ -1,0 +1,23 @@
+digraph G4_field_ContaCorrente {
+  f_ContaBancaria_ativa [label="ContaBancaria.ativa", shape=ellipse];
+  f_ContaBancaria_saldo [label="ContaBancaria.saldo", shape=ellipse];
+  f_ContaCorrente_plano [label="ContaCorrente.plano", shape=ellipse];
+  f_ContaCorrente_taxaMensal [label="ContaCorrente.taxaMensal", shape=ellipse];
+  f_ContaCorrente_transacoesMes [label="ContaCorrente.transacoesMes", shape=ellipse];
+  m_ContaCorrente__init_ [label="ContaCorrente.<init>", shape=box];
+  m_ContaCorrente_cobrarTaxa [label="ContaCorrente.cobrarTaxa", shape=box];
+  m_ContaCorrente_getPlano [label="ContaCorrente.getPlano", shape=box];
+  m_ContaCorrente_getTransacoesMes [label="ContaCorrente.getTransacoesMes", shape=box];
+  m_ContaCorrente_registrarTransacoes [label="ContaCorrente.registrarTransacoes", shape=box];
+  m_ContaCorrente__init_ -> f_ContaCorrente_plano [label="write"];
+  m_ContaCorrente__init_ -> f_ContaCorrente_taxaMensal [label="write"];
+  m_ContaCorrente__init_ -> f_ContaCorrente_transacoesMes [label="write"];
+  m_ContaCorrente_cobrarTaxa -> f_ContaBancaria_ativa [label="read"];
+  m_ContaCorrente_cobrarTaxa -> f_ContaBancaria_saldo [label="read"];
+  m_ContaCorrente_cobrarTaxa -> f_ContaBancaria_saldo [label="write"];
+  m_ContaCorrente_cobrarTaxa -> f_ContaCorrente_taxaMensal [label="read"];
+  m_ContaCorrente_getPlano -> f_ContaCorrente_plano [label="read"];
+  m_ContaCorrente_getTransacoesMes -> f_ContaCorrente_transacoesMes [label="read"];
+  m_ContaCorrente_registrarTransacoes -> f_ContaBancaria_saldo [label="write"];
+  m_ContaCorrente_registrarTransacoes -> f_ContaCorrente_transacoesMes [label="read"];
+}

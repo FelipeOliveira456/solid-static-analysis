@@ -1,0 +1,19 @@
+graph G4_proj_Relatorio {
+  Relatorio__init_ [label="Relatorio.<init>"];
+  Relatorio_adicionarConta [label="Relatorio.adicionarConta"];
+  Relatorio_calcularTotalImpostos [label="Relatorio.calcularTotalImpostos"];
+  Relatorio_getAgencia [label="Relatorio.getAgencia"];
+  Relatorio_getTotalSaldo [label="Relatorio.getTotalSaldo"];
+  Relatorio_imprimirResumo [label="Relatorio.imprimirResumo"];
+  Relatorio__init_ -- Relatorio_adicionarConta;
+  Relatorio__init_ -- Relatorio_calcularTotalImpostos;
+  Relatorio__init_ -- Relatorio_getAgencia;
+  Relatorio__init_ -- Relatorio_getTotalSaldo;
+  Relatorio__init_ -- Relatorio_imprimirResumo;
+  Relatorio_adicionarConta -- Relatorio_calcularTotalImpostos;
+  Relatorio_adicionarConta -- Relatorio_getTotalSaldo;
+  Relatorio_adicionarConta -- Relatorio_imprimirResumo;
+  Relatorio_calcularTotalImpostos -- Relatorio_imprimirResumo;
+  Relatorio_getAgencia -- Relatorio_imprimirResumo;
+  Relatorio_getTotalSaldo -- Relatorio_imprimirResumo;
+}

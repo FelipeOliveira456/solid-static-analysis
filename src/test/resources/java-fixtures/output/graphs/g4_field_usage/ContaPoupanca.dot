@@ -1,0 +1,22 @@
+digraph G4_field_ContaPoupanca {
+  f_ContaBancaria_saldo [label="ContaBancaria.saldo", shape=ellipse];
+  f_ContaPoupanca_mesesAplicados [label="ContaPoupanca.mesesAplicados", shape=ellipse];
+  f_ContaPoupanca_taxaRendimento [label="ContaPoupanca.taxaRendimento", shape=ellipse];
+  m_ContaPoupanca__init_ [label="ContaPoupanca.<init>", shape=box];
+  m_ContaPoupanca_aplicarRendimentosMensais [label="ContaPoupanca.aplicarRendimentosMensais", shape=box];
+  m_ContaPoupanca_calcularRendimento [label="ContaPoupanca.calcularRendimento", shape=box];
+  m_ContaPoupanca_getMesesAplicados [label="ContaPoupanca.getMesesAplicados", shape=box];
+  m_ContaPoupanca_getTaxaRendimento [label="ContaPoupanca.getTaxaRendimento", shape=box];
+  m_ContaPoupanca_isIsento [label="ContaPoupanca.isIsento", shape=box];
+  m_ContaPoupanca__init_ -> f_ContaPoupanca_mesesAplicados [label="write"];
+  m_ContaPoupanca__init_ -> f_ContaPoupanca_taxaRendimento [label="write"];
+  m_ContaPoupanca_aplicarRendimentosMensais -> f_ContaBancaria_saldo [label="read"];
+  m_ContaPoupanca_aplicarRendimentosMensais -> f_ContaBancaria_saldo [label="write"];
+  m_ContaPoupanca_aplicarRendimentosMensais -> f_ContaPoupanca_mesesAplicados [label="read"];
+  m_ContaPoupanca_aplicarRendimentosMensais -> f_ContaPoupanca_taxaRendimento [label="read"];
+  m_ContaPoupanca_calcularRendimento -> f_ContaBancaria_saldo [label="read"];
+  m_ContaPoupanca_calcularRendimento -> f_ContaPoupanca_taxaRendimento [label="read"];
+  m_ContaPoupanca_getMesesAplicados -> f_ContaPoupanca_mesesAplicados [label="read"];
+  m_ContaPoupanca_getTaxaRendimento -> f_ContaPoupanca_taxaRendimento [label="read"];
+  m_ContaPoupanca_isIsento -> f_ContaPoupanca_mesesAplicados [label="read"];
+}

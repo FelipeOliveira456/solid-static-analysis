@@ -1,0 +1,9 @@
+digraph G5 {
+  ContaBancaria [label="ContaBancaria", shape=box];
+  ContaCorrente [label="ContaCorrente", shape=box];
+  ContaPoupanca [label="ContaPoupanca", shape=box];
+  GerenciadorContas [label="GerenciadorContas", shape=box];
+  Relatorio [label="Relatorio", shape=box];
+  Tributavel [label="Tributavel", shape=ellipse];
+  ContaPoupanca -> Tributavel;
+}

@@ -1,0 +1,12 @@
+digraph CFG_ContaCorrente_registrarTransacoes {
+  entry [label="entry", shape=point];
+  s_1 [label="foreach: int v : valores"];
+  s_3 [label="if: v > 0"];
+  then_24_2 [label="then", shape=box];
+  then_25_4 [label="then", shape=box];
+  entry -> s_1;
+  s_1 -> s_1 [label="loop"];
+  s_1 -> then_24_2 [label="then"];
+  s_3 -> then_25_4 [label="then"];
+  then_24_2 -> s_3;
+}

@@ -1,0 +1,15 @@
+digraph G3_GerenciadorContas {
+  ContaCorrente__init_ [label="ContaCorrente.<init>"];
+  ContaPoupanca__init_ [label="ContaPoupanca.<init>"];
+  GerenciadorContas__init_ [label="GerenciadorContas.<init>"];
+  GerenciadorContas_abrirContaCorrente [label="GerenciadorContas.abrirContaCorrente"];
+  GerenciadorContas_abrirContaPoupanca [label="GerenciadorContas.abrirContaPoupanca"];
+  GerenciadorContas_gerarRelatorio [label="GerenciadorContas.gerarRelatorio"];
+  GerenciadorContas_totalContas [label="GerenciadorContas.totalContas"];
+  Relatorio__init_ [label="Relatorio.<init>"];
+  Relatorio_adicionarConta [label="Relatorio.adicionarConta"];
+  GerenciadorContas_abrirContaCorrente -> ContaCorrente__init_;
+  GerenciadorContas_abrirContaPoupanca -> ContaPoupanca__init_;
+  GerenciadorContas_gerarRelatorio -> Relatorio__init_;
+  GerenciadorContas_gerarRelatorio -> Relatorio_adicionarConta;
+}

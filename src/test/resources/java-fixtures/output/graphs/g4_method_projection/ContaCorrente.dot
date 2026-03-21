@@ -1,0 +1,13 @@
+graph G4_proj_ContaCorrente {
+  ContaCorrente__init_ [label="ContaCorrente.<init>"];
+  ContaCorrente_cobrarTaxa [label="ContaCorrente.cobrarTaxa"];
+  ContaCorrente_getPlano [label="ContaCorrente.getPlano"];
+  ContaCorrente_getTransacoesMes [label="ContaCorrente.getTransacoesMes"];
+  ContaCorrente_registrarTransacoes [label="ContaCorrente.registrarTransacoes"];
+  ContaCorrente__init_ -- ContaCorrente_cobrarTaxa;
+  ContaCorrente__init_ -- ContaCorrente_getPlano;
+  ContaCorrente__init_ -- ContaCorrente_getTransacoesMes;
+  ContaCorrente__init_ -- ContaCorrente_registrarTransacoes;
+  ContaCorrente_cobrarTaxa -- ContaCorrente_registrarTransacoes;
+  ContaCorrente_getTransacoesMes -- ContaCorrente_registrarTransacoes;
+}

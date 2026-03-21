@@ -1,0 +1,22 @@
+digraph G1 {
+  ContaBancaria [label="ContaBancaria"];
+  ContaCorrente [label="ContaCorrente"];
+  ContaPoupanca [label="ContaPoupanca"];
+  GerenciadorContas [label="GerenciadorContas"];
+  Relatorio [label="Relatorio"];
+  Tributavel [label="Tributavel"];
+  ContaCorrente -> ContaCorrente [label="call"];
+  ContaPoupanca -> ContaPoupanca [label="call"];
+  GerenciadorContas -> ContaCorrente [label="call"];
+  GerenciadorContas -> ContaCorrente [label="instantiation"];
+  GerenciadorContas -> ContaCorrente [label="return"];
+  GerenciadorContas -> ContaPoupanca [label="call"];
+  GerenciadorContas -> ContaPoupanca [label="instantiation"];
+  GerenciadorContas -> ContaPoupanca [label="return"];
+  GerenciadorContas -> Relatorio [label="call"];
+  GerenciadorContas -> Relatorio [label="instantiation"];
+  GerenciadorContas -> Relatorio [label="return"];
+  Relatorio -> ContaBancaria [label="call"];
+  Relatorio -> ContaBancaria [label="param"];
+  Relatorio -> Tributavel [label="call"];
+}

@@ -1,0 +1,23 @@
+graph G4_proj_ContaBancaria {
+  ContaBancaria__init_ [label="ContaBancaria.<init>"];
+  ContaBancaria_depositar [label="ContaBancaria.depositar"];
+  ContaBancaria_encerrar [label="ContaBancaria.encerrar"];
+  ContaBancaria_getSaldo [label="ContaBancaria.getSaldo"];
+  ContaBancaria_getTitular [label="ContaBancaria.getTitular"];
+  ContaBancaria_isAtiva [label="ContaBancaria.isAtiva"];
+  ContaBancaria_sacar [label="ContaBancaria.sacar"];
+  ContaBancaria__init_ -- ContaBancaria_depositar;
+  ContaBancaria__init_ -- ContaBancaria_encerrar;
+  ContaBancaria__init_ -- ContaBancaria_getSaldo;
+  ContaBancaria__init_ -- ContaBancaria_getTitular;
+  ContaBancaria__init_ -- ContaBancaria_isAtiva;
+  ContaBancaria__init_ -- ContaBancaria_sacar;
+  ContaBancaria_depositar -- ContaBancaria_encerrar;
+  ContaBancaria_depositar -- ContaBancaria_getSaldo;
+  ContaBancaria_depositar -- ContaBancaria_sacar;
+  ContaBancaria_encerrar -- ContaBancaria_getSaldo;
+  ContaBancaria_encerrar -- ContaBancaria_isAtiva;
+  ContaBancaria_encerrar -- ContaBancaria_sacar;
+  ContaBancaria_getSaldo -- ContaBancaria_sacar;
+  ContaBancaria_isAtiva -- ContaBancaria_sacar;
+}

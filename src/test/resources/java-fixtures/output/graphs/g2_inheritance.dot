@@ -1,0 +1,11 @@
+digraph G2 {
+  ContaBancaria [label="ContaBancaria"];
+  ContaCorrente [label="ContaCorrente"];
+  ContaPoupanca [label="ContaPoupanca"];
+  GerenciadorContas [label="GerenciadorContas"];
+  Relatorio [label="Relatorio"];
+  Tributavel [label="Tributavel"];
+  ContaCorrente -> ContaBancaria [label="extends"];
+  ContaPoupanca -> ContaBancaria [label="extends"];
+  ContaPoupanca -> Tributavel [label="implements"];
+}

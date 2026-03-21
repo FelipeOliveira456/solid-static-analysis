@@ -1,0 +1,13 @@
+digraph CFG_ContaBancaria_sacar {
+  else_26_5 [label="else", shape=box];
+  entry [label="entry", shape=point];
+  s_1 [label="if: !ativa"];
+  s_3 [label="if: valor > saldo"];
+  then_20_2 [label="then", shape=box];
+  then_23_4 [label="then", shape=box];
+  entry -> s_1;
+  s_1 -> s_3 [label="else"];
+  s_1 -> then_20_2 [label="then"];
+  s_3 -> else_26_5 [label="else"];
+  s_3 -> then_23_4 [label="then"];
+}

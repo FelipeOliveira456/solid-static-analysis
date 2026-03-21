@@ -1,0 +1,7 @@
+digraph CFG_ContaCorrente_cobrarTaxa {
+  entry [label="entry", shape=point];
+  s_1 [label="if: ativa && saldo >= taxaMensal"];
+  then_33_2 [label="then", shape=box];
+  entry -> s_1;
+  s_1 -> then_33_2 [label="then"];
+}

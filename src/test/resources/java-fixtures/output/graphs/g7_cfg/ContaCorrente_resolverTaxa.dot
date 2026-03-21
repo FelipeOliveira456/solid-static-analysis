@@ -1,0 +1,13 @@
+digraph CFG_ContaCorrente_resolverTaxa {
+  case_2 [label="\"basico\"", shape=box];
+  case_3 [label="\"premium\"", shape=box];
+  case_4 [label="\"empresarial\"", shape=box];
+  case_5 [label="default", shape=box];
+  entry [label="entry", shape=point];
+  s_1 [label="switch: plano"];
+  entry -> s_1;
+  s_1 -> case_2 [label="\"basico\""];
+  s_1 -> case_3 [label="\"premium\""];
+  s_1 -> case_4 [label="\"empresarial\""];
+  s_1 -> case_5 [label="default"];
+}

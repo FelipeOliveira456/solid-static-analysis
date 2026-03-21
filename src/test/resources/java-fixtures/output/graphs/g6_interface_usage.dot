@@ -1,0 +1,9 @@
+digraph G6 {
+  ContaBancaria [label="ContaBancaria"];
+  ContaCorrente [label="ContaCorrente"];
+  ContaPoupanca [label="ContaPoupanca"];
+  GerenciadorContas [label="GerenciadorContas"];
+  Relatorio [label="Relatorio"];
+  Tributavel [label="Tributavel"];
+  Relatorio -> Tributavel;
+}

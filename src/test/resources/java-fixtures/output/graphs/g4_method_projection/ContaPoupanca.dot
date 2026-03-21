@@ -1,0 +1,19 @@
+graph G4_proj_ContaPoupanca {
+  ContaPoupanca__init_ [label="ContaPoupanca.<init>"];
+  ContaPoupanca_aplicarRendimentosMensais [label="ContaPoupanca.aplicarRendimentosMensais"];
+  ContaPoupanca_calcularRendimento [label="ContaPoupanca.calcularRendimento"];
+  ContaPoupanca_getMesesAplicados [label="ContaPoupanca.getMesesAplicados"];
+  ContaPoupanca_getTaxaRendimento [label="ContaPoupanca.getTaxaRendimento"];
+  ContaPoupanca_isIsento [label="ContaPoupanca.isIsento"];
+  ContaPoupanca__init_ -- ContaPoupanca_aplicarRendimentosMensais;
+  ContaPoupanca__init_ -- ContaPoupanca_calcularRendimento;
+  ContaPoupanca__init_ -- ContaPoupanca_getMesesAplicados;
+  ContaPoupanca__init_ -- ContaPoupanca_getTaxaRendimento;
+  ContaPoupanca__init_ -- ContaPoupanca_isIsento;
+  ContaPoupanca_aplicarRendimentosMensais -- ContaPoupanca_calcularRendimento;
+  ContaPoupanca_aplicarRendimentosMensais -- ContaPoupanca_getMesesAplicados;
+  ContaPoupanca_aplicarRendimentosMensais -- ContaPoupanca_getTaxaRendimento;
+  ContaPoupanca_aplicarRendimentosMensais -- ContaPoupanca_isIsento;
+  ContaPoupanca_calcularRendimento -- ContaPoupanca_getTaxaRendimento;
+  ContaPoupanca_getMesesAplicados -- ContaPoupanca_isIsento;
+}

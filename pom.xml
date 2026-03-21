@@ -9,7 +9,7 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>solid-static-analysis</name>
-    <description>Static analysis tooling — AST scanner (iteration 001)</description>
+    <description>Static analysis — AST scanner (001) and DOT graph generation from JSON (002)</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -75,7 +75,7 @@
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.solidanalysis.scanner.ScannerCli</mainClass>
+                                    <mainClass>com.solidanalysis.SolidAnalysisCli</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>

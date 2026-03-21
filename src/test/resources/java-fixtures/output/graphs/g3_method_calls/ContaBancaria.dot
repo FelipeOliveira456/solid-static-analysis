@@ -1,0 +1,10 @@
+digraph G3_ContaBancaria {
+  ContaBancaria__init_ [label="ContaBancaria.<init>"];
+  ContaBancaria_calcularRendimento [label="ContaBancaria.calcularRendimento"];
+  ContaBancaria_depositar [label="ContaBancaria.depositar"];
+  ContaBancaria_encerrar [label="ContaBancaria.encerrar"];
+  ContaBancaria_getSaldo [label="ContaBancaria.getSaldo"];
+  ContaBancaria_getTitular [label="ContaBancaria.getTitular"];
+  ContaBancaria_isAtiva [label="ContaBancaria.isAtiva"];
+  ContaBancaria_sacar [label="ContaBancaria.sacar"];
+}
