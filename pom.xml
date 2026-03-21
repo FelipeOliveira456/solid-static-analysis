@@ -9,7 +9,7 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>solid-static-analysis</name>
-    <description>Static analysis — AST scanner (001) and DOT graph generation from JSON (002)</description>
+    <description>Static analysis — AST scanner (001), DOT graphs (002), graph algorithms (003)</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -18,6 +18,9 @@
         <javaparser.version>3.26.3</javaparser.version>
         <jackson.version>2.17.2</jackson.version>
         <junit.version>5.10.2</junit.version>
+        <jgrapht.version>1.5.2</jgrapht.version>
+        <!-- Exclude heavy clustering integration tests from default mvn test -->
+        <surefire.excludedGroups>clustering</surefire.excludedGroups>
     </properties>
 
     <dependencies>
@@ -35,6 +38,16 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jgrapht</groupId>
+            <artifactId>jgrapht-core</artifactId>
+            <version>${jgrapht.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jgrapht</groupId>
+            <artifactId>jgrapht-io</artifactId>
+            <version>${jgrapht.version}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -60,6 +73,10 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
+                <configuration>
+                    <excludedGroups>${surefire.excludedGroups}</excludedGroups>
+                    <forkedProcessTimeoutInSeconds>600</forkedProcessTimeoutInSeconds>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -1,0 +1,5 @@
+{
+  "clusters" : [ [ "ContaBancaria__init_", "ContaBancaria_getTitular", "ContaBancaria_isAtiva" ], [ "ContaBancaria_depositar", "ContaBancaria_encerrar", "ContaBancaria_getSaldo", "ContaBancaria_sacar" ] ],
+  "connectedComponents" : [ [ "ContaBancaria__init_", "ContaBancaria_depositar", "ContaBancaria_encerrar", "ContaBancaria_getSaldo", "ContaBancaria_getTitular", "ContaBancaria_isAtiva", "ContaBancaria_sacar" ] ],
+  "isolatedNodes" : [ ]
+}

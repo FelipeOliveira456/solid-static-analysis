@@ -1,0 +1,6 @@
+{
+  "decisionNodeCount" : 2,
+  "longestPathEdgesFromEntry" : 0,
+  "longestPathNote" : "Graph contains a cycle; longest path in DAG undefined.",
+  "maxDecisionOutDegree" : 2
+}

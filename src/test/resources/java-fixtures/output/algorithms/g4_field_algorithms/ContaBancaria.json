@@ -1,0 +1,17 @@
+{
+  "fieldInDegree" : {
+    "f_ContaBancaria_ativa" : 4,
+    "f_ContaBancaria_saldo" : 6,
+    "f_ContaBancaria_titular" : 2
+  },
+  "lcom" : 0.3333333333333333,
+  "methodOutDegree" : {
+    "m_ContaBancaria__init_" : 3,
+    "m_ContaBancaria_depositar" : 1,
+    "m_ContaBancaria_encerrar" : 2,
+    "m_ContaBancaria_getSaldo" : 1,
+    "m_ContaBancaria_getTitular" : 1,
+    "m_ContaBancaria_isAtiva" : 1,
+    "m_ContaBancaria_sacar" : 3
+  }
+}

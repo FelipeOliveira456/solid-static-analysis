@@ -1,0 +1,23 @@
+{
+  "clusters" : [ [ "ContaPoupanca__init_" ], [ "ContaPoupanca_aplicarRendimentosMensais" ], [ "ContaPoupanca_calcularImposto", "ContaPoupanca_calcularRendimento", "ContaPoupanca_isIsento" ], [ "ContaPoupanca_getMesesAplicados" ], [ "ContaPoupanca_getTaxaRendimento" ] ],
+  "inDegree" : {
+    "ContaPoupanca__init_" : 0,
+    "ContaPoupanca_aplicarRendimentosMensais" : 0,
+    "ContaPoupanca_calcularImposto" : 0,
+    "ContaPoupanca_calcularRendimento" : 1,
+    "ContaPoupanca_getMesesAplicados" : 0,
+    "ContaPoupanca_getTaxaRendimento" : 0,
+    "ContaPoupanca_isIsento" : 1
+  },
+  "isolatedNodes" : [ "ContaPoupanca__init_", "ContaPoupanca_aplicarRendimentosMensais", "ContaPoupanca_getMesesAplicados", "ContaPoupanca_getTaxaRendimento" ],
+  "outDegree" : {
+    "ContaPoupanca__init_" : 0,
+    "ContaPoupanca_aplicarRendimentosMensais" : 0,
+    "ContaPoupanca_calcularImposto" : 2,
+    "ContaPoupanca_calcularRendimento" : 0,
+    "ContaPoupanca_getMesesAplicados" : 0,
+    "ContaPoupanca_getTaxaRendimento" : 0,
+    "ContaPoupanca_isIsento" : 0
+  },
+  "stronglyConnectedComponents" : [ [ "ContaPoupanca__init_" ], [ "ContaPoupanca_aplicarRendimentosMensais" ], [ "ContaPoupanca_calcularImposto" ], [ "ContaPoupanca_calcularRendimento" ], [ "ContaPoupanca_getMesesAplicados" ], [ "ContaPoupanca_getTaxaRendimento" ], [ "ContaPoupanca_isIsento" ] ]
+}

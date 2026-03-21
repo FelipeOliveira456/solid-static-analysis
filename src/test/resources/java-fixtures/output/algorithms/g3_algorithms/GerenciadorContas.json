@@ -1,0 +1,27 @@
+{
+  "clusters" : [ [ "ContaCorrente__init_", "GerenciadorContas_abrirContaCorrente", "GerenciadorContas_gerarRelatorio", "Relatorio__init_", "Relatorio_adicionarConta" ], [ "ContaPoupanca__init_", "GerenciadorContas_abrirContaPoupanca" ], [ "GerenciadorContas__init_" ], [ "GerenciadorContas_totalContas" ] ],
+  "inDegree" : {
+    "ContaCorrente__init_" : 1,
+    "ContaPoupanca__init_" : 1,
+    "GerenciadorContas__init_" : 0,
+    "GerenciadorContas_abrirContaCorrente" : 0,
+    "GerenciadorContas_abrirContaPoupanca" : 0,
+    "GerenciadorContas_gerarRelatorio" : 0,
+    "GerenciadorContas_totalContas" : 0,
+    "Relatorio__init_" : 1,
+    "Relatorio_adicionarConta" : 1
+  },
+  "isolatedNodes" : [ "GerenciadorContas__init_", "GerenciadorContas_totalContas" ],
+  "outDegree" : {
+    "ContaCorrente__init_" : 0,
+    "ContaPoupanca__init_" : 0,
+    "GerenciadorContas__init_" : 0,
+    "GerenciadorContas_abrirContaCorrente" : 1,
+    "GerenciadorContas_abrirContaPoupanca" : 1,
+    "GerenciadorContas_gerarRelatorio" : 2,
+    "GerenciadorContas_totalContas" : 0,
+    "Relatorio__init_" : 0,
+    "Relatorio_adicionarConta" : 0
+  },
+  "stronglyConnectedComponents" : [ [ "ContaCorrente__init_" ], [ "ContaPoupanca__init_" ], [ "GerenciadorContas__init_" ], [ "GerenciadorContas_abrirContaCorrente" ], [ "GerenciadorContas_abrirContaPoupanca" ], [ "GerenciadorContas_gerarRelatorio" ], [ "GerenciadorContas_totalContas" ], [ "Relatorio__init_" ], [ "Relatorio_adicionarConta" ] ]
+}

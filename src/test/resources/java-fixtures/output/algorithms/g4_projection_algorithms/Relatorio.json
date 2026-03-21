@@ -1,0 +1,5 @@
+{
+  "clusters" : [ [ "Relatorio__init_", "Relatorio_adicionarConta", "Relatorio_calcularTotalImpostos", "Relatorio_getAgencia", "Relatorio_getTotalSaldo", "Relatorio_imprimirResumo" ] ],
+  "connectedComponents" : [ [ "Relatorio__init_", "Relatorio_adicionarConta", "Relatorio_calcularTotalImpostos", "Relatorio_getAgencia", "Relatorio_getTotalSaldo", "Relatorio_imprimirResumo" ] ],
+  "isolatedNodes" : [ ]
+}

@@ -1,0 +1,16 @@
+{
+  "fieldInDegree" : {
+    "f_ContaBancaria_saldo" : 3,
+    "f_ContaPoupanca_mesesAplicados" : 4,
+    "f_ContaPoupanca_taxaRendimento" : 4
+  },
+  "lcom" : 0.26666666666666666,
+  "methodOutDegree" : {
+    "m_ContaPoupanca__init_" : 2,
+    "m_ContaPoupanca_aplicarRendimentosMensais" : 4,
+    "m_ContaPoupanca_calcularRendimento" : 2,
+    "m_ContaPoupanca_getMesesAplicados" : 1,
+    "m_ContaPoupanca_getTaxaRendimento" : 1,
+    "m_ContaPoupanca_isIsento" : 1
+  }
+}

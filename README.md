@@ -4,6 +4,9 @@ Ferramenta de análise estática em Java: percorre um projeto fonte, parseia cad
 [JavaParser](https://github.com/javaparser/javaparser) e grava um JSON por ficheiro em `output/`
 (métodos, chamadas, estruturas de fluxo como `if` / `while` / `try`, etc.). Com **`--graphs`**, lê
 esses JSON e gera grafos [Graphviz DOT](https://graphviz.org/) em `output/<projeto>/graphs/`.
+Com **`--analyze`**, lê os `.dot` dessa pasta e grava métricas e algoritmos em
+`output/<projeto>/algorithms/` (SCC, graus, centralidade, longest path em DAG onde aplicável, LCOM,
+componentes conectados, clusterização **Louvain** opcional com `--clustering`).
 
 ## Requisitos
 
@@ -31,6 +34,23 @@ O `Main-Class` do shade é `com.solidanalysis.SolidAnalysisCli`:
 - **Scan (Etapa 1)**: um argumento — raiz **absoluta** do projeto Java a analisar.
 - **Grafos (Etapa 2)**: `--graphs` e o caminho **absoluto** do diretório que já contém os `*.json`
   (por exemplo `.../output/nome-do-projeto`).
+- **Algoritmos (Etapa 3)**: `--analyze` e o caminho **absoluto** do mesmo diretório de saída do
+  projeto (`.../output/nome-do-projeto`), que deve conter `graphs/` com os `.dot`. Opcional:
+  `--clustering` para preencher o campo `clusters` (Louvain) em G1, G3 e G4 projeção; sem a flag,
+  `clusters` fica `[]` nesses JSON.
+
+### Onde a saída é gravada (utilizador vs testes)
+
+| Fluxo | O que grava | Onde fica |
+|-------|-------------|-----------|
+| **Uso normal** — `java -jar … /abs/projeto` (scan) | JSON por `.java` | **`output/` na raiz do repositório** (relativo ao diretório de trabalho onde corres o comando), p.ex. `output/meu-projeto/*.json` |
+| Depois `--graphs /abs/.../output/meu-projeto` | DOT G1–G7 | `output/meu-projeto/graphs/` |
+| Depois `--analyze /abs/.../output/meu-projeto` | JSON de algoritmos | `output/meu-projeto/algorithms/` |
+| **Fixtures de teste** — fontes em `src/test/resources/java-fixtures/` | O teste `JavaFixturesScannerTest` gera JSON de scan; podes regenerar grafos e algoritmos apontando o JAR ao diretório de fixture | **`src/test/resources/java-fixtures/output/`** (não é o `output/` da raiz do repo): lá estão `*.json` de scan, `graphs/` e `algorithms/` commitados como referência |
+
+Ou seja: o **`output/` “de fora”** é o da raiz do projeto **solid-static-analysis** quando corres o scan
+a partir daí. Os **fixtures** usam um layout espelhado **dentro de** `src/test/resources/java-fixtures/output/`
+para testes e exemplos versionados.
 
 ## Como executar o scanner (Etapa 1)
 
@@ -63,13 +83,57 @@ São criados `g1_dependency.dot` … `g6_interface_usage.dot` e `g7_cfg/*.dot` d
 dot -Tpng graphs/g1_dependency.dot -o g1.png
 ```
 
+## Como analisar grafos e gerar JSON de algoritmos (Etapa 3)
+
+Pré-requisito: já existir `graphs/` com os `.dot` (Etapa 2) dentro do diretório de saída do projeto.
+
+```bash
+# Métricas rápidas; campo "clusters" vazio nos JSON onde o clustering é opcional
+java -jar target/solid-static-analysis.jar --analyze /caminho/absoluto/para/output/meu-projeto
+
+# Inclui Louvain (G1, G3 por classe, G4 projeção por classe)
+java -jar target/solid-static-analysis.jar --analyze /caminho/absoluto/para/output/meu-projeto --clustering
+```
+
+Estrutura típica gerada em `.../output/meu-projeto/algorithms/`: `g1_algorithms.json`, `g2_…`,
+`g3_algorithms/<Classe>.json`, `g4_field_algorithms/…`, `g4_projection_algorithms/…`, `g5_…`, `g6_…`,
+`g7_algorithms/<Classe>_<Metodo>.json`.
+
+### Regenerar artefactos dos fixtures (opcional)
+
+A partir da raiz do repositório, com o JAR já construído:
+
+```bash
+mvn -q package
+# Sem clustering (rápido)
+java -jar target/solid-static-analysis.jar --analyze "$(pwd)/src/test/resources/java-fixtures/output"
+# Com clustering (atualiza "clusters" nos JSON de G1/G3/G4 projeção)
+java -jar target/solid-static-analysis.jar --analyze "$(pwd)/src/test/resources/java-fixtures/output" --clustering
+```
+
+Isto escreve em **`src/test/resources/java-fixtures/output/algorithms/`**, não em `output/` na raiz.
+
 ## Como correr os testes
 
 ```bash
 mvn test
 ```
 
-Fontes de exemplo para integração ficam em `src/test/resources/java-fixtures/`. Ao correr os testes, o scan dessas fontes gera JSON em **`src/test/resources/java-fixtures/output/`** (para inspecionar o artefacto sem apontar o JAR a pastas externas).
+Por defeito o Surefire **exclui** testes com a tag JUnit `clustering` (integração pesada opcional).
+Para correr também esses testes:
+
+```bash
+mvn test -Dsurefire.excludedGroups=
+```
+
+### Fixtures (`java-fixtures`)
+
+- Fontes de exemplo: `src/test/resources/java-fixtures/*.java`.
+- Artefactos versionados de referência: **`src/test/resources/java-fixtures/output/`**
+  (`*.json` do scan, `graphs/*.dot`, `algorithms/*.json`).
+- O teste `JavaFixturesScannerTest` regista no próprio `output/` dos fixtures os JSON do scan; grafos
+  e algoritmos podem ser regenerados com os comandos `--graphs` / `--analyze` acima apontando para
+  esse diretório **absoluto**.
 
 ## Argumentos e códigos de saída
 
@@ -92,3 +156,5 @@ Falhas de parse por ficheiro **não** abortam o lote. Detalhe em [specs/001-ast-
   [plan.md](specs/001-ast-parser/plan.md), [tasks.md](specs/001-ast-parser/tasks.md)
 - **002 — Grafos DOT**: [specs/002-generate-dot-graphs/spec.md](specs/002-generate-dot-graphs/spec.md),
   [quickstart.md](specs/002-generate-dot-graphs/quickstart.md)
+- **003 — Algoritmos de grafos**: [specs/003-analyze-graph-algorithms/spec.md](specs/003-analyze-graph-algorithms/spec.md),
+  [quickstart.md](specs/003-analyze-graph-algorithms/quickstart.md), [tasks.md](specs/003-analyze-graph-algorithms/tasks.md)

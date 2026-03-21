@@ -1,0 +1,5 @@
+{
+  "clusters" : [ [ "ContaCorrente__init_", "ContaCorrente_cobrarTaxa", "ContaCorrente_getPlano", "ContaCorrente_getTransacoesMes", "ContaCorrente_registrarTransacoes" ] ],
+  "connectedComponents" : [ [ "ContaCorrente__init_", "ContaCorrente_cobrarTaxa", "ContaCorrente_getPlano", "ContaCorrente_getTransacoesMes", "ContaCorrente_registrarTransacoes" ] ],
+  "isolatedNodes" : [ ]
+}

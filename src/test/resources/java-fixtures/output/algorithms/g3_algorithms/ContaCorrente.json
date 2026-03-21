@@ -1,0 +1,23 @@
+{
+  "clusters" : [ [ "ContaCorrente__init_", "ContaCorrente_resolverTaxa" ], [ "ContaCorrente_calcularRendimento" ], [ "ContaCorrente_cobrarTaxa" ], [ "ContaCorrente_getPlano" ], [ "ContaCorrente_getTransacoesMes" ], [ "ContaCorrente_registrarTransacoes" ] ],
+  "inDegree" : {
+    "ContaCorrente__init_" : 0,
+    "ContaCorrente_calcularRendimento" : 0,
+    "ContaCorrente_cobrarTaxa" : 0,
+    "ContaCorrente_getPlano" : 0,
+    "ContaCorrente_getTransacoesMes" : 0,
+    "ContaCorrente_registrarTransacoes" : 0,
+    "ContaCorrente_resolverTaxa" : 1
+  },
+  "isolatedNodes" : [ "ContaCorrente_calcularRendimento", "ContaCorrente_cobrarTaxa", "ContaCorrente_getPlano", "ContaCorrente_getTransacoesMes", "ContaCorrente_registrarTransacoes" ],
+  "outDegree" : {
+    "ContaCorrente__init_" : 1,
+    "ContaCorrente_calcularRendimento" : 0,
+    "ContaCorrente_cobrarTaxa" : 0,
+    "ContaCorrente_getPlano" : 0,
+    "ContaCorrente_getTransacoesMes" : 0,
+    "ContaCorrente_registrarTransacoes" : 0,
+    "ContaCorrente_resolverTaxa" : 0
+  },
+  "stronglyConnectedComponents" : [ [ "ContaCorrente__init_" ], [ "ContaCorrente_calcularRendimento" ], [ "ContaCorrente_cobrarTaxa" ], [ "ContaCorrente_getPlano" ], [ "ContaCorrente_getTransacoesMes" ], [ "ContaCorrente_registrarTransacoes" ], [ "ContaCorrente_resolverTaxa" ] ]
+}

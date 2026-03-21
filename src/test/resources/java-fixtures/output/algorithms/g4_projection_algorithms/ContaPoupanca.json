@@ -1,0 +1,5 @@
+{
+  "clusters" : [ [ "ContaPoupanca__init_", "ContaPoupanca_calcularRendimento", "ContaPoupanca_getTaxaRendimento" ], [ "ContaPoupanca_aplicarRendimentosMensais", "ContaPoupanca_getMesesAplicados", "ContaPoupanca_isIsento" ] ],
+  "connectedComponents" : [ [ "ContaPoupanca__init_", "ContaPoupanca_aplicarRendimentosMensais", "ContaPoupanca_calcularRendimento", "ContaPoupanca_getMesesAplicados", "ContaPoupanca_getTaxaRendimento", "ContaPoupanca_isIsento" ] ],
+  "isolatedNodes" : [ ]
+}

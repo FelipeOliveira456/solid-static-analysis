@@ -1,0 +1,17 @@
+{
+  "fieldInDegree" : {
+    "f_ContaBancaria_ativa" : 1,
+    "f_ContaBancaria_saldo" : 3,
+    "f_ContaCorrente_plano" : 2,
+    "f_ContaCorrente_taxaMensal" : 2,
+    "f_ContaCorrente_transacoesMes" : 3
+  },
+  "lcom" : 0.4,
+  "methodOutDegree" : {
+    "m_ContaCorrente__init_" : 3,
+    "m_ContaCorrente_cobrarTaxa" : 4,
+    "m_ContaCorrente_getPlano" : 1,
+    "m_ContaCorrente_getTransacoesMes" : 1,
+    "m_ContaCorrente_registrarTransacoes" : 2
+  }
+}

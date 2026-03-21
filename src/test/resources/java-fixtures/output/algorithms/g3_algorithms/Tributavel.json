@@ -1,0 +1,13 @@
+{
+  "clusters" : [ [ "Tributavel_calcularImposto" ], [ "Tributavel_isIsento" ] ],
+  "inDegree" : {
+    "Tributavel_calcularImposto" : 0,
+    "Tributavel_isIsento" : 0
+  },
+  "isolatedNodes" : [ "Tributavel_calcularImposto", "Tributavel_isIsento" ],
+  "outDegree" : {
+    "Tributavel_calcularImposto" : 0,
+    "Tributavel_isIsento" : 0
+  },
+  "stronglyConnectedComponents" : [ [ "Tributavel_calcularImposto" ], [ "Tributavel_isIsento" ] ]
+}

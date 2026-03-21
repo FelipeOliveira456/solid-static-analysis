@@ -1,0 +1,7 @@
+{
+  "interfaceInDegree" : {
+    "Tributavel" : 1
+  },
+  "interfacesWithZeroInDegree" : [ ],
+  "knownInterfacesFromG5" : [ "Tributavel" ]
+}

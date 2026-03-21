@@ -1,0 +1,13 @@
+{
+  "classOutDegree" : {
+    "ContaBancaria" : 0,
+    "ContaCorrente" : 0,
+    "ContaPoupanca" : 1,
+    "GerenciadorContas" : 0,
+    "Relatorio" : 0
+  },
+  "interfaceInDegree" : {
+    "Tributavel" : 1
+  },
+  "interfacesWithZeroInDegree" : [ ]
+}

@@ -1,0 +1,16 @@
+{
+  "fieldInDegree" : {
+    "f_Relatorio_agencia" : 3,
+    "f_Relatorio_contas" : 4,
+    "f_Relatorio_totalSaldo" : 4
+  },
+  "lcom" : 0.26666666666666666,
+  "methodOutDegree" : {
+    "m_Relatorio__init_" : 3,
+    "m_Relatorio_adicionarConta" : 2,
+    "m_Relatorio_calcularTotalImpostos" : 1,
+    "m_Relatorio_getAgencia" : 1,
+    "m_Relatorio_getTotalSaldo" : 1,
+    "m_Relatorio_imprimirResumo" : 3
+  }
+}

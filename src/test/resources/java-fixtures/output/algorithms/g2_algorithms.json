@@ -1,0 +1,19 @@
+{
+  "globalLongestPathEdges" : 1,
+  "inDegree" : {
+    "ContaBancaria" : 2,
+    "ContaCorrente" : 0,
+    "ContaPoupanca" : 0,
+    "GerenciadorContas" : 0,
+    "Relatorio" : 0,
+    "Tributavel" : 1
+  },
+  "longestPathNote" : null,
+  "maxDepthFromRootEdges" : {
+    "ContaCorrente" : 1,
+    "ContaPoupanca" : 1,
+    "GerenciadorContas" : 0,
+    "Relatorio" : 0
+  },
+  "roots" : [ "ContaCorrente", "ContaPoupanca", "GerenciadorContas", "Relatorio" ]
+}

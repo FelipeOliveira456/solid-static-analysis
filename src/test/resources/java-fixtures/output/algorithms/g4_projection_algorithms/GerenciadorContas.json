@@ -1,0 +1,5 @@
+{
+  "clusters" : [ [ "GerenciadorContas__init_" ], [ "GerenciadorContas_abrirContaCorrente" ], [ "GerenciadorContas_abrirContaPoupanca" ], [ "GerenciadorContas_gerarRelatorio" ], [ "GerenciadorContas_totalContas" ] ],
+  "connectedComponents" : [ [ "GerenciadorContas__init_", "GerenciadorContas_abrirContaCorrente", "GerenciadorContas_abrirContaPoupanca", "GerenciadorContas_gerarRelatorio", "GerenciadorContas_totalContas" ] ],
+  "isolatedNodes" : [ ]
+}

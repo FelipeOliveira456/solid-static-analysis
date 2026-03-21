@@ -1,0 +1,25 @@
+{
+  "clusters" : [ [ "ContaBancaria__init_" ], [ "ContaBancaria_calcularRendimento" ], [ "ContaBancaria_depositar" ], [ "ContaBancaria_encerrar" ], [ "ContaBancaria_getSaldo" ], [ "ContaBancaria_getTitular" ], [ "ContaBancaria_isAtiva" ], [ "ContaBancaria_sacar" ] ],
+  "inDegree" : {
+    "ContaBancaria__init_" : 0,
+    "ContaBancaria_calcularRendimento" : 0,
+    "ContaBancaria_depositar" : 0,
+    "ContaBancaria_encerrar" : 0,
+    "ContaBancaria_getSaldo" : 0,
+    "ContaBancaria_getTitular" : 0,
+    "ContaBancaria_isAtiva" : 0,
+    "ContaBancaria_sacar" : 0
+  },
+  "isolatedNodes" : [ "ContaBancaria__init_", "ContaBancaria_calcularRendimento", "ContaBancaria_depositar", "ContaBancaria_encerrar", "ContaBancaria_getSaldo", "ContaBancaria_getTitular", "ContaBancaria_isAtiva", "ContaBancaria_sacar" ],
+  "outDegree" : {
+    "ContaBancaria__init_" : 0,
+    "ContaBancaria_calcularRendimento" : 0,
+    "ContaBancaria_depositar" : 0,
+    "ContaBancaria_encerrar" : 0,
+    "ContaBancaria_getSaldo" : 0,
+    "ContaBancaria_getTitular" : 0,
+    "ContaBancaria_isAtiva" : 0,
+    "ContaBancaria_sacar" : 0
+  },
+  "stronglyConnectedComponents" : [ [ "ContaBancaria__init_" ], [ "ContaBancaria_calcularRendimento" ], [ "ContaBancaria_depositar" ], [ "ContaBancaria_encerrar" ], [ "ContaBancaria_getSaldo" ], [ "ContaBancaria_getTitular" ], [ "ContaBancaria_isAtiva" ], [ "ContaBancaria_sacar" ] ]
+}

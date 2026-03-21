@@ -1,0 +1,6 @@
+{
+  "decisionNodeCount" : 2,
+  "longestPathEdgesFromEntry" : 3,
+  "longestPathNote" : null,
+  "maxDecisionOutDegree" : 2
+}

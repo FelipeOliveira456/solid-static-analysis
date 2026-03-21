@@ -1,0 +1,25 @@
+{
+  "clusters" : [ [ "ContaBancaria_getSaldo", "Relatorio_adicionarConta" ], [ "Relatorio__init_" ], [ "Relatorio_calcularTotalImpostos", "Tributavel_calcularImposto" ], [ "Relatorio_getAgencia" ], [ "Relatorio_getTotalSaldo" ], [ "Relatorio_imprimirResumo" ] ],
+  "inDegree" : {
+    "ContaBancaria_getSaldo" : 1,
+    "Relatorio__init_" : 0,
+    "Relatorio_adicionarConta" : 0,
+    "Relatorio_calcularTotalImpostos" : 0,
+    "Relatorio_getAgencia" : 0,
+    "Relatorio_getTotalSaldo" : 0,
+    "Relatorio_imprimirResumo" : 0,
+    "Tributavel_calcularImposto" : 1
+  },
+  "isolatedNodes" : [ "Relatorio__init_", "Relatorio_getAgencia", "Relatorio_getTotalSaldo", "Relatorio_imprimirResumo" ],
+  "outDegree" : {
+    "ContaBancaria_getSaldo" : 0,
+    "Relatorio__init_" : 0,
+    "Relatorio_adicionarConta" : 1,
+    "Relatorio_calcularTotalImpostos" : 1,
+    "Relatorio_getAgencia" : 0,
+    "Relatorio_getTotalSaldo" : 0,
+    "Relatorio_imprimirResumo" : 0,
+    "Tributavel_calcularImposto" : 0
+  },
+  "stronglyConnectedComponents" : [ [ "ContaBancaria_getSaldo" ], [ "Relatorio__init_" ], [ "Relatorio_adicionarConta" ], [ "Relatorio_calcularTotalImpostos" ], [ "Relatorio_getAgencia" ], [ "Relatorio_getTotalSaldo" ], [ "Relatorio_imprimirResumo" ], [ "Tributavel_calcularImposto" ] ]
+}

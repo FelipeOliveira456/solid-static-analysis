@@ -1,0 +1,44 @@
+{
+  "clusters" : [ [ "ContaBancaria", "Relatorio", "Tributavel" ], [ "ContaCorrente", "ContaPoupanca", "GerenciadorContas" ] ],
+  "degreeCentrality" : {
+    "ContaBancaria" : 0.2,
+    "ContaCorrente" : 0.5,
+    "ContaPoupanca" : 0.5,
+    "GerenciadorContas" : 0.9,
+    "Relatorio" : 0.6,
+    "Tributavel" : 0.1
+  },
+  "inCentrality" : {
+    "ContaBancaria" : 0.4,
+    "ContaCorrente" : 0.8,
+    "ContaPoupanca" : 0.8,
+    "GerenciadorContas" : 0.0,
+    "Relatorio" : 0.6,
+    "Tributavel" : 0.2
+  },
+  "inDegree" : {
+    "ContaBancaria" : 2,
+    "ContaCorrente" : 4,
+    "ContaPoupanca" : 4,
+    "GerenciadorContas" : 0,
+    "Relatorio" : 3,
+    "Tributavel" : 1
+  },
+  "outCentrality" : {
+    "ContaBancaria" : 0.0,
+    "ContaCorrente" : 0.2,
+    "ContaPoupanca" : 0.2,
+    "GerenciadorContas" : 1.8,
+    "Relatorio" : 0.6,
+    "Tributavel" : 0.0
+  },
+  "outDegree" : {
+    "ContaBancaria" : 0,
+    "ContaCorrente" : 1,
+    "ContaPoupanca" : 1,
+    "GerenciadorContas" : 9,
+    "Relatorio" : 3,
+    "Tributavel" : 0
+  },
+  "stronglyConnectedComponents" : [ [ "ContaBancaria" ], [ "ContaCorrente" ], [ "ContaPoupanca" ], [ "GerenciadorContas" ], [ "Relatorio" ], [ "Tributavel" ] ]
+}

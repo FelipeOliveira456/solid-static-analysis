@@ -1,0 +1,14 @@
+{
+  "fieldInDegree" : {
+    "f_GerenciadorContas_agencia" : 2,
+    "f_GerenciadorContas_contas" : 5
+  },
+  "lcom" : 0.0,
+  "methodOutDegree" : {
+    "m_GerenciadorContas__init_" : 2,
+    "m_GerenciadorContas_abrirContaCorrente" : 1,
+    "m_GerenciadorContas_abrirContaPoupanca" : 1,
+    "m_GerenciadorContas_gerarRelatorio" : 2,
+    "m_GerenciadorContas_totalContas" : 1
+  }
+}
