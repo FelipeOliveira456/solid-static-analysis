@@ -3,6 +3,7 @@ package com.solidanalysis.scanner;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
@@ -32,6 +33,7 @@ import com.solidanalysis.scanner.model.AstArtifact;
 import com.solidanalysis.scanner.model.ControlFlowStatementSummary;
 import com.solidanalysis.scanner.model.FieldAccessSummary;
 import com.solidanalysis.scanner.model.FieldSummary;
+import com.solidanalysis.scanner.model.InstantiationSummary;
 import com.solidanalysis.scanner.model.MethodCallSummary;
 import com.solidanalysis.scanner.model.MethodSummary;
 import com.solidanalysis.scanner.model.ParameterSummary;
@@ -88,6 +90,18 @@ public class AstExtractor {
         }
     }
 
+    private record InstantiationPos(int line, int col, InstantiationSummary summary)
+            implements Comparable<InstantiationPos> {
+        @Override
+        public int compareTo(InstantiationPos o) {
+            int c = Integer.compare(line, o.line);
+            if (c != 0) {
+                return c;
+            }
+            return Integer.compare(col, o.col);
+        }
+    }
+
     /**
      * Extracts structured data for the first top-level class or interface in the compilation unit.
      *
@@ -131,29 +145,10 @@ public class AstExtractor {
 
         List<MethodSummary> methods = new ArrayList<>();
         for (MethodDeclaration md : typeDecl.getMethods()) {
-            MethodSummary ms = new MethodSummary();
-            ms.setName(md.getNameAsString());
-            ms.setReturnType(md.getType().asString());
-            List<ParameterSummary> params = new ArrayList<>();
-            for (Parameter p : md.getParameters()) {
-                params.add(new ParameterSummary(p.getNameAsString(), p.getType().asString()));
-            }
-            ms.setParameters(params);
-
-            List<MethodCallSummary> calls = new ArrayList<>();
-            List<ControlFlowStatementSummary> flow = new ArrayList<>();
-            List<FieldAccessSummary> fieldAccesses = new ArrayList<>();
-            md.getBody()
-                    .ifPresent(
-                            body -> {
-                                collectMethodCallsAndConstructors(body, calls);
-                                collectControlFlow(body, flow);
-                                collectFieldAccesses(body, fieldAccesses);
-                            });
-            ms.setMethodCalls(calls);
-            ms.setControlFlowStatements(flow);
-            ms.setFieldAccesses(fieldAccesses);
-            methods.add(ms);
+            methods.add(extractExecutableSummary(md.getNameAsString(), md.getType().asString(), md.getParameters(), md.getBody().orElse(null)));
+        }
+        for (ConstructorDeclaration cd : typeDecl.getConstructors()) {
+            methods.add(extractExecutableSummary(typeDecl.getNameAsString(), "<init>", cd.getParameters(), cd.getBody()));
         }
         summary.setMethods(methods);
 
@@ -161,6 +156,35 @@ public class AstExtractor {
         artifact.setSourceFile(sourceFile.toAbsolutePath().normalize().toString());
         artifact.setPrimaryType(summary);
         return artifact;
+    }
+
+    private static MethodSummary extractExecutableSummary(
+            String name, String returnType, com.github.javaparser.ast.NodeList<Parameter> parameters, BlockStmt body) {
+        MethodSummary ms = new MethodSummary();
+        ms.setName(name);
+        ms.setReturnType(returnType);
+
+        List<ParameterSummary> params = new ArrayList<>();
+        for (Parameter p : parameters) {
+            params.add(new ParameterSummary(p.getNameAsString(), p.getType().asString()));
+        }
+        ms.setParameters(params);
+
+        List<MethodCallSummary> calls = new ArrayList<>();
+        List<ControlFlowStatementSummary> flow = new ArrayList<>();
+        List<FieldAccessSummary> fieldAccesses = new ArrayList<>();
+        List<InstantiationSummary> instantiations = new ArrayList<>();
+        if (body != null) {
+            collectMethodCallsAndConstructors(body, calls);
+            collectControlFlow(body, flow);
+            collectFieldAccesses(body, fieldAccesses);
+            collectInstantiations(body, instantiations);
+        }
+        ms.setMethodCalls(calls);
+        ms.setControlFlowStatements(flow);
+        ms.setFieldAccesses(fieldAccesses);
+        ms.setInstantiations(instantiations);
+        return ms;
     }
 
     /**
@@ -329,6 +353,18 @@ public class AstExtractor {
         }
     }
 
+    static void collectInstantiations(BlockStmt body, List<InstantiationSummary> out) {
+        List<InstantiationPos> list = new ArrayList<>();
+        for (ObjectCreationExpr expr : body.findAll(ObjectCreationExpr.class)) {
+            summarizeInstantiation(expr)
+                    .ifPresent(summary -> list.add(new InstantiationPos(lineOf(expr), colOf(expr), summary)));
+        }
+        list.sort(Comparator.naturalOrder());
+        for (InstantiationPos p : list) {
+            out.add(p.summary());
+        }
+    }
+
     static void collectFieldAccesses(BlockStmt body, List<FieldAccessSummary> out) {
         Set<Expression> assignTargets = Collections.newSetFromMap(new IdentityHashMap<>());
         for (AssignExpr a : body.findAll(AssignExpr.class)) {
@@ -413,6 +449,21 @@ public class AstExtractor {
             return new MethodCallSummary(expression, true, declaring, signature);
         } catch (RuntimeException e) {
             return new MethodCallSummary(expression, false, null, null);
+        }
+    }
+
+    private static Optional<InstantiationSummary> summarizeInstantiation(ObjectCreationExpr expr) {
+        Integer line = lineOfNullable(expr);
+        try {
+            ResolvedConstructorDeclaration resolved = expr.resolve();
+            String qn = resolved.declaringType().getQualifiedName();
+            if (qn != null && (qn.startsWith("java.") || qn.startsWith("javax."))) {
+                return Optional.empty();
+            }
+            return Optional.of(new InstantiationSummary(resolved.declaringType().getClassName(), line));
+        } catch (RuntimeException ignored) {
+            // Fallback to AST type when resolution is unavailable.
+            return Optional.of(new InstantiationSummary(expr.getType().getName().asString(), line));
         }
     }
 

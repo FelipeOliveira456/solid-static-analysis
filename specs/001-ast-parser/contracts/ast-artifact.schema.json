@@ -76,6 +76,15 @@
         "signature": { "type": ["string", "null"] }
       }
     },
+    "instantiationSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "line"],
+      "properties": {
+        "type": { "type": "string" },
+        "line": { "type": ["integer", "null"] }
+      }
+    },
     "fieldAccessSummary": {
       "type": "object",
       "additionalProperties": false,
@@ -129,7 +138,8 @@
         "parameters",
         "methodCalls",
         "controlFlowStatements",
-        "fieldAccesses"
+        "fieldAccesses",
+        "instantiations"
       ],
       "properties": {
         "name": { "type": "string" },
@@ -149,6 +159,10 @@
         "fieldAccesses": {
           "type": "array",
           "items": { "$ref": "#/$defs/fieldAccessSummary" }
+        },
+        "instantiations": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/instantiationSummary" }
         }
       }
     }

@@ -1,0 +1,183 @@
+{
+  "sourceFile" : "/home/felipe/Documents/AS/solid-static-analysis/target/test-classes/java-fixtures/Relatorio.java",
+  "primaryType" : {
+    "kind" : "class",
+    "name" : "Relatorio",
+    "abstract" : false,
+    "superclass" : null,
+    "implementedInterfaces" : [ ],
+    "fields" : [ {
+      "name" : "agencia",
+      "type" : "String"
+    }, {
+      "name" : "contas",
+      "type" : "List<ContaBancaria>"
+    }, {
+      "name" : "totalSaldo",
+      "type" : "double"
+    } ],
+    "methods" : [ {
+      "name" : "adicionarConta",
+      "returnType" : "void",
+      "parameters" : [ {
+        "name" : "conta",
+        "type" : "ContaBancaria"
+      } ],
+      "methodCalls" : [ {
+        "expression" : "contas.add(conta)",
+        "resolved" : true,
+        "declaringType" : "java.util.List",
+        "signature" : "java.util.List.add(E)"
+      }, {
+        "expression" : "conta.getSaldo()",
+        "resolved" : true,
+        "declaringType" : "ContaBancaria",
+        "signature" : "ContaBancaria.getSaldo()"
+      } ],
+      "controlFlowStatements" : [ ],
+      "fieldAccesses" : [ {
+        "fieldName" : "contas",
+        "ownerClass" : "Relatorio",
+        "accessType" : "read"
+      }, {
+        "fieldName" : "totalSaldo",
+        "ownerClass" : "Relatorio",
+        "accessType" : "write"
+      } ],
+      "instantiations" : [ ]
+    }, {
+      "name" : "calcularTotalImpostos",
+      "returnType" : "double",
+      "parameters" : [ ],
+      "methodCalls" : [ {
+        "expression" : "t.calcularImposto()",
+        "resolved" : true,
+        "declaringType" : "Tributavel",
+        "signature" : "Tributavel.calcularImposto()"
+      } ],
+      "controlFlowStatements" : [ {
+        "kind" : "foreach",
+        "condition" : "ContaBancaria c : contas",
+        "line" : 23,
+        "thenLine" : 23,
+        "endLine" : 28
+      }, {
+        "kind" : "if",
+        "condition" : "c instanceof Tributavel",
+        "line" : 24,
+        "thenLine" : 24,
+        "endLine" : 27
+      } ],
+      "fieldAccesses" : [ {
+        "fieldName" : "contas",
+        "ownerClass" : "Relatorio",
+        "accessType" : "read"
+      } ],
+      "instantiations" : [ ]
+    }, {
+      "name" : "imprimirResumo",
+      "returnType" : "void",
+      "parameters" : [ ],
+      "methodCalls" : [ {
+        "expression" : "System.out.println(\"Agencia: \" + agencia)",
+        "resolved" : true,
+        "declaringType" : "java.io.PrintStream",
+        "signature" : "java.io.PrintStream.println(java.lang.String)"
+      }, {
+        "expression" : "System.out.println(\"Total contas: \" + contas.size())",
+        "resolved" : true,
+        "declaringType" : "java.io.PrintStream",
+        "signature" : "java.io.PrintStream.println(java.lang.String)"
+      }, {
+        "expression" : "contas.size()",
+        "resolved" : true,
+        "declaringType" : "java.util.List",
+        "signature" : "java.util.List.size()"
+      }, {
+        "expression" : "System.out.println(\"Total saldo: \" + totalSaldo)",
+        "resolved" : true,
+        "declaringType" : "java.io.PrintStream",
+        "signature" : "java.io.PrintStream.println(java.lang.String)"
+      } ],
+      "controlFlowStatements" : [ ],
+      "fieldAccesses" : [ {
+        "fieldName" : "out",
+        "ownerClass" : "java.lang.System",
+        "accessType" : "read"
+      }, {
+        "fieldName" : "agencia",
+        "ownerClass" : "Relatorio",
+        "accessType" : "read"
+      }, {
+        "fieldName" : "out",
+        "ownerClass" : "java.lang.System",
+        "accessType" : "read"
+      }, {
+        "fieldName" : "contas",
+        "ownerClass" : "Relatorio",
+        "accessType" : "read"
+      }, {
+        "fieldName" : "out",
+        "ownerClass" : "java.lang.System",
+        "accessType" : "read"
+      }, {
+        "fieldName" : "totalSaldo",
+        "ownerClass" : "Relatorio",
+        "accessType" : "read"
+      } ],
+      "instantiations" : [ ]
+    }, {
+      "name" : "getAgencia",
+      "returnType" : "String",
+      "parameters" : [ ],
+      "methodCalls" : [ ],
+      "controlFlowStatements" : [ ],
+      "fieldAccesses" : [ {
+        "fieldName" : "agencia",
+        "ownerClass" : "Relatorio",
+        "accessType" : "read"
+      } ],
+      "instantiations" : [ ]
+    }, {
+      "name" : "getTotalSaldo",
+      "returnType" : "double",
+      "parameters" : [ ],
+      "methodCalls" : [ ],
+      "controlFlowStatements" : [ ],
+      "fieldAccesses" : [ {
+        "fieldName" : "totalSaldo",
+        "ownerClass" : "Relatorio",
+        "accessType" : "read"
+      } ],
+      "instantiations" : [ ]
+    }, {
+      "name" : "Relatorio",
+      "returnType" : "<init>",
+      "parameters" : [ {
+        "name" : "agencia",
+        "type" : "String"
+      } ],
+      "methodCalls" : [ {
+        "expression" : "new ArrayList<>()",
+        "resolved" : true,
+        "declaringType" : "java.util.ArrayList",
+        "signature" : "java.util.ArrayList.ArrayList()"
+      } ],
+      "controlFlowStatements" : [ ],
+      "fieldAccesses" : [ {
+        "fieldName" : "agencia",
+        "ownerClass" : "Relatorio",
+        "accessType" : "write"
+      }, {
+        "fieldName" : "contas",
+        "ownerClass" : "Relatorio",
+        "accessType" : "write"
+      }, {
+        "fieldName" : "totalSaldo",
+        "ownerClass" : "Relatorio",
+        "accessType" : "write"
+      } ],
+      "instantiations" : [ ]
+    } ]
+  }
+}

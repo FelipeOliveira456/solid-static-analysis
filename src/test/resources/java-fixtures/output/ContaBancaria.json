@@ -35,7 +35,8 @@
         "fieldName" : "saldo",
         "ownerClass" : "ContaBancaria",
         "accessType" : "write"
-      } ]
+      } ],
+      "instantiations" : [ ]
     }, {
       "name" : "sacar",
       "returnType" : "boolean",
@@ -90,7 +91,8 @@
         "fieldName" : "saldo",
         "ownerClass" : "ContaBancaria",
         "accessType" : "write"
-      } ]
+      } ],
+      "instantiations" : [ ]
     }, {
       "name" : "encerrar",
       "returnType" : "void",
@@ -105,14 +107,16 @@
         "fieldName" : "saldo",
         "ownerClass" : "ContaBancaria",
         "accessType" : "write"
-      } ]
+      } ],
+      "instantiations" : [ ]
     }, {
       "name" : "calcularRendimento",
       "returnType" : "double",
       "parameters" : [ ],
       "methodCalls" : [ ],
       "controlFlowStatements" : [ ],
-      "fieldAccesses" : [ ]
+      "fieldAccesses" : [ ],
+      "instantiations" : [ ]
     }, {
       "name" : "getTitular",
       "returnType" : "String",
@@ -123,7 +127,8 @@
         "fieldName" : "titular",
         "ownerClass" : "ContaBancaria",
         "accessType" : "read"
-      } ]
+      } ],
+      "instantiations" : [ ]
     }, {
       "name" : "getSaldo",
       "returnType" : "double",
@@ -134,7 +139,8 @@
         "fieldName" : "saldo",
         "ownerClass" : "ContaBancaria",
         "accessType" : "read"
-      } ]
+      } ],
+      "instantiations" : [ ]
     }, {
       "name" : "isAtiva",
       "returnType" : "boolean",
@@ -145,7 +151,34 @@
         "fieldName" : "ativa",
         "ownerClass" : "ContaBancaria",
         "accessType" : "read"
-      } ]
+      } ],
+      "instantiations" : [ ]
+    }, {
+      "name" : "ContaBancaria",
+      "returnType" : "<init>",
+      "parameters" : [ {
+        "name" : "titular",
+        "type" : "String"
+      }, {
+        "name" : "saldoInicial",
+        "type" : "double"
+      } ],
+      "methodCalls" : [ ],
+      "controlFlowStatements" : [ ],
+      "fieldAccesses" : [ {
+        "fieldName" : "titular",
+        "ownerClass" : "ContaBancaria",
+        "accessType" : "write"
+      }, {
+        "fieldName" : "saldo",
+        "ownerClass" : "ContaBancaria",
+        "accessType" : "write"
+      }, {
+        "fieldName" : "ativa",
+        "ownerClass" : "ContaBancaria",
+        "accessType" : "write"
+      } ],
+      "instantiations" : [ ]
     } ]
   }
 }

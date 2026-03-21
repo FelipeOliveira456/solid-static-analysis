@@ -13,14 +13,16 @@
       "parameters" : [ ],
       "methodCalls" : [ ],
       "controlFlowStatements" : [ ],
-      "fieldAccesses" : [ ]
+      "fieldAccesses" : [ ],
+      "instantiations" : [ ]
     }, {
       "name" : "isIsento",
       "returnType" : "boolean",
       "parameters" : [ ],
       "methodCalls" : [ ],
       "controlFlowStatements" : [ ],
-      "fieldAccesses" : [ ]
+      "fieldAccesses" : [ ],
+      "instantiations" : [ ]
     } ]
   }
 }

@@ -29,6 +29,10 @@ public class MethodSummary {
     @JsonProperty("fieldAccesses")
     private List<FieldAccessSummary> fieldAccesses = new ArrayList<>();
 
+    /** Object creations ({@code new Type(...)}), excluding JDK (java.* / javax.*). */
+    @JsonProperty("instantiations")
+    private List<InstantiationSummary> instantiations = new ArrayList<>();
+
     public String getName() {
         return name;
     }
@@ -75,5 +79,13 @@ public class MethodSummary {
 
     public void setFieldAccesses(List<FieldAccessSummary> fieldAccesses) {
         this.fieldAccesses = fieldAccesses;
+    }
+
+    public List<InstantiationSummary> getInstantiations() {
+        return instantiations;
+    }
+
+    public void setInstantiations(List<InstantiationSummary> instantiations) {
+        this.instantiations = instantiations;
     }
 }

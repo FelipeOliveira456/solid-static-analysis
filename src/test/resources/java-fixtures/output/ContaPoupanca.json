@@ -44,7 +44,8 @@
         "fieldName" : "mesesAplicados",
         "ownerClass" : "ContaPoupanca",
         "accessType" : "read"
-      } ]
+      } ],
+      "instantiations" : [ ]
     }, {
       "name" : "calcularRendimento",
       "returnType" : "double",
@@ -59,7 +60,8 @@
         "fieldName" : "taxaRendimento",
         "ownerClass" : "ContaPoupanca",
         "accessType" : "read"
-      } ]
+      } ],
+      "instantiations" : [ ]
     }, {
       "name" : "calcularImposto",
       "returnType" : "double",
@@ -83,7 +85,8 @@
         "elseLine" : 30,
         "endLine" : 32
       } ],
-      "fieldAccesses" : [ ]
+      "fieldAccesses" : [ ],
+      "instantiations" : [ ]
     }, {
       "name" : "isIsento",
       "returnType" : "boolean",
@@ -94,7 +97,8 @@
         "fieldName" : "mesesAplicados",
         "ownerClass" : "ContaPoupanca",
         "accessType" : "read"
-      } ]
+      } ],
+      "instantiations" : [ ]
     }, {
       "name" : "getTaxaRendimento",
       "returnType" : "double",
@@ -105,7 +109,8 @@
         "fieldName" : "taxaRendimento",
         "ownerClass" : "ContaPoupanca",
         "accessType" : "read"
-      } ]
+      } ],
+      "instantiations" : [ ]
     }, {
       "name" : "getMesesAplicados",
       "returnType" : "int",
@@ -116,7 +121,33 @@
         "fieldName" : "mesesAplicados",
         "ownerClass" : "ContaPoupanca",
         "accessType" : "read"
-      } ]
+      } ],
+      "instantiations" : [ ]
+    }, {
+      "name" : "ContaPoupanca",
+      "returnType" : "<init>",
+      "parameters" : [ {
+        "name" : "titular",
+        "type" : "String"
+      }, {
+        "name" : "saldoInicial",
+        "type" : "double"
+      }, {
+        "name" : "taxaRendimento",
+        "type" : "double"
+      } ],
+      "methodCalls" : [ ],
+      "controlFlowStatements" : [ ],
+      "fieldAccesses" : [ {
+        "fieldName" : "taxaRendimento",
+        "ownerClass" : "ContaPoupanca",
+        "accessType" : "write"
+      }, {
+        "fieldName" : "mesesAplicados",
+        "ownerClass" : "ContaPoupanca",
+        "accessType" : "write"
+      } ],
+      "instantiations" : [ ]
     } ]
   }
 }

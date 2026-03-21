@@ -18,6 +18,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -68,11 +69,31 @@ class JavaFixturesScannerTest {
                 new PrintStream(new ByteArrayOutputStream(), true, StandardCharsets.UTF_8);
         ScanRunResult r = scanner.scan(fixtureRoot, outDir, silent);
         assertEquals(0, r.getFailureCount(), r.getFailureMessages()::toString);
-        assertEquals(4, r.getSuccessCount());
-        assertTrue(Files.exists(outDir.resolve("ContaBancaria.json")));
-        assertTrue(Files.exists(outDir.resolve("ContaCorrente.json")));
-        assertTrue(Files.exists(outDir.resolve("ContaPoupanca.json")));
-        assertTrue(Files.exists(outDir.resolve("Tributavel.json")));
+        Path scanRootAbs = fixtureRoot.toAbsolutePath().normalize();
+        long javaCount;
+        try (Stream<Path> walk = Files.walk(fixtureRoot)) {
+            javaCount =
+                    walk.filter(Files::isRegularFile)
+                            .filter(p -> p.getFileName().toString().endsWith(".java"))
+                            .count();
+        }
+        assertEquals(
+                javaCount,
+                r.getSuccessCount(),
+                "cada .java no diretório de fixtures deve gerar um JSON; atualize o teste se mudar o conjunto de fontes");
+        try (Stream<Path> walk = Files.walk(fixtureRoot)) {
+            walk.filter(Files::isRegularFile)
+                    .filter(p -> p.getFileName().toString().endsWith(".java"))
+                    .forEach(
+                            javaFile -> {
+                                Path expected =
+                                        OutputArtifactNamer.resolveOutputPath(
+                                                outDir, scanRootAbs, javaFile);
+                                assertTrue(
+                                        Files.exists(expected),
+                                        () -> "expected JSON for " + javaFile + ": " + expected);
+                            });
+        }
     }
 
     @Test

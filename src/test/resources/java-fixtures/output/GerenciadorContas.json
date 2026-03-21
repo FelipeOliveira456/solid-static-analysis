@@ -1,0 +1,162 @@
+{
+  "sourceFile" : "/home/felipe/Documents/AS/solid-static-analysis/target/test-classes/java-fixtures/GerenciadorContas.java",
+  "primaryType" : {
+    "kind" : "class",
+    "name" : "GerenciadorContas",
+    "abstract" : false,
+    "superclass" : null,
+    "implementedInterfaces" : [ ],
+    "fields" : [ {
+      "name" : "contas",
+      "type" : "List<ContaBancaria>"
+    }, {
+      "name" : "agencia",
+      "type" : "String"
+    } ],
+    "methods" : [ {
+      "name" : "abrirContaCorrente",
+      "returnType" : "ContaCorrente",
+      "parameters" : [ {
+        "name" : "titular",
+        "type" : "String"
+      }, {
+        "name" : "deposito",
+        "type" : "double"
+      }, {
+        "name" : "plano",
+        "type" : "String"
+      } ],
+      "methodCalls" : [ {
+        "expression" : "new ContaCorrente(titular, deposito, plano)",
+        "resolved" : true,
+        "declaringType" : "ContaCorrente",
+        "signature" : "ContaCorrente.ContaCorrente(java.lang.String, double, java.lang.String)"
+      }, {
+        "expression" : "contas.add(conta)",
+        "resolved" : true,
+        "declaringType" : "java.util.List",
+        "signature" : "java.util.List.add(E)"
+      } ],
+      "controlFlowStatements" : [ ],
+      "fieldAccesses" : [ {
+        "fieldName" : "contas",
+        "ownerClass" : "GerenciadorContas",
+        "accessType" : "read"
+      } ],
+      "instantiations" : [ {
+        "type" : "ContaCorrente",
+        "line" : 15
+      } ]
+    }, {
+      "name" : "abrirContaPoupanca",
+      "returnType" : "ContaPoupanca",
+      "parameters" : [ {
+        "name" : "titular",
+        "type" : "String"
+      }, {
+        "name" : "deposito",
+        "type" : "double"
+      }, {
+        "name" : "taxa",
+        "type" : "double"
+      } ],
+      "methodCalls" : [ {
+        "expression" : "new ContaPoupanca(titular, deposito, taxa)",
+        "resolved" : true,
+        "declaringType" : "ContaPoupanca",
+        "signature" : "ContaPoupanca.ContaPoupanca(java.lang.String, double, double)"
+      }, {
+        "expression" : "contas.add(conta)",
+        "resolved" : true,
+        "declaringType" : "java.util.List",
+        "signature" : "java.util.List.add(E)"
+      } ],
+      "controlFlowStatements" : [ ],
+      "fieldAccesses" : [ {
+        "fieldName" : "contas",
+        "ownerClass" : "GerenciadorContas",
+        "accessType" : "read"
+      } ],
+      "instantiations" : [ {
+        "type" : "ContaPoupanca",
+        "line" : 21
+      } ]
+    }, {
+      "name" : "gerarRelatorio",
+      "returnType" : "Relatorio",
+      "parameters" : [ ],
+      "methodCalls" : [ {
+        "expression" : "new Relatorio(agencia)",
+        "resolved" : true,
+        "declaringType" : "Relatorio",
+        "signature" : "Relatorio.Relatorio(java.lang.String)"
+      }, {
+        "expression" : "rel.adicionarConta(c)",
+        "resolved" : true,
+        "declaringType" : "Relatorio",
+        "signature" : "Relatorio.adicionarConta(ContaBancaria)"
+      } ],
+      "controlFlowStatements" : [ {
+        "kind" : "foreach",
+        "condition" : "ContaBancaria c : contas",
+        "line" : 28,
+        "thenLine" : 28,
+        "endLine" : 30
+      } ],
+      "fieldAccesses" : [ {
+        "fieldName" : "agencia",
+        "ownerClass" : "GerenciadorContas",
+        "accessType" : "read"
+      }, {
+        "fieldName" : "contas",
+        "ownerClass" : "GerenciadorContas",
+        "accessType" : "read"
+      } ],
+      "instantiations" : [ {
+        "type" : "Relatorio",
+        "line" : 27
+      } ]
+    }, {
+      "name" : "totalContas",
+      "returnType" : "int",
+      "parameters" : [ ],
+      "methodCalls" : [ {
+        "expression" : "contas.size()",
+        "resolved" : true,
+        "declaringType" : "java.util.List",
+        "signature" : "java.util.List.size()"
+      } ],
+      "controlFlowStatements" : [ ],
+      "fieldAccesses" : [ {
+        "fieldName" : "contas",
+        "ownerClass" : "GerenciadorContas",
+        "accessType" : "read"
+      } ],
+      "instantiations" : [ ]
+    }, {
+      "name" : "GerenciadorContas",
+      "returnType" : "<init>",
+      "parameters" : [ {
+        "name" : "agencia",
+        "type" : "String"
+      } ],
+      "methodCalls" : [ {
+        "expression" : "new ArrayList<>()",
+        "resolved" : true,
+        "declaringType" : "java.util.ArrayList",
+        "signature" : "java.util.ArrayList.ArrayList()"
+      } ],
+      "controlFlowStatements" : [ ],
+      "fieldAccesses" : [ {
+        "fieldName" : "agencia",
+        "ownerClass" : "GerenciadorContas",
+        "accessType" : "write"
+      }, {
+        "fieldName" : "contas",
+        "ownerClass" : "GerenciadorContas",
+        "accessType" : "write"
+      } ],
+      "instantiations" : [ ]
+    } ]
+  }
+}

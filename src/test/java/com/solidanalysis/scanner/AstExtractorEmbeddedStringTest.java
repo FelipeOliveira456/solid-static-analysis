@@ -56,7 +56,9 @@ class AstExtractorEmbeddedStringTest {
                         + "    y = 2;\n"
                         + "    int u = y;\n"
                         + "  }\n"
-                        + "}\n";
+                        + "}\n"
+                        + "class ContaCorrente {}\n"
+                        + "class ContaPoupanca {}\n";
         AstArtifact a = new AstExtractor().extract(parseCompilationUnit(code), Path.of("Fa.java"));
         MethodSummary m = methodNamed(a, "m");
         String owner = "Fa";
@@ -129,7 +131,9 @@ class AstExtractorEmbeddedStringTest {
                         + "        break;\n"
                         + "    }\n"
                         + "  }\n"
-                        + "}\n";
+                        + "}\n"
+                        + "class ContaCorrente {}\n"
+                        + "class ContaPoupanca {}\n";
         AstArtifact a = new AstExtractor().extract(parseCompilationUnit(code), Path.of("Sw.java"));
         ControlFlowStatementSummary sw =
                 methodNamed(a, "m").getControlFlowStatements().stream()
@@ -199,4 +203,55 @@ class AstExtractorEmbeddedStringTest {
         assertNull(root.getChainedElseIf().getChainedElseIf().getChainedElseIf());
         assertNotNull(root.getEndLine());
     }
+    @Test
+    void instantiationsCapturaClassesDoProjetoENaoIncluiJdk() {
+        String code =
+                "class F {\n"
+                        + "  void m() {\n"
+                        + "    new ContaCorrente();\n"
+                        + "    new ContaPoupanca();\n"
+                        + "    new java.util.ArrayList<>();\n"
+                        + "  }\n"
+                        + "}\n"
+                        + "class ContaCorrente {}\n"
+                        + "class ContaPoupanca {}\n";
+        AstArtifact art = new AstExtractor().extract(parseCompilationUnit(code), Path.of("F.java"));
+        MethodSummary m = methodNamed(art, "m");
+        assertEquals(2, m.getInstantiations().size());
+        assertTrue(
+                m.getInstantiations().stream()
+                        .anyMatch(i -> "ContaCorrente".equals(i.getType()) && Integer.valueOf(3).equals(i.getLine())));
+        assertTrue(
+                m.getInstantiations().stream()
+                        .anyMatch(i -> "ContaPoupanca".equals(i.getType()) && Integer.valueOf(4).equals(i.getLine())));
+    }
+
+    @Test
+    void construtorEhExportadoComoMetodoEExtraiEstruturas() {
+        String code =
+                "class Conta {\n"
+                        + "  private Dep dep;\n"
+                        + "  Conta() {\n"
+                        + "    this.dep = new Dep();\n"
+                        + "    if (this.dep != null) { }\n"
+                        + "  }\n"
+                        + "}\n"
+                        + "class Dep {}\n";
+        AstArtifact art = new AstExtractor().extract(parseCompilationUnit(code), Path.of("Conta.java"));
+        MethodSummary ctor =
+                art.getPrimaryType().getMethods().stream()
+                        .filter(m -> "Conta".equals(m.getName()) && "<init>".equals(m.getReturnType()))
+                        .findFirst()
+                        .orElseThrow();
+        assertTrue(
+                ctor.getFieldAccesses().stream()
+                        .anyMatch(fa -> "dep".equals(fa.getFieldName()) && "write".equals(fa.getAccessType())));
+        assertTrue(
+                ctor.getInstantiations().stream()
+                        .anyMatch(i -> "Dep".equals(i.getType()) && Integer.valueOf(4).equals(i.getLine())));
+        assertTrue(
+                ctor.getControlFlowStatements().stream()
+                        .anyMatch(cf -> "if".equals(cf.getKind()) && cf.getThenLine() != null));
+    }
+
 }

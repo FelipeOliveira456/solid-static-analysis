@@ -43,6 +43,7 @@ JavaParser; é um **DTO estável** para etapas seguintes.
 | `methodCalls` | `MethodCallSummary[]` | sim | Chamadas (`MethodCallExpr`) e construtores (`new ...` / `ObjectCreationExpr`) no corpo do método, ordenados por posição no fonte; mesma forma `expression` / `resolved` / assinatura |
 | `controlFlowStatements` | `ControlFlowStatementSummary[]` | sim | Estruturas de fluxo no corpo (`if`, `while`, `for`, `try`, …), ordenadas por posição no ficheiro |
 | `fieldAccesses` | `FieldAccessSummary[]` | sim | Acessos a campos resolvidos (`FieldAccessExpr` e `NameExpr` campo); omitidos quando o symbol solver não resolve |
+| `instantiations` | `InstantiationSummary[]` | sim | Instanciações `new Type(...)` no corpo do método; tipos JDK (`java.*`, `javax.*`) são ignorados |
 
 ### `FieldAccessSummary`
 
@@ -51,6 +52,13 @@ JavaParser; é um **DTO estável** para etapas seguintes.
 | `fieldName` | string | sim | Nome do campo |
 | `ownerClass` | string | sim | Nome qualificado do tipo declarante |
 | `accessType` | string | sim | `read` ou `write` (alvo de `AssignExpr`) |
+
+### `InstantiationSummary`
+
+| Campo | Tipo | Obrigatório | Regras |
+|-------|------|-------------|--------|
+| `type` | string | sim | Tipo instanciado (`new Type(...)`) |
+| `line` | int \| null | não | Linha da expressão `new` no fonte |
 
 ### `ControlFlowStatementSummary`
 

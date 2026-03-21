@@ -43,7 +43,8 @@
           "line" : 19
         } ]
       } ],
-      "fieldAccesses" : [ ]
+      "fieldAccesses" : [ ],
+      "instantiations" : [ ]
     }, {
       "name" : "registrarTransacoes",
       "returnType" : "void",
@@ -73,7 +74,8 @@
         "fieldName" : "transacoesMes",
         "ownerClass" : "ContaCorrente",
         "accessType" : "read"
-      } ]
+      } ],
+      "instantiations" : [ ]
     }, {
       "name" : "cobrarTaxa",
       "returnType" : "void",
@@ -106,14 +108,16 @@
         "fieldName" : "taxaMensal",
         "ownerClass" : "ContaCorrente",
         "accessType" : "read"
-      } ]
+      } ],
+      "instantiations" : [ ]
     }, {
       "name" : "calcularRendimento",
       "returnType" : "double",
       "parameters" : [ ],
       "methodCalls" : [ ],
       "controlFlowStatements" : [ ],
-      "fieldAccesses" : [ ]
+      "fieldAccesses" : [ ],
+      "instantiations" : [ ]
     }, {
       "name" : "getPlano",
       "returnType" : "String",
@@ -124,7 +128,8 @@
         "fieldName" : "plano",
         "ownerClass" : "ContaCorrente",
         "accessType" : "read"
-      } ]
+      } ],
+      "instantiations" : [ ]
     }, {
       "name" : "getTransacoesMes",
       "returnType" : "int",
@@ -135,7 +140,42 @@
         "fieldName" : "transacoesMes",
         "ownerClass" : "ContaCorrente",
         "accessType" : "read"
-      } ]
+      } ],
+      "instantiations" : [ ]
+    }, {
+      "name" : "ContaCorrente",
+      "returnType" : "<init>",
+      "parameters" : [ {
+        "name" : "titular",
+        "type" : "String"
+      }, {
+        "name" : "saldoInicial",
+        "type" : "double"
+      }, {
+        "name" : "plano",
+        "type" : "String"
+      } ],
+      "methodCalls" : [ {
+        "expression" : "resolverTaxa(plano)",
+        "resolved" : true,
+        "declaringType" : "ContaCorrente",
+        "signature" : "ContaCorrente.resolverTaxa(java.lang.String)"
+      } ],
+      "controlFlowStatements" : [ ],
+      "fieldAccesses" : [ {
+        "fieldName" : "plano",
+        "ownerClass" : "ContaCorrente",
+        "accessType" : "write"
+      }, {
+        "fieldName" : "transacoesMes",
+        "ownerClass" : "ContaCorrente",
+        "accessType" : "write"
+      }, {
+        "fieldName" : "taxaMensal",
+        "ownerClass" : "ContaCorrente",
+        "accessType" : "write"
+      } ],
+      "instantiations" : [ ]
     } ]
   }
 }
