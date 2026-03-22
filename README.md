@@ -1,220 +1,318 @@
 # solid-static-analysis
 
-Pipeline de **análise estática em Java**: extrai estrutura e métricas do código, constrói **grafos** (Graphviz DOT), corre **algoritmos em grafos** (JGraphT) e produz **pontuações SOLID** com relatórios JSON e texto.
+Ferramenta de **análise estática em Java** que corre um **pipeline em cadeia**: extrai informação do código-fonte com [JavaParser](https://github.com/javaparser/javaparser), gera **grafos Graphviz (DOT)** com dependências, herança, chamadas, uso de campos, interfaces e CFG por método, calcula **métricas e algoritmos em grafos** com [JGraphT](https://jgrapht.org/), e por fim produz **pontuações SOLID** (S/O/L/I/D) com ficheiros **JSON** e relatórios **legíveis em texto**.
+
+Este README descreve **passo a passo** como o projeto está organizado, como compilar, como correr cada etapa, onde cada ficheiro é gravado e como interpretar a configuração.
 
 ---
 
 ## Índice
 
-- [Visão geral](#visão-geral)
-- [Estrutura do repositório](#estrutura-do-repositório)
-- [Requisitos](#requisitos)
-- [Início rápido](#início-rápido)
-- [Etapas do pipeline](#etapas-do-pipeline)
-- [Onde a saída é gravada](#onde-a-saída-é-gravada)
-- [Configuração (`analysis.properties`)](#configuração-analysisproperties)
-- [Scoring: projetos pequenos vs grandes](#scoring-projetos-pequenos-vs-grandes)
-- [Benchmarks e fixtures](#benchmarks-e-fixtures)
-- [Testes e Javadoc](#testes-e-javadoc)
-- [Argumentos e códigos de saída](#argumentos-e-códigos-de-saída)
-- [Limitações](#limitações)
-- [Documentação por feature (specs)](#documentação-por-feature-specs)
+1. [Glossário (leia primeiro)](#1-glossário-leia-primeiro)
+2. [Visão geral do pipeline](#2-visão-geral-do-pipeline)
+3. [Estrutura de diretórios do repositório](#3-estrutura-de-diretórios-do-repositório)
+4. [Requisitos de ambiente](#4-requisitos-de-ambiente)
+5. [Compilar o projeto](#5-compilar-o-projeto)
+6. [Referência da linha de comandos (CLI)](#6-referência-da-linha-de-comandos-cli)
+7. [Etapa 1 — Scan (AST → JSON)](#7-etapa-1--scan-ast--json)
+8. [Etapa 2 — Grafos (`--graphs`, DOT)](#8-etapa-2--grafos---graphs-dot)
+9. [Etapa 3 — Algoritmos (`--analyze`)](#9-etapa-3--algoritmos---analyze)
+10. [Etapa 4 — Scoring SOLID (`--score`)](#10-etapa-4--scoring-solid---score)
+11. [Etapa 5 — Pipeline completo (`--all`)](#11-etapa-5--pipeline-completo---all)
+12. [Onde a saída é gravada (regra do `user.dir`)](#12-onde-a-saída-é-gravada-regra-do-userdir)
+13. [Ficheiro `analysis.properties` (thresholds e relaxamento)](#13-ficheiro-analysisproperties-thresholds-e-relaxamento)
+14. [Projetos pequenos vs grandes (estratégia de scoring)](#14-projetos-pequenos-vs-grandes-estratégia-de-scoring)
+15. [Benchmarks e fixtures](#15-benchmarks-e-fixtures)
+16. [Testes automatizados](#16-testes-automatizados)
+17. [Javadoc da API (HTML gerado pelo Maven)](#17-javadoc-da-api-html-gerado-pelo-maven)
+18. [Códigos de saída e mensagens](#18-códigos-de-saída-e-mensagens)
+19. [Limitações conhecidas](#19-limitações-conhecidas)
+20. [Documentação por feature (`specs/`)](#20-documentação-por-feature-specs)
 
 ---
 
-## Visão geral
+## 1. Glossário (leia primeiro)
 
-| Etapa | Comando / modo | Entrada principal | Saída principal |
-|-------|----------------|-------------------|-----------------|
-| **1 — Scan** | *(argumento único: raiz absoluta)* | Árvore de `.java` | `*.json` por classe (AST resumido) |
-| **2 — Grafos** | `--graphs <dir>` | Diretório com JSON da etapa 1 | `graphs/*.dot` (G1–G7) |
-| **3 — Algoritmos** | `--analyze <dir>` | `graphs/` + JSON | `algorithms/*.json` (métricas, SCC, LCOM, Louvain opcional, etc.) |
-| **4 — Scoring** | `--score <dir>` | JSON + `graphs/` + `algorithms/` | `scoring/*.json`, `results/*.txt` |
-| **5 — Pipeline completo** | `--all <raiz>` | Raiz do projeto fonte | Etapas 1–4 em sequência |
+| Termo | Significado |
+|--------|-------------|
+| **`user.dir`** | Diretório de trabalho atual do processo Java (onde corres `java -jar …`). Muitas decisões de caminho dependem disto. |
+| **Raiz do projeto analisado** | Caminho **absoluto** que passas ao scan ou ao `--all`: a árvore de `.java` a percorrer. |
+| **Diretório de saída do projeto** | Pasta que contém, em simultâneo: JSON do scan na raiz (ou espelhados em subpastas), `graphs/`, `algorithms/`, e após scoring `scoring/` e `results/`. |
+| **Raiz do repositório (merge de propriedades)** | Para **`--score`** e para o **`--all`**, o código usa `Paths.get(System.getProperty("user.dir"))` como pasta onde procurar `analysis.properties` **adicional** a fazer merge sobre o ficheiro embutido no JAR. Na prática: corre o JAR a partir da raiz do **solid-static-analysis** se quiseres usar o `analysis.properties` da raiz do repo. |
+| **JAR shaded** | Um único `.jar` com dependências empacotadas; o `Main-Class` é `com.solidanalysis.SolidAnalysisCli`. |
 
-O ponto de entrada do JAR (shade) é **`com.solidanalysis.SolidAnalysisCli`**.
+**Regra importante:** quase todos os caminhos que passas à CLI têm de ser **absolutos** (o programa valida e recusa caminhos relativos).
 
-Fluxo lógico:
+---
+
+## 2. Visão geral do pipeline
+
+| Ordem | Nome | Como invocar | Resumo |
+|------:|------|--------------|--------|
+| 1 | Scan | `java -jar … <ABS_RAIZ_JAVA>` | Um JSON por classe analisada. |
+| 2 | Grafos | `java -jar … --graphs <ABS_DIR_COM_JSON>` | Escreve `graphs/*.dot` (G1–G7). |
+| 3 | Algoritmos | `java -jar … --analyze <ABS_DIR_PROJETO>` | Lê DOT + JSON, escreve `algorithms/…`. |
+| 4 | Scoring | `java -jar … --score <ABS_DIR_PROJETO>` | Lê tudo, escreve `scoring/` e `results/`. |
+| — | Tudo | `java -jar … --all <ABS_RAIZ_JAVA>` | Executa 1→2→3→4 em sequência. |
 
 ```mermaid
 flowchart LR
-  A[Scan JSON] --> B[Grafos DOT]
-  B --> C[Algoritmos JSON]
-  C --> D[Scoring SOLID]
-  D --> E[results/*.txt]
+  S[1 Scan\nJSON] --> G[2 Graphs\nDOT]
+  G --> A[3 Algorithms\nJSON]
+  A --> C[4 Scoring\nJSON + TXT]
 ```
 
 ---
 
-## Estrutura do repositório
+## 3. Estrutura de diretórios do repositório
 
 ```text
 solid-static-analysis/
-├── pom.xml                      # Maven: Java 17, shade JAR, recursos (analysis.properties)
-├── analysis.properties          # Limiares do scorer + scoring.relax.k (também no JAR)
-├── README.md                    # Este ficheiro
-├── docs/                        # Documentação ad-hoc (ex.: comparação k)
-├── specs/                       # Especificações por feature (001–005)
-├── benchmarks/                  # Projetos de exemplo + run-all.sh
+├── pom.xml                    # Build Maven (Java 17), shade, plugin Javadoc, recursos
+├── analysis.properties        # Limiares do scorer + scoring.relax.k (copiado para o JAR)
+├── README.md                  # Este guia
+├── docs/                      # Pasta reservada para documentação local (.gitkeep); não obrigatória para correr o projeto
+├── specs/                     # Especificações por feature (001 … 005)
+├── benchmarks/                # Projetos Java de exemplo + scripts
+│   ├── run-all.sh             # Corre --all em cada benchmark (saída em output/ na raiz do repo)
+│   ├── good-project/ …      # Exemplo maior “bom”
+│   ├── bad-project/ …       # Exemplo maior “mau”
+│   └── …                      # Mini-exemplos por princípio SOLID
 ├── src/main/java/com/solidanalysis/
-│   ├── SolidAnalysisCli.java    # CLI principal
-│   ├── scanner/                 # Etapa 1 — parse AST (JavaParser) → JSON
-│   ├── graphs/                  # Etapa 2 — geração DOT
-│   ├── algorithms/              # Etapa 3 — leitura DOT, métricas, algoritmos
-│   └── scoring/                 # Etapa 4 — SOLID, thresholds, relaxamento
-├── src/main/resources/          # Recursos adicionais (se existirem)
-├── src/test/java/               # Testes JUnit 5 (espelha pacotes de produção)
+│   ├── SolidAnalysisCli.java  # Entrada única da aplicação (modos scan, graphs, analyze, score, all)
+│   ├── scanner/               # Etapa 1: AST → modelo → JSON
+│   ├── graphs/                # Etapa 2: JSON → DOT (G1–G7)
+│   ├── algorithms/            # Etapa 3: DOT → métricas / algoritmos → JSON
+│   └── scoring/               # Etapa 4: artefactos → SOLID + relatórios
+├── src/main/resources/        # Recursos extra (o analysis.properties vem também da raiz via pom)
+├── src/test/java/             # Testes JUnit 5 (unitários e integração)
 └── src/test/resources/
-    └── java-fixtures/           # Mini-projeto para testes + output de referência opcional
-        ├── *.java
-        └── output/              # Snapshot regenerável (--all --output)
+    └── java-fixtures/         # Código de exemplo + output/ opcional versionado como referência
 ```
 
-**Pacotes principais**
+**Pacotes (código):**
 
-- **`scanner`** — visita AST, extrai tipos, métodos, chamadas, fluxo, etc., serializa em JSON.
-- **`graphs`** — lê JSON da etapa 1 e materializa grafos G1–G7 em DOT.
-- **`algorithms`** — importa DOT (JGraphT), calcula SCC, graus, caminhos, LCOM, componentes, clusterização Louvain (por defeito em `--analyze` / `--all`).
-- **`scoring`** — lê artefactos 1–3, aplica limiares de `analysis.properties`, agrega princípios S/O/L/I/D e escreve JSON + relatórios legíveis.
-
----
-
-## Requisitos
-
-- **JDK 17+** para compilar e correr o projeto (o `pom.xml` fixa `source` / `target` em **17**).
-- **Maven 3.9+**.
-- **Javadoc** (opcional): para `mvn javadoc:javadoc`, use um JDK completo (ex.: pacote `openjdk-17-jdk`) com `bin/javadoc` disponível; defina `JAVA_HOME` para esse JDK se o Maven não encontrar o executável.
-- **Graphviz** (`dot`) — apenas para visualizar ou converter ficheiros `.dot` gerados na etapa 2; não é exigido em tempo de execução do JAR.
+- **`scanner`** — `JavaParser`, visita AST, extrai tipo principal, métodos, chamadas, estruturas de fluxo, etc.
+- **`graphs`** — Carrega o JSON do scan, constrói grafos conceptuais e exporta DOT.
+- **`algorithms`** — `DOTImporter` (JGraphT), SCC, graus, centralidade, LCOM, componentes, **Louvain** (por defeito em `--analyze` / `--all`, desligável com `--no-clustering`).
+- **`scoring`** — Lê JSON + algoritmos + grafos conforme necessário, aplica `analysis.properties`, escreve `scoring/*.json` e `results/*.txt`.
 
 ---
 
-## Início rápido
+## 4. Requisitos de ambiente
+
+| Componente | Notas |
+|------------|--------|
+| **JDK 17+** | O `pom.xml` compila com `source`/`target` **17**. Podes correr com JRE 17+ do JAR compilado. |
+| **Maven 3.9+** | Para `mvn package`, `mvn test`, `mvn javadoc:javadoc`. |
+| **Graphviz (`dot`)** | **Opcional**: só para converter/visualizar `.dot`. O JAR **não** invoca o Graphviz em runtime. |
+| **JDK com `javadoc`** | **Opcional**: para gerar HTML de API (secção [17](#17-javadoc-da-api-html-gerado-pelo-maven)). Em alguns sistemas só está o JRE; instala o pacote **JDK completo** (ex.: `openjdk-17-jdk` no Debian/Ubuntu). |
+
+---
+
+## 5. Compilar o projeto
+
+Na raiz do repositório:
 
 ```bash
-git clone <repo>
-cd solid-static-analysis
 mvn clean package
 ```
 
-JAR gerado:
+**Saída principal:**
 
 ```text
 target/solid-static-analysis.jar
 ```
 
-Analisar um projeto (pipeline completo), a partir da raiz deste repositório:
-
-```bash
-java -jar target/solid-static-analysis.jar --all /caminho/absoluto/para/o/projeto-java
-```
-
-Saída por defeito: `output/<segmento>/` relativo ao diretório onde corres o comando (`user.dir`). Ver [Onde a saída é gravada](#onde-a-saída-é-gravada).
-
-Com saída explícita:
-
-```bash
-java -jar target/solid-static-analysis.jar --all /abs/projeto --output /abs/saida-projeto
-```
+O goal `package` corre testes **não** excluídos pelo Surefire e depois o **shade**, que produz o JAR executável único.
 
 ---
 
-## Etapas do pipeline
+## 6. Referência da linha de comandos (CLI)
 
-### 1 — Scan (AST → JSON)
+Sintaxe aceite (mensagem de usage oficial do `SolidAnalysisCli`):
 
-```bash
-java -jar target/solid-static-analysis.jar /caminho/absoluto/para/o/projeto-java
+```text
+java -jar solid-static-analysis.jar <ABS_ROOT_DIR>
+
+java -jar solid-static-analysis.jar --graphs <ABS_PROJECT_JSON_DIR>
+
+java -jar solid-static-analysis.jar --analyze <ABS_PROJECT_OUTPUT_DIR> [--no-clustering]
+
+java -jar solid-static-analysis.jar --score <ABS_PROJECT_OUTPUT_DIR>
+
+java -jar solid-static-analysis.jar --all <ABS_PROJECT_ROOT_DIR> [--output <ABS_PROJECT_OUTPUT_DIR>] [--no-clustering]
+
+java -jar solid-static-analysis.jar --all --output <ABS_PROJECT_OUTPUT_DIR> <ABS_PROJECT_ROOT_DIR> [--no-clustering]
 ```
 
-- Um JSON por ficheiro `.java` analisado.
-- Caminhos no output espelham a árvore sob a raiz do scan (prefixos `src/main/java` e `src/test/java` são omitidos no espelho quando aplicável).
+- **`--clustering`** existe como **no-op** (compatibilidade); o Louvain está **ligado por defeito**.
+- **`--no-clustering`** desliga a clusterização onde é opcional (campos `clusters` vazios onde aplicável).
 
-### 2 — Grafos (`--graphs`)
+---
+
+## 7. Etapa 1 — Scan (AST → JSON)
+
+```bash
+cd /caminho/para/solid-static-analysis
+java -jar target/solid-static-analysis.jar /caminho/absoluto/para/projeto-java
+```
+
+**Comportamento:**
+
+- Percorre recursivamente `.java` sob a raiz indicada.
+- Por ficheiro com sucesso, grava um **JSON** com estrutura resumida (tipo, métodos, chamadas, fluxo, etc.).
+- **Caminhos no output:** espelham a árvore de pastas relativamente à raiz do scan; prefixos habituais `src/main/java` e `src/test/java` são **omitidos** no espelho quando detetados (para não repetir esse segmento nos paths dos artefactos).
+
+**Saída no disco:** ver [secção 12](#12-onde-a-saída-é-gravada-regra-do-userdir) — por defeito `./output/` sob o `user.dir`.
+
+No fim, o resumo típico em stdout: `Parsed: N, Failed: M` (falhas por ficheiro **não** abortam o lote inteiro).
+
+---
+
+## 8. Etapa 2 — Grafos (`--graphs`, DOT)
+
+**Pré-requisito:** o diretório que passas já contém os JSON da etapa 1 (não é a raiz do projeto fonte original).
 
 ```bash
 java -jar target/solid-static-analysis.jar --graphs /abs/.../output/meu-projeto
 ```
 
-Gera `graphs/` com `g1_dependency.dot` … `g6_interface_usage.dot` e `g7_cfg/*.dot` quando existir CFG por método.
+**Cria** (dentro desse diretório) a pasta `graphs/` com ficheiros DOT, incluindo:
 
-### 3 — Algoritmos (`--analyze`)
+| Ficheiro / pasta | Ideia geral |
+|------------------|-------------|
+| `g1_dependency.dot` | Dependências entre classes do projeto (G1). |
+| `g2_inheritance.dot` | Herança / extends. |
+| `g3_method_calls.dot` (por classe espelhada) | Chamadas entre métodos. |
+| `g4_field_usage.dot` / projeção | Uso de campos e projeção para coesão. |
+| `g5_interface_impl.dot` | Interfaces e implementações. |
+| `g6_interface_usage.dot` | Uso de interfaces como tipo. |
+| `g7_cfg/*.dot` | CFG por método (quando gerado). |
+
+Para **ver** um grafo: com Graphviz instalado, por exemplo `dot -Tpng graphs/g1_dependency.dot -o g1.png`.
+
+---
+
+## 9. Etapa 3 — Algoritmos (`--analyze`)
+
+**Pré-requisito:** o mesmo diretório de projeto contém `graphs/` com DOT e os JSON do scan.
 
 ```bash
-# Louvain ativo por defeito onde aplicável
 java -jar target/solid-static-analysis.jar --analyze /abs/.../output/meu-projeto
-
-# Sem clusterização
 java -jar target/solid-static-analysis.jar --analyze /abs/.../output/meu-projeto --no-clustering
 ```
 
-Estrutura típica em `algorithms/`: `g1_algorithms.json`, `g2_…`, `g3_algorithms/<Classe>.json`, `g4_field_algorithms/…`, `g4_projection_algorithms/…`, `g5_…`, `g6_…`, `g7_algorithms/<Classe>_<Metodo>.json`.
+**Estrutura típica** em `algorithms/`:
 
-### 4 — Scoring (`--score`)
+- `g1_algorithms.json`, `g2_algorithms.json`, …
+- `g3_algorithms/<Classe>.json`, `g4_field_algorithms/…`, `g4_projection_algorithms/…`
+- `g5_algorithms.json`, `g6_algorithms.json` (G6 pode ser vazio estruturado quando não há interfaces no G5)
+- `g7_algorithms/<Classe>_<Metodo>.json` quando existir CFG
+
+O **Louvain** preenche `clusters` em pontos do pipeline onde o modelo o prevê (G1, G3 por classe, G4 projeção), salvo `--no-clustering`.
+
+---
+
+## 10. Etapa 4 — Scoring SOLID (`--score`)
+
+**Pré-requisito:** diretório de projeto com JSON na raiz (ou espelhados), `graphs/` e `algorithms/` consistentes.
 
 ```bash
 java -jar target/solid-static-analysis.jar --score /abs/.../output/meu-projeto
 ```
 
-Gera `scoring/<Classe>.json`, `scoring/project_summary.json` e `results/*.txt` (+ `project_summary.txt`).
+**Gera:**
 
-### 5 — Tudo (`--all`)
+- `scoring/<NomeClasse>.json` — por classe: princípios S/O/L/I/D, indicadores, níveis.
+- `scoring/project_summary.json` — visão do projeto.
+- `results/<NomeClasse>.txt` e `results/project_summary.txt` — relatório legível (usa sobretudo o texto `detail` dos indicadores; métricas brutas aparecem aí quando descritas).
 
-Executa as etapas 1–4 em sequência. Flags úteis:
+**Campos úteis no JSON (modo relaxado, projetos pequenos):**
 
-- `--output <dir>` — raiz de saída explícita.
-- `--no-clustering` — desativa Louvain na etapa 3 dentro do `--all`.
+- `relaxFactor` — valor \(f(n)=n/(n+k)\) para o projeto.
+- `rawMetric` — valor bruto da métrica (quando exposto).
+- `value` — para indicadores contínuos relaxados: tipicamente **métrica bruta × relaxFactor**; a **classificação** ALTO/MEDIO/BAIXO desses indicadores compara este **`value`** com os limiares **nominais** de `analysis.properties`.
 
----
-
-## Onde a saída é gravada
-
-| Fluxo | O que grava | Onde fica |
-|-------|-------------|-----------|
-| Scan (um argumento) | JSON por `.java` | `./output/` no **`user.dir`** |
-| `--all` sem `--output` | Etapas 1–4 | `./output/<caminho relativo ao user.dir>/` se a raiz analisada estiver dentro do `user.dir`; senão segmento sanitizado (ver `ProjectOutputPathResolver`) |
-| `--all --output /abs/X` | Etapas 1–4 | Diretamente sob `/abs/X/` |
-| Fixtures de referência | Snapshot opcional | `src/test/resources/java-fixtures/output/` (regenerar com `--all` + `--output`) |
-
-**Importante:** ao correr o CLI, o ficheiro **`analysis.properties` na raiz do repositório** (ou no `user.dir`) faz **merge** por cima do ficheiro empacotado no JAR — útil para ajustar `scoring.relax.k` e limiares sem recompilar.
+O `ScoringRunner` usa `user.dir` como pasta do ficheiro `analysis.properties` opcional (merge). Ver glossário.
 
 ---
 
-## Configuração (`analysis.properties`)
+## 11. Etapa 5 — Pipeline completo (`--all`)
 
-- Empacotado como `/analysis.properties` no JAR.
-- Chaves principais:
-  - **`scoring.relax.k`** — parâmetro \(k\) em \(f(n)=n/(n+k)\) para projetos com **&lt; 10 classes** (`FIXED_THRESHOLD_RELAXED`).
-  - **`threshold.*`** — limiares nominais para LCOM, clusters de projeção, razão de métodos isolados, profundidade de herança, etc.
+```bash
+cd /caminho/para/solid-static-analysis
+java -jar target/solid-static-analysis.jar --all /abs/para/projeto-fonte
+```
 
-No JSON de scoring, para indicadores contínuos relaxados: **`value` = métrica bruta × \(f(n)\)**; **`rawMetric`** repete o valor bruto quando relevante. A **classificação** (ALTO / MEDIO / BAIXO) desses indicadores compara **`value`** com os limiares nominais deste ficheiro.
+Ordem interna: **scan → graphs → analyze → score**.
 
-Relatório de exemplo **k=5 vs k=100** no fixture: [docs/java-fixtures-k5-vs-k100.md](docs/java-fixtures-k5-vs-k100.md).
+**Saída explícita** (útil para fixtures ou CI):
+
+```bash
+java -jar target/solid-static-analysis.jar --all /abs/projeto-fonte --output /abs/pasta-saida
+# ou ordem alternativa aceite:
+java -jar target/solid-static-analysis.jar --all --output /abs/pasta-saida /abs/projeto-fonte
+```
+
+**Flags:** `--no-clustering` propagado à etapa de algoritmos dentro do `--all`.
 
 ---
 
-## Scoring: projetos pequenos vs grandes
+## 12. Onde a saída é gravada (regra do `user.dir`)
 
-- **&lt; 10 classes** no output analisado → estratégia **`FIXED_THRESHOLD_RELAXED`** com `relaxFactor` no JSON.
-- **≥ 10 classes** → **`Z_SCORE`** nos sinais contínuos (o `k` **não** altera esses projetos).
+| Cenário | Onde os ficheiros aparecem |
+|---------|----------------------------|
+| Scan só (um argumento) | `./output/` relativo ao **`user.dir`** (não relativo ao projeto analisado). |
+| `--all` sem `--output` | `./output/...` sob `user.dir`, com subpasta derivada da raiz absoluta (se estiver **dentro** de `user.dir`, espelha caminho relativo; caso contrário segmento sanitizado — implementação em `ProjectOutputPathResolver`). |
+| `--all --output /abs/X` | Tudo diretamente sob `/abs/X/`. |
+| `--graphs` / `--analyze` / `--score` | Escrevem **no diretório que passas** (deve ser o diretório de saída do projeto). |
+
+**Benchmarks:** `./benchmarks/run-all.sh` grava em `output/<nome-do-benchmark>/` na raiz do repo (pastas comuns estão referidas no `.gitignore`).
+
+**Fixtures versionados:** podes regenerar `src/test/resources/java-fixtures/output/` com `--all` + `--output` apontando para essa pasta (ver [15](#15-benchmarks-e-fixtures)).
 
 ---
 
-## Benchmarks e fixtures
+## 13. Ficheiro `analysis.properties` (thresholds e relaxamento)
+
+- **No JAR:** existe uma cópia em `/analysis.properties` (empacotada pelo Maven a partir da raiz do repo).
+- **No disco:** se existir `analysis.properties` em **`user.dir`** (tipicamente a raiz do clone ao correres daí), as chaves presentes **substituem** as do JAR (**merge**: só o que está definido no ficheiro local sobrescreve).
+
+**Chaves centrais:**
+
+- `scoring.relax.k` — inteiro \(k \ge 0\) na fórmula \(f(n)=n/(n+k)\) para projetos com **menos de 10 classes** (`FIXED_THRESHOLD_RELAXED`). Com `k=0`, o comportamento efetivo é sem escala (`f=1` conforme implementação).
+- `threshold.*` — limiares para LCOM, clusters de projeção, proporção de métodos isolados, profundidade de herança, fan-out de `switch`, grau de dependências, etc.
+
+Alterar thresholds **não** exige recompilar se usares o `analysis.properties` no `user.dir`; **exige** recompilar se mudares só o ficheiro na raiz **e** quiseres que o valor embutido no JAR mude para outros ambientes que não carreguem o ficheiro local.
+
+---
+
+## 14. Projetos pequenos vs grandes (estratégia de scoring)
+
+| Tamanho (classes no output) | Estratégia no JSON | Notas |
+|----------------------------|--------------------|--------|
+| **&lt; 10** | `FIXED_THRESHOLD_RELAXED` | Aparece `relaxFactor`. Indicadores contínuos relaxados usam `value` escalado para comparar com limiares nominais. |
+| **≥ 10** | `Z_SCORE` | Comparação por z-score entre classes do mesmo projeto; **`scoring.relax.k` não altera** esta estratégia. |
+
+---
+
+## 15. Benchmarks e fixtures
 
 ### Benchmarks (`benchmarks/`)
-
-Vários mini-projetos por princípio SOLID e um `good-project` / `bad-project` maior. Script:
 
 ```bash
 ./benchmarks/run-all.sh
 ```
 
-Gera saída sob `output/<nome-do-benchmark>/` na raiz do repositório (respeitando `.gitignore`).
+Corre o pipeline completo sobre cada subpasta de benchmark e escreve resultados sob `output/` na raiz do repositório (conforme `.gitignore`). Serve para inspecionar diferenças “good vs bad” por princípio SOLID.
 
 ### Fixtures (`src/test/resources/java-fixtures`)
 
-- Fontes: `*.java` no diretório do fixture.
-- **`java-fixtures/output/`** — snapshot opcional; regenerar:
+- Código-fonte de exemplo em `*.java`.
+- **`output/`** opcional: snapshot de referência (JSON, `graphs/`, `algorithms/`, `scoring/`, `results/`). Instruções em `src/test/resources/java-fixtures/output/README.txt`.
+
+Regeneração típica (a partir da raiz do repo, com `user.dir` = raiz do repo para o merge de `analysis.properties`):
 
 ```bash
 mvn -q package
@@ -222,59 +320,76 @@ java -jar target/solid-static-analysis.jar --all "$(pwd)/src/test/resources/java
   --output "$(pwd)/src/test/resources/java-fixtures/output"
 ```
 
-Os testes também podem usar cache em `target/java-fixtures-pipeline-cache/`.
-
 ---
 
-## Testes e Javadoc
-
-### Testes
+## 16. Testes automatizados
 
 ```bash
 mvn test
 ```
 
-Por defeito o Surefire **exclui** testes com a tag JUnit **`clustering`** (integração mais pesada). Para incluir:
+O Surefire **exclui por defeito** testes anotados com a tag JUnit **`@Tag("clustering")`** (integração mais pesada). Para correr **todos**:
 
 ```bash
 mvn test -Dsurefire.excludedGroups=
 ```
 
-### Javadoc
+---
 
-Gera API HTML em **`target/site/apidocs/`**:
+## 17. Javadoc da API (HTML gerado pelo Maven)
+
+O Javadoc **não** é commitado no Git: a pasta `target/` está no `.gitignore`. É gerado **localmente** sempre que executas o goal do plugin.
+
+### Onde o HTML é gravado
+
+Após um build bem-sucedido com o plugin configurado no `pom.xml`:
+
+| Item | Localização |
+|------|-------------|
+| **Página inicial** | `target/site/apidocs/index.html` |
+| **Páginas por pacote / classe** | `target/site/apidocs/com/solidanalysis/...` |
+
+Caminho completo no disco: **`<raiz-do-repo>/target/site/apidocs/`**.
+
+### Como gerar
 
 ```bash
-export JAVA_HOME=/caminho/para/jdk-17   # JDK com bin/javadoc
+cd /caminho/para/solid-static-analysis
+export JAVA_HOME=/caminho/para/jdk-17    # JDK que contenha bin/javadoc
 mvn javadoc:javadoc
 ```
 
-Abrir `target/site/apidocs/index.html` no browser.
+Abre no browser: `target/site/apidocs/index.html`.
+
+### Problemas frequentes
+
+- **“Unable to find javadoc command”** — `JAVA_HOME` aponta para um JRE ou JDK sem `bin/javadoc`. Instala um JDK completo e volta a definir `JAVA_HOME`.
+- **`mvn clean`** — apaga `target/`, incluindo o Javadoc gerado; é preciso correr `mvn javadoc:javadoc` outra vez.
 
 ---
 
-## Argumentos e códigos de saída
+## 18. Códigos de saída e mensagens
 
-| Situação | Exit code | Onde mensagens |
-|----------|-----------|----------------|
-| Scan / pipeline concluído (pode haver falhas parciais por ficheiro) | `0` | Falhas por ficheiro em **stdout**; resumo `Parsed: N, Failed: M` |
-| Argumentos inválidos, caminho não absoluto, I/O fatal | `≠ 0` (tipicamente `1`) | **stderr** |
+| Situação | Exit code | Onde |
+|----------|-----------|------|
+| Scan / pipeline terminou (pode haver falhas parciais por ficheiro no scan) | `0` | Erros por ficheiro em **stdout**; resumo `Parsed: N, Failed: M` |
+| Argumentos inválidos, caminho não absoluto, diretório inexistente, erro fatal | `≠ 0` (normalmente `1`) | **stderr** |
 
-Detalhe do contrato do scan: [specs/001-ast-parser/contracts/cli.md](specs/001-ast-parser/contracts/cli.md).
-
----
-
-## Limitações
-
-- Resolução de tipos via JavaParser + `CombinedTypeSolver` (fontes sob a raiz e JDK); dependências Maven externas **não** são resolvidas automaticamente nesta versão.
-- Por ficheiro: exporta o **primeiro** tipo `class` / `interface` top-level.
+Contrato detalhado do scan: [specs/001-ast-parser/contracts/cli.md](specs/001-ast-parser/contracts/cli.md).
 
 ---
 
-## Documentação por feature (specs)
+## 19. Limitações conhecidas
 
-- **001 — AST / JSON**: [specs/001-ast-parser/spec.md](specs/001-ast-parser/spec.md)
-- **002 — Grafos DOT**: [specs/002-generate-dot-graphs/spec.md](specs/002-generate-dot-graphs/spec.md), [quickstart.md](specs/002-generate-dot-graphs/quickstart.md)
-- **003 — Algoritmos**: [specs/003-analyze-graph-algorithms/spec.md](specs/003-analyze-graph-algorithms/spec.md), [quickstart.md](specs/003-analyze-graph-algorithms/quickstart.md)
-- **004 — Scoring SOLID**: [specs/004-solid-scoring/spec.md](specs/004-solid-scoring/spec.md), [quickstart.md](specs/004-solid-scoring/quickstart.md), [contracts/score-cli.md](specs/004-solid-scoring/contracts/score-cli.md)
-- **005 — Benchmarks / docs**: [specs/005-add-solid-benchmarks-docs/spec.md](specs/005-add-solid-benchmarks-docs/spec.md)
+- Resolução de tipos via JavaParser (`CombinedTypeSolver`) com fontes sob a raiz analisada e JDK; **dependências Maven externas não são resolvidas automaticamente** nesta versão.
+- Por ficheiro `.java`: exporta o **primeiro** tipo `class` ou `interface` de nível superior.
+
+---
+
+## 20. Documentação por feature (`specs/`)
+
+- **001 — AST / JSON:** [specs/001-ast-parser/spec.md](specs/001-ast-parser/spec.md)
+- **002 — Grafos DOT:** [specs/002-generate-dot-graphs/spec.md](specs/002-generate-dot-graphs/spec.md), [quickstart.md](specs/002-generate-dot-graphs/quickstart.md)
+- **003 — Algoritmos:** [specs/003-analyze-graph-algorithms/spec.md](specs/003-analyze-graph-algorithms/spec.md), [quickstart.md](specs/003-analyze-graph-algorithms/quickstart.md)
+- **004 — Scoring SOLID:** [specs/004-solid-scoring/spec.md](specs/004-solid-scoring/spec.md), [quickstart.md](specs/004-solid-scoring/quickstart.md), [contracts/score-cli.md](specs/004-solid-scoring/contracts/score-cli.md)
+- **005 — Benchmarks / docs:** [specs/005-add-solid-benchmarks-docs/spec.md](specs/005-add-solid-benchmarks-docs/spec.md)

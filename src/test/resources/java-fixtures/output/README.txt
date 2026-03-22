@@ -1,5 +1,5 @@
 Snapshot de referência: scan, graphs/, algorithms/, scoring/ e results/ (Etapas 1–5).
-O `relaxFactor` nos JSON segue `scoring.relax.k` em `analysis.properties` na raiz do repo (atualmente k=100 para fixtures pequenos).
+O `relaxFactor` nos JSON segue `scoring.relax.k` em `analysis.properties` na raiz do repo (valor atual: ver essa chave; o snapshot foi gerado com o repo em `user.dir` para o merge de propriedades).
 
 Regenerar a partir dos *.java em ../ (na raiz do repositório solid-static-analysis, Louvain por defeito):
 
