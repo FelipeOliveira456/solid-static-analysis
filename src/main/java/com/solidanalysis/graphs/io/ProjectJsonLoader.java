@@ -13,29 +13,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
-/** Loads every scanner {@code *.json} from a project output directory into {@link AstArtifact}s. */
+/**
+ * Loads scanner {@code *.json} from {@code <project>/ast/} into {@link AstArtifact}s and {@link
+ * PlacedArtifact}s.
+ */
 public final class ProjectJsonLoader {
 
     private ProjectJsonLoader() {}
-
-    /**
-     * Top-level segments under {@code projectDirectory} that are not Etapa 1 AST JSON trees (Etapa
-     * 2–5 outputs).
-     */
-    private static boolean isReservedTopLevelSegment(String name) {
-        return name.equals("graphs")
-                || name.equals("algorithms")
-                || name.equals("scoring")
-                || name.equals("results");
-    }
-
-    static boolean isScannerArtifactJson(Path projectDirectory, Path file) {
-        Path rel = projectDirectory.relativize(file.toAbsolutePath().normalize());
-        if (rel.getNameCount() == 0) {
-            return false;
-        }
-        return !isReservedTopLevelSegment(rel.getName(0).toString());
-    }
 
     public static List<AstArtifact> loadArtifacts(Path projectDirectory) throws IOException {
         ObjectMapper mapper = GraphObjectMapper.create();
@@ -43,12 +27,15 @@ public final class ProjectJsonLoader {
         if (!Files.isDirectory(projectDirectory)) {
             throw new IOException("Not a directory: " + projectDirectory);
         }
-        Path abs = projectDirectory.toAbsolutePath().normalize();
+        Path ast = ProjectOutputLayout.astDirectory(projectDirectory);
+        if (!Files.isDirectory(ast)) {
+            return out;
+        }
+        Path absAst = ast.toAbsolutePath().normalize();
         List<Path> jsonFiles = new ArrayList<>();
-        try (Stream<Path> stream = Files.walk(abs)) {
+        try (Stream<Path> stream = Files.walk(absAst)) {
             stream.filter(Files::isRegularFile)
                     .filter(p -> p.getFileName().toString().endsWith(".json"))
-                    .filter(p -> isScannerArtifactJson(abs, p))
                     .forEach(jsonFiles::add);
         }
         jsonFiles.sort(Comparator.naturalOrder());
@@ -63,18 +50,21 @@ public final class ProjectJsonLoader {
         if (!Files.isDirectory(projectDirectory)) {
             throw new IOException("Not a directory: " + projectDirectory);
         }
-        Path abs = projectDirectory.toAbsolutePath().normalize();
+        Path ast = ProjectOutputLayout.astDirectory(projectDirectory);
+        if (!Files.isDirectory(ast)) {
+            return List.of();
+        }
+        Path absAst = ast.toAbsolutePath().normalize();
         List<Path> jsonFiles = new ArrayList<>();
-        try (Stream<Path> stream = Files.walk(abs)) {
+        try (Stream<Path> stream = Files.walk(absAst)) {
             stream.filter(Files::isRegularFile)
                     .filter(p -> p.getFileName().toString().endsWith(".json"))
-                    .filter(p -> isScannerArtifactJson(abs, p))
                     .forEach(jsonFiles::add);
         }
         jsonFiles.sort(Comparator.naturalOrder());
         List<PlacedArtifact> placed = new ArrayList<>();
         for (Path p : jsonFiles) {
-            Path rel = abs.relativize(p);
+            Path rel = absAst.relativize(p);
             Path parent = rel.getParent();
             Path relDir = parent == null ? Path.of("") : parent;
             AstArtifact a = mapper.readValue(p.toFile(), AstArtifact.class);

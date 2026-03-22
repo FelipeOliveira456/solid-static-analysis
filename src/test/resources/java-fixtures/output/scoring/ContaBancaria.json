@@ -1,10 +1,10 @@
 {
   "class" : "ContaBancaria",
   "classificationStrategy" : "FIXED_THRESHOLD_RELAXED",
-  "overall" : "MEDIO",
+  "overall" : "ALTO",
   "projectPath" : "/home/felipe/Documents/AS/solid-static-analysis/src/test/resources/java-fixtures/output",
   "relativePath" : "",
-  "relaxFactor" : 0.5454545454545454,
+  "relaxFactor" : 1.0,
   "scores" : {
     "D" : {
       "indicators" : [ {
@@ -52,21 +52,19 @@
     "S" : {
       "indicators" : [ {
         "detail" : "LCOM 0.3333 — 33% dos pares de métodos sem atributo em comum",
-        "rawMetric" : 0.3333333333333333,
         "templateId" : "LCOM_VALUE",
-        "value" : 0.1818181818181818
+        "value" : 0.3333333333333333
       }, {
         "detail" : "2 clusters de métodos na projeção — possível divisão de responsabilidades",
         "rawMetric" : 2,
         "templateId" : "PROJECTION_CLUSTERS",
-        "value" : 1.0909090909090908
+        "value" : 2.0
       }, {
         "detail" : "8 de 8 métodos isolados (100%) — sem colaboração interna",
-        "rawMetric" : 1.0,
         "templateId" : "ISOLATED_METHODS_RATIO",
-        "value" : 0.5454545454545454
+        "value" : 1.0
       } ],
-      "score" : "MEDIO"
+      "score" : "ALTO"
     }
   }
 }

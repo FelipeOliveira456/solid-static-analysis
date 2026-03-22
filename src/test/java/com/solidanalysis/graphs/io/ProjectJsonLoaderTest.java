@@ -14,13 +14,22 @@ import org.junit.jupiter.api.io.TempDir;
 class ProjectJsonLoaderTest {
 
     @Test
-    void diretorioSemJsonRetornaListaVazia(@TempDir Path tmp) throws Exception {
+    void diretorioSemAstRetornaListaVazia(@TempDir Path tmp) throws Exception {
         List<AstArtifact> list = ProjectJsonLoader.loadArtifacts(tmp);
         assertTrue(list.isEmpty());
     }
 
     @Test
-    void carregaMultiplosArtefactos(@TempDir Path tmp) throws Exception {
+    void astVazioRetornaListaVazia(@TempDir Path tmp) throws Exception {
+        Files.createDirectories(ProjectOutputLayout.astDirectory(tmp));
+        List<AstArtifact> list = ProjectJsonLoader.loadArtifacts(tmp);
+        assertTrue(list.isEmpty());
+    }
+
+    @Test
+    void carregaMultiplosArtefactosEmAst(@TempDir Path tmp) throws Exception {
+        Path ast = ProjectOutputLayout.astDirectory(tmp);
+        Files.createDirectories(ast);
         String j1 =
                 "{\"sourceFile\":\"/a.java\",\"primaryType\":{\"kind\":\"class\",\"name\":\"A\","
                         + "\"abstract\":false,\"superclass\":null,\"implementedInterfaces\":[],"
@@ -29,19 +38,20 @@ class ProjectJsonLoaderTest {
                 "{\"sourceFile\":\"/b.java\",\"primaryType\":{\"kind\":\"interface\",\"name\":\"B\","
                         + "\"abstract\":false,\"superclass\":null,\"implementedInterfaces\":[],"
                         + "\"fields\":[],\"methods\":[]}}";
-        Files.writeString(tmp.resolve("a.json"), j1, StandardCharsets.UTF_8);
-        Files.writeString(tmp.resolve("b.json"), j2, StandardCharsets.UTF_8);
+        Files.writeString(ast.resolve("a.json"), j1, StandardCharsets.UTF_8);
+        Files.writeString(ast.resolve("b.json"), j2, StandardCharsets.UTF_8);
         List<AstArtifact> list = ProjectJsonLoader.loadArtifacts(tmp);
         assertEquals(2, list.size());
     }
 
     @Test
-    void carregaJsonEmSubpastasEIgnoraAlgorithmsNaRaiz(@TempDir Path tmp) throws Exception {
+    void carregaJsonEmSubpastasAstEIgnoraAlgorithmsNaRaiz(@TempDir Path tmp) throws Exception {
+        Path ast = ProjectOutputLayout.astDirectory(tmp);
         String artifact =
                 "{\"sourceFile\":\"/x.java\",\"primaryType\":{\"kind\":\"class\",\"name\":\"X\","
                         + "\"abstract\":false,\"superclass\":null,\"implementedInterfaces\":[],"
                         + "\"fields\":[],\"methods\":[]}}";
-        Path nested = tmp.resolve("src").resolve("main").resolve("X.json");
+        Path nested = ast.resolve("src").resolve("main").resolve("X.json");
         Files.createDirectories(nested.getParent());
         Files.writeString(nested, artifact, StandardCharsets.UTF_8);
         Path alg = tmp.resolve("algorithms").resolve("g1_algorithms.json");

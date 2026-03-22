@@ -1,10 +1,10 @@
 {
   "class" : "Tributavel",
   "classificationStrategy" : "FIXED_THRESHOLD_RELAXED",
-  "overall" : "MEDIO",
+  "overall" : "ALTO",
   "projectPath" : "/home/felipe/Documents/AS/solid-static-analysis/src/test/resources/java-fixtures/output",
   "relativePath" : "",
-  "relaxFactor" : 0.5454545454545454,
+  "relaxFactor" : 1.0,
   "scores" : {
     "D" : {
       "indicators" : [ {
@@ -61,11 +61,10 @@
         "value" : 0.0
       }, {
         "detail" : "2 de 2 métodos isolados (100%) — sem colaboração interna",
-        "rawMetric" : 1.0,
         "templateId" : "ISOLATED_METHODS_RATIO",
-        "value" : 0.5454545454545454
+        "value" : 1.0
       } ],
-      "score" : "MEDIO"
+      "score" : "ALTO"
     }
   }
 }

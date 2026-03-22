@@ -7,6 +7,7 @@ import com.solidanalysis.graphs.GraphGenerationRunner;
 import com.solidanalysis.scanner.ArtifactJsonWriter;
 import com.solidanalysis.scanner.AstExtractor;
 import com.solidanalysis.scanner.JavaParserFacade;
+import com.solidanalysis.graphs.io.ProjectOutputLayout;
 import com.solidanalysis.scanner.ProjectScanner;
 import com.solidanalysis.scoring.ScoringRunner;
 import java.io.IOException;
@@ -44,7 +45,7 @@ public final class JavaFixturesPipeline {
                 failureLog != null
                         ? failureLog
                         : new PrintStream(OutputStream.nullOutputStream(), true, StandardCharsets.UTF_8);
-        scanner.scan(src, projectOut, log);
+        scanner.scan(src, ProjectOutputLayout.astDirectory(projectOut), log);
     }
 
     public static void runGraphs(Path projectOut) throws Exception {

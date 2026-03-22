@@ -15,7 +15,7 @@ class ProjectScannerIntegrationTest {
 
     @Test
     void deveGerarDoisJsonParaDoisJavaEmSubpastas(@TempDir Path root) throws Exception {
-        Path out = root.resolve("output");
+        Path out = root.resolve("output").resolve("ast");
         Files.createDirectories(root.resolve("p1"));
         Files.createDirectories(root.resolve("p2"));
         Files.writeString(
@@ -44,7 +44,7 @@ class ProjectScannerIntegrationTest {
 
     @Test
     void scanSemJavaDeveConcluirComZeroSucessos(@TempDir Path root) throws Exception {
-        Path out = root.resolve("output");
+        Path out = root.resolve("output").resolve("ast");
         JavaParserFacade facade = new JavaParserFacade(root);
         ProjectScanner scanner =
                 new ProjectScanner(facade, new AstExtractor(), new ArtifactJsonWriter());

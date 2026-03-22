@@ -3,7 +3,8 @@ package com.solidanalysis.scanner;
 import java.nio.file.Path;
 
 /**
- * Maps a {@code .java} file under a scan root to a JSON path under {@code output/}.
+ * Maps a {@code .java} file under a scan root to a JSON path under the scan output directory
+ * (typically {@code <project>/ast/}).
  *
  * <p>Leading Maven/Gradle-style source roots {@code src/main/java} and {@code src/test/java} are
  * <strong>not</strong> reproduced under output (only the path below them is kept), e.g. {@code

@@ -2,16 +2,16 @@
 CLASSE: ContaCorrente
 PROJETO: /home/felipe/Documents/AS/solid-static-analysis/src/test/resources/java-fixtures/output
 SCORE GERAL: ALTO
-ESTRATÉGIA: FIXED_THRESHOLD_RELAXED (fator de relaxamento: 0.5455)
+ESTRATÉGIA: FIXED_THRESHOLD_RELAXED (fator de relaxamento: 1.0000)
 ================================================================================
 
 O — Open/Closed: BAIXO
   [ok] switch com 1 case em resolverTaxa — baixa ramificação
 
-S — Single Responsibility: BAIXO
-  [ok] LCOM 0.4000 — 40% dos pares de métodos sem atributo em comum
-  [ok] 1 cluster de métodos na projeção — baixa evidência de responsabilidades separadas
-  [ok] 5 de 7 métodos isolados (71%) — sem colaboração interna
+S — Single Responsibility: ALTO
+  [!] LCOM 0.4000 — 40% dos pares de métodos sem atributo em comum
+  [!] 1 cluster de métodos na projeção — baixa evidência de responsabilidades separadas
+  [!] 5 de 7 métodos isolados (71%) — sem colaboração interna
 
 L — Liskov Substitution: BAIXO
   [ok] profundidade de herança da classe ContaCorrente: 1

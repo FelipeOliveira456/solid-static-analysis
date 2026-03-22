@@ -25,7 +25,8 @@ public class ProjectScanner {
 
     /**
      * Scans {@code scanRoot} recursively and writes one JSON file per successfully parsed source
-     * under {@code outputDirectory}.
+     * under {@code outputDirectory} (use {@link com.solidanalysis.graphs.io.ProjectOutputLayout#astDirectory}
+     * for the standard Etapa 1 layout).
      *
      * @param failureLog stream where per-file failures are printed (typically {@link System#out})
      */

@@ -9,6 +9,7 @@ import com.solidanalysis.algorithms.model.G5AlgorithmsDocument;
 import com.solidanalysis.algorithms.model.G6AlgorithmsDocument;
 import com.solidanalysis.algorithms.model.G7AlgorithmsDocument;
 import com.solidanalysis.algorithms.runners.GraphFileMapper;
+import com.solidanalysis.graphs.io.ProjectOutputLayout;
 import com.solidanalysis.graphs.model.PlacedArtifact;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -63,7 +64,10 @@ public final class ScoringRunner {
         placed.removeIf(pa -> pa.simpleTypeName().isEmpty());
         placed.sort(Comparator.comparing(PlacedArtifact::slotKey));
         if (placed.isEmpty()) {
-            throw new IOException("No AST JSON files in project output root: " + projectOutputDir);
+            throw new IOException(
+                    "No AST JSON under "
+                            + ProjectOutputLayout.astDirectory(projectOutputDir).toAbsolutePath()
+                            + " (run Etapa 1 scan into ast/)");
         }
         List<GraphFileMapper.MirroredDot> g7All = reader.listG7MirroredDots(projectOutputDir);
         for (PlacedArtifact pa : placed) {

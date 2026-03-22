@@ -3,9 +3,9 @@
   "mostViolatedPrinciple" : "D",
   "principleDistribution" : {
     "D" : {
-      "ALTO" : 3,
+      "ALTO" : 4,
       "BAIXO" : 2,
-      "MEDIO" : 1
+      "MEDIO" : 0
     },
     "I" : {
       "ALTO" : 0,
@@ -23,13 +23,18 @@
       "MEDIO" : 0
     },
     "S" : {
-      "ALTO" : 0,
-      "BAIXO" : 3,
-      "MEDIO" : 3
+      "ALTO" : 4,
+      "BAIXO" : 0,
+      "MEDIO" : 2
     }
   },
   "projectPath" : "/home/felipe/Documents/AS/solid-static-analysis/src/test/resources/java-fixtures/output",
   "ranking" : [ {
+    "class" : "ContaBancaria",
+    "overall" : "ALTO",
+    "relativePath" : "",
+    "worst" : "S"
+  }, {
     "class" : "ContaCorrente",
     "overall" : "ALTO",
     "relativePath" : "",
@@ -45,20 +50,15 @@
     "relativePath" : "",
     "worst" : "D"
   }, {
-    "class" : "ContaBancaria",
-    "overall" : "MEDIO",
-    "relativePath" : "",
-    "worst" : "S"
-  }, {
     "class" : "Relatorio",
-    "overall" : "MEDIO",
+    "overall" : "ALTO",
     "relativePath" : "",
     "worst" : "D"
   }, {
     "class" : "Tributavel",
-    "overall" : "MEDIO",
+    "overall" : "ALTO",
     "relativePath" : "",
     "worst" : "S"
   } ],
-  "relaxFactor" : 0.5454545454545454
+  "relaxFactor" : 1.0
 }

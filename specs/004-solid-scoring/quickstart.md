@@ -65,9 +65,9 @@ repo-root file). Optional `analysis.properties` in the process working
 directory merges on top (only defined keys override).
 
 Small projects (`classCount < 10`) use `FIXED_THRESHOLD_RELAXED`: selected
-continuous metrics scale thresholds by `f(n)=n/(n+k)` with default `k=5`
-(`scoring.relax.k` in `analysis.properties`). Set `scoring.relax.k=0` to
-disable scaling (`f(n)=1`). Each JSON output includes `relaxFactor` (`f(n)`).
+continuous metrics use `f(n)=n/(n+k)` with `scoring.relax.k` in root
+`analysis.properties`. Set `k=0` for no scaling (`f=1`). Each JSON output
+includes `relaxFactor` (`f(n)`).
 
 ## Verify the Output
 

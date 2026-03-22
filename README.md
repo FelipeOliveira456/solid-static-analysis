@@ -37,7 +37,7 @@ Este README descreve **passo a passo** como o projeto está organizado, como com
 |--------|-------------|
 | **`user.dir`** | Diretório de trabalho atual do processo Java (onde corres `java -jar …`). Muitas decisões de caminho dependem disto. |
 | **Raiz do projeto analisado** | Caminho **absoluto** que passas ao scan ou ao `--all`: a árvore de `.java` a percorrer. |
-| **Diretório de saída do projeto** | Pasta que contém, em simultâneo: JSON do scan na raiz (ou espelhados em subpastas), `graphs/`, `algorithms/`, e após scoring `scoring/` e `results/`. |
+| **Diretório de saída do projeto** | Pasta que contém, em simultâneo: **`ast/`** com os JSON do scan (espelhando pacotes), `graphs/`, `algorithms/`, e após scoring `scoring/` e `results/`. |
 | **Raiz do repositório (merge de propriedades)** | Para **`--score`** e para o **`--all`**, o código usa `Paths.get(System.getProperty("user.dir"))` como pasta onde procurar `analysis.properties` **adicional** a fazer merge sobre o ficheiro embutido no JAR. Na prática: corre o JAR a partir da raiz do **solid-static-analysis** se quiseres usar o `analysis.properties` da raiz do repo. |
 | **JAR shaded** | Um único `.jar` com dependências empacotadas; o `Main-Class` é `com.solidanalysis.SolidAnalysisCli`. |
 
@@ -50,8 +50,8 @@ Este README descreve **passo a passo** como o projeto está organizado, como com
 | Ordem | Nome | Como invocar | Resumo |
 |------:|------|--------------|--------|
 | 1 | Scan | `java -jar … <ABS_RAIZ_JAVA>` | Um JSON por classe analisada. |
-| 2 | Grafos | `java -jar … --graphs <ABS_DIR_COM_JSON>` | Escreve `graphs/*.dot` (G1–G7). |
-| 3 | Algoritmos | `java -jar … --analyze <ABS_DIR_PROJETO>` | Lê DOT + JSON, escreve `algorithms/…`. |
+| 2 | Grafos | `java -jar … --graphs <ABS_DIR_PROJETO>` | Lê `ast/*.json`, escreve `graphs/*.dot` (G1–G7). |
+| 3 | Algoritmos | `java -jar … --analyze <ABS_DIR_PROJETO>` | Lê `graphs/*.dot`, escreve `algorithms/…`. |
 | 4 | Scoring | `java -jar … --score <ABS_DIR_PROJETO>` | Lê tudo, escreve `scoring/` e `results/`. |
 | — | Tudo | `java -jar … --all <ABS_RAIZ_JAVA>` | Executa 1→2→3→4 em sequência. |
 
@@ -93,9 +93,9 @@ solid-static-analysis/
 **Pacotes (código):**
 
 - **`scanner`** — `JavaParser`, visita AST, extrai tipo principal, métodos, chamadas, estruturas de fluxo, etc.
-- **`graphs`** — Carrega o JSON do scan, constrói grafos conceptuais e exporta DOT.
+- **`graphs`** — Carrega o JSON do scan em **`ast/`**, constrói grafos conceptuais e exporta DOT.
 - **`algorithms`** — `DOTImporter` (JGraphT), SCC, graus, centralidade, LCOM, componentes, **Louvain** (por defeito em `--analyze` / `--all`, desligável com `--no-clustering`).
-- **`scoring`** — Lê JSON + algoritmos + grafos conforme necessário, aplica `analysis.properties`, escreve `scoring/*.json` e `results/*.txt`.
+- **`scoring`** — Lê **`ast/`** + algoritmos + grafos conforme necessário, aplica `analysis.properties`, escreve `scoring/*.json` e `results/*.txt`.
 
 ---
 
@@ -162,7 +162,8 @@ java -jar target/solid-static-analysis.jar /caminho/absoluto/para/projeto-java
 
 - Percorre recursivamente `.java` sob a raiz indicada.
 - Por ficheiro com sucesso, grava um **JSON** com estrutura resumida (tipo, métodos, chamadas, fluxo, etc.).
-- **Caminhos no output:** espelham a árvore de pastas relativamente à raiz do scan; prefixos habituais `src/main/java` e `src/test/java` são **omitidos** no espelho quando detetados (para não repetir esse segmento nos paths dos artefactos).
+- **Onde grava:** dentro de **`ast/`** sob o diretório de saída (o próprio scan usa essa pasta como raiz dos JSON).
+- **Caminhos dentro de `ast/`:** espelham a árvore de pastas relativamente à raiz do scan; prefixos habituais `src/main/java` e `src/test/java` são **omitidos** no espelho quando detetados.
 
 **Saída no disco:** ver [secção 12](#12-onde-a-saída-é-gravada-regra-do-userdir) — por defeito `./output/` sob o `user.dir`.
 
@@ -172,13 +173,13 @@ No fim, o resumo típico em stdout: `Parsed: N, Failed: M` (falhas por ficheiro 
 
 ## 8. Etapa 2 — Grafos (`--graphs`, DOT)
 
-**Pré-requisito:** o diretório que passas já contém os JSON da etapa 1 (não é a raiz do projeto fonte original).
+**Pré-requisito:** o diretório de projeto já contém **`ast/`** com os JSON da etapa 1 (não passes só a raiz do código-fonte).
 
 ```bash
 java -jar target/solid-static-analysis.jar --graphs /abs/.../output/meu-projeto
 ```
 
-**Cria** (dentro desse diretório) a pasta `graphs/` com ficheiros DOT, incluindo:
+**Cria** (no mesmo diretório de projeto) a pasta `graphs/` com ficheiros DOT, incluindo:
 
 | Ficheiro / pasta | Ideia geral |
 |------------------|-------------|
@@ -196,7 +197,7 @@ Para **ver** um grafo: com Graphviz instalado, por exemplo `dot -Tpng graphs/g1_
 
 ## 9. Etapa 3 — Algoritmos (`--analyze`)
 
-**Pré-requisito:** o mesmo diretório de projeto contém `graphs/` com DOT e os JSON do scan.
+**Pré-requisito:** o mesmo diretório de projeto contém `graphs/` com DOT e **`ast/`** com os JSON do scan.
 
 ```bash
 java -jar target/solid-static-analysis.jar --analyze /abs/.../output/meu-projeto
@@ -216,7 +217,7 @@ O **Louvain** preenche `clusters` em pontos do pipeline onde o modelo o prevê (
 
 ## 10. Etapa 4 — Scoring SOLID (`--score`)
 
-**Pré-requisito:** diretório de projeto com JSON na raiz (ou espelhados), `graphs/` e `algorithms/` consistentes.
+**Pré-requisito:** diretório de projeto com **`ast/`** (JSON do scan), `graphs/` e `algorithms/` consistentes.
 
 ```bash
 java -jar target/solid-static-analysis.jar --score /abs/.../output/meu-projeto
@@ -263,7 +264,7 @@ java -jar target/solid-static-analysis.jar --all --output /abs/pasta-saida /abs/
 
 | Cenário | Onde os ficheiros aparecem |
 |---------|----------------------------|
-| Scan só (um argumento) | `./output/` relativo ao **`user.dir`** (não relativo ao projeto analisado). |
+| Scan só (um argumento) | `./output/ast/` relativo ao **`user.dir`** (não relativo ao projeto analisado). |
 | `--all` sem `--output` | `./output/...` sob `user.dir`, com subpasta derivada da raiz absoluta (se estiver **dentro** de `user.dir`, espelha caminho relativo; caso contrário segmento sanitizado — implementação em `ProjectOutputPathResolver`). |
 | `--all --output /abs/X` | Tudo diretamente sob `/abs/X/`. |
 | `--graphs` / `--analyze` / `--score` | Escrevem **no diretório que passas** (deve ser o diretório de saída do projeto). |

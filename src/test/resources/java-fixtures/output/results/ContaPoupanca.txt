@@ -2,16 +2,16 @@
 CLASSE: ContaPoupanca
 PROJETO: /home/felipe/Documents/AS/solid-static-analysis/src/test/resources/java-fixtures/output
 SCORE GERAL: ALTO
-ESTRATÉGIA: FIXED_THRESHOLD_RELAXED (fator de relaxamento: 0.5455)
+ESTRATÉGIA: FIXED_THRESHOLD_RELAXED (fator de relaxamento: 1.0000)
 ================================================================================
 
 O — Open/Closed: BAIXO
   [ok] sem indicadores listados
 
-S — Single Responsibility: BAIXO
-  [ok] LCOM 0.2667 — 27% dos pares de métodos sem atributo em comum
-  [ok] 2 clusters de métodos na projeção — possível divisão de responsabilidades
-  [ok] 4 de 7 métodos isolados (57%) — sem colaboração interna
+S — Single Responsibility: MEDIO
+  [~] LCOM 0.2667 — 27% dos pares de métodos sem atributo em comum
+  [~] 2 clusters de métodos na projeção — possível divisão de responsabilidades
+  [~] 4 de 7 métodos isolados (57%) — sem colaboração interna
 
 L — Liskov Substitution: BAIXO
   [ok] profundidade de herança da classe ContaPoupanca: 1

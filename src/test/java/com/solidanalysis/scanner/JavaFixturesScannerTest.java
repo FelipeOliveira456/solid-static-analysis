@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.solidanalysis.scanner.model.AstArtifact;
 import com.solidanalysis.scanner.model.ControlFlowStatementSummary;
+import com.solidanalysis.graphs.io.ProjectOutputLayout;
 import com.solidanalysis.scanner.model.MethodSummary;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -57,7 +58,7 @@ class JavaFixturesScannerTest {
 
     @Test
     void geraArtefactosJsonNoOutputDosFixtures(@TempDir Path tempOut) throws Exception {
-        Path outDir = tempOut.resolve("scanner-out");
+        Path outDir = ProjectOutputLayout.astDirectory(tempOut.resolve("scanner-out"));
         Files.createDirectories(outDir);
         JavaParserFacade facade = new JavaParserFacade(fixtureRoot);
         ProjectScanner scanner =

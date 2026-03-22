@@ -1,17 +1,17 @@
 ================================================================================
 CLASSE: Relatorio
 PROJETO: /home/felipe/Documents/AS/solid-static-analysis/src/test/resources/java-fixtures/output
-SCORE GERAL: MEDIO
-ESTRATÉGIA: FIXED_THRESHOLD_RELAXED (fator de relaxamento: 0.5455)
+SCORE GERAL: ALTO
+ESTRATÉGIA: FIXED_THRESHOLD_RELAXED (fator de relaxamento: 1.0000)
 ================================================================================
 
 O — Open/Closed: BAIXO
   [ok] sem indicadores listados
 
-S — Single Responsibility: BAIXO
-  [ok] LCOM 0.2667 — 27% dos pares de métodos sem atributo em comum
-  [ok] 1 cluster de métodos na projeção — baixa evidência de responsabilidades separadas
-  [ok] 4 de 8 métodos isolados (50%) — sem colaboração interna
+S — Single Responsibility: MEDIO
+  [~] LCOM 0.2667 — 27% dos pares de métodos sem atributo em comum
+  [~] 1 cluster de métodos na projeção — baixa evidência de responsabilidades separadas
+  [~] 4 de 8 métodos isolados (50%) — sem colaboração interna
 
 L — Liskov Substitution: BAIXO
   [ok] profundidade de herança da classe Relatorio: 0
@@ -20,11 +20,11 @@ L — Liskov Substitution: BAIXO
 I — Interface Segregation: BAIXO
   [ok] implementa 0 interfaces — escopo enxuto
 
-D — Dependency Inversion: MEDIO
-  [~] não instancia classes concretas via new
-  [~] depende de 3 de 6 classes do projeto (50%) — espalhamento moderado de dependências
-  [~] 50% das dependências são classes concretas — 1 de 2 (predominam dependências concretas)
-  [~] out-centrality 0.6000 — alcance moderado de dependências
+D — Dependency Inversion: ALTO
+  [!] não instancia classes concretas via new
+  [!] depende de 3 de 6 classes do projeto (50%) — espalhamento moderado de dependências
+  [!] 50% das dependências são classes concretas — 1 de 2 (predominam dependências concretas)
+  [!] out-centrality 0.6000 — alcance moderado de dependências
 
 Legenda de símbolos:
 [!]  ALTO  — risco elevado, requer atenção

@@ -2,6 +2,7 @@ package com.solidanalysis.graphs;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.solidanalysis.graphs.io.ProjectOutputLayout;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,7 +17,9 @@ class GraphGenerationRunnerTest {
                 "{\"sourceFile\":\"/x.java\",\"primaryType\":{\"kind\":\"class\",\"name\":\"X\","
                         + "\"abstract\":false,\"superclass\":null,\"implementedInterfaces\":[],"
                         + "\"fields\":[],\"methods\":[]}}";
-        Files.writeString(tmp.resolve("x.json"), json, StandardCharsets.UTF_8);
+        Path ast = ProjectOutputLayout.astDirectory(tmp);
+        Files.createDirectories(ast);
+        Files.writeString(ast.resolve("x.json"), json, StandardCharsets.UTF_8);
         new GraphGenerationRunner().run(tmp);
         Path graphs = tmp.resolve("graphs");
         assertTrue(Files.exists(graphs.resolve("g1_dependency.dot")));

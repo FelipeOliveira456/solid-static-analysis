@@ -6,13 +6,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-/** Loads JSON artifacts and writes all graph DOT files next to them. */
+/** Loads AST JSON from {@code ast/} and writes graph DOT files under {@code graphs/}. */
 public final class GraphGenerationRunner {
 
     /**
      * Writes {@code graphs/*.dot} under {@code projectJsonDirectory}.
      *
-     * @param projectJsonDirectory directory containing {@code *.json} from the scanner
+     * @param projectJsonDirectory project output root containing {@code ast/*.json} from the scanner
      */
     public void run(Path projectJsonDirectory) throws IOException {
         ParsedProject project = ProjectJsonLoader.loadParsed(projectJsonDirectory);

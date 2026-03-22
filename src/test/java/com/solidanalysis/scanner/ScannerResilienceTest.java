@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import com.solidanalysis.graphs.io.ProjectOutputLayout;
 import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -15,7 +16,7 @@ class ScannerResilienceTest {
 
     @Test
     void deveContinuarAposFicheiroInvalidoEContarFalhas(@TempDir Path root) throws Exception {
-        Path out = root.resolve("output");
+        Path out = ProjectOutputLayout.astDirectory(root.resolve("output"));
         Files.writeString(root.resolve("Ok.java"), "public class Ok { }\n");
         Files.writeString(root.resolve("Bad.java"), "this is not valid java {{{\n");
 

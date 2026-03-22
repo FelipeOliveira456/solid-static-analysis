@@ -2,16 +2,16 @@
 CLASSE: GerenciadorContas
 PROJETO: /home/felipe/Documents/AS/solid-static-analysis/src/test/resources/java-fixtures/output
 SCORE GERAL: ALTO
-ESTRATÉGIA: FIXED_THRESHOLD_RELAXED (fator de relaxamento: 0.5455)
+ESTRATÉGIA: FIXED_THRESHOLD_RELAXED (fator de relaxamento: 1.0000)
 ================================================================================
 
 O — Open/Closed: BAIXO
   [ok] sem indicadores listados
 
-S — Single Responsibility: MEDIO
-  [~] LCOM 0 — 0% dos pares de métodos sem atributo em comum
-  [~] 5 clusters de métodos na projeção — possível divisão de responsabilidades
-  [~] 2 de 9 métodos isolados (22%) — sem colaboração interna
+S — Single Responsibility: ALTO
+  [!] LCOM 0 — 0% dos pares de métodos sem atributo em comum
+  [!] 5 clusters de métodos na projeção — possível divisão de responsabilidades
+  [!] 2 de 9 métodos isolados (22%) — sem colaboração interna
 
 L — Liskov Substitution: BAIXO
   [ok] profundidade de herança da classe GerenciadorContas: 0

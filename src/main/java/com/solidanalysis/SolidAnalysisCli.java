@@ -4,6 +4,7 @@ import com.solidanalysis.algorithms.runners.GraphAlgorithmsErrorHandler;
 import com.solidanalysis.algorithms.runners.GraphAlgorithmsRunner;
 import com.solidanalysis.algorithms.runners.GraphAnalyzeOptions;
 import com.solidanalysis.graphs.GraphGenerationRunner;
+import com.solidanalysis.graphs.io.ProjectOutputLayout;
 import com.solidanalysis.scanner.ArtifactJsonWriter;
 import com.solidanalysis.scanner.AstExtractor;
 import com.solidanalysis.scanner.JavaParserFacade;
@@ -178,7 +179,8 @@ public final class SolidAnalysisCli {
             JavaParserFacade facade = new JavaParserFacade(root);
             ProjectScanner scanner =
                     new ProjectScanner(facade, new AstExtractor(), new ArtifactJsonWriter());
-            ScanRunResult result = scanner.scan(root, projectOut, out);
+            ScanRunResult result =
+                    scanner.scan(root, ProjectOutputLayout.astDirectory(projectOut), out);
             out.println(
                     "Parsed: "
                             + result.getSuccessCount()

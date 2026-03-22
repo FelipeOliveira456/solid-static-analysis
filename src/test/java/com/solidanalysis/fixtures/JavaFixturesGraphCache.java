@@ -17,7 +17,7 @@ public final class JavaFixturesGraphCache {
 
     private JavaFixturesGraphCache() {}
 
-    /** Project output dir containing {@code graphs/}, {@code algorithms/}, root {@code *.json}. */
+    /** Project output dir containing {@code ast/}, {@code graphs/}, {@code algorithms/}. */
     public static Path cachedProjectOutput() throws Exception {
         Path c = CACHE;
         if (c != null && Files.isRegularFile(c.resolve("graphs/g1_dependency.dot"))) {

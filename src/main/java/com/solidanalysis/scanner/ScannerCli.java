@@ -1,5 +1,6 @@
 package com.solidanalysis.scanner;
 
+import com.solidanalysis.graphs.io.ProjectOutputLayout;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
@@ -48,7 +49,8 @@ public final class ScannerCli {
             return EXIT_ERROR;
         }
 
-        Path outputDir = Paths.get(System.getProperty("user.dir")).resolve("output");
+        Path outputDir = ProjectOutputLayout.astDirectory(
+                Paths.get(System.getProperty("user.dir")).resolve("output"));
         try {
             JavaParserFacade facade = new JavaParserFacade(root);
             ProjectScanner scanner =

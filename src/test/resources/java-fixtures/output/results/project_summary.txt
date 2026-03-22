@@ -5,16 +5,16 @@ PRINCÍPIO MAIS VIOLADO: D (Dependency Inversion)
 ================================================================================
 
 DISTRIBUIÇÃO POR PRINCÍPIO:
-  S — Single Responsibility:  ALTO: 0  MEDIO: 3  BAIXO: 3
+  S — Single Responsibility:  ALTO: 4  MEDIO: 2  BAIXO: 0
   O — Open/Closed:            ALTO: 0  MEDIO: 0  BAIXO: 6
   L — Liskov Substitution:    ALTO: 0  MEDIO: 0  BAIXO: 6
   I — Interface Segregation:  ALTO: 0  MEDIO: 0  BAIXO: 6
-  D — Dependency Inversion:   ALTO: 3  MEDIO: 1  BAIXO: 2
+  D — Dependency Inversion:   ALTO: 4  MEDIO: 0  BAIXO: 2
 
 RANKING DE CLASSES (pior para melhor):
-  1. ContaCorrente                ALTO   (pior: D — Dependency Inversion)
-  2. ContaPoupanca                ALTO   (pior: D — Dependency Inversion)
-  3. GerenciadorContas            ALTO   (pior: D — Dependency Inversion)
-  4. ContaBancaria                MEDIO  (pior: S — Single Responsibility)
-  5. Relatorio                    MEDIO  (pior: D — Dependency Inversion)
-  6. Tributavel                   MEDIO  (pior: S — Single Responsibility)
+  1. ContaBancaria                ALTO   (pior: S — Single Responsibility)
+  2. ContaCorrente                ALTO   (pior: D — Dependency Inversion)
+  3. ContaPoupanca                ALTO   (pior: D — Dependency Inversion)
+  4. GerenciadorContas            ALTO   (pior: D — Dependency Inversion)
+  5. Relatorio                    ALTO   (pior: D — Dependency Inversion)
+  6. Tributavel                   ALTO   (pior: S — Single Responsibility)
