@@ -29,7 +29,13 @@ class G7CfgGraphGeneratorTest {
         ParsedProject p = ParsedProject.fromArtifacts(List.of(new AstArtifact("/t.java", t)));
         Path g7 = tmp.resolve("g7");
         new G7CfgGraphGenerator().writeAll(g7, p);
-        assertEquals(0, Files.list(g7).count());
+        try (Stream<Path> w = Files.walk(g7)) {
+            long dots =
+                    w.filter(Files::isRegularFile)
+                            .filter(path -> path.toString().endsWith(".dot"))
+                            .count();
+            assertEquals(0, dots);
+        }
     }
 
     @Test
@@ -50,11 +56,8 @@ class G7CfgGraphGeneratorTest {
         ParsedProject p = ParsedProject.fromArtifacts(List.of(new AstArtifact("/t.java", t)));
         Path g7 = tmp.resolve("g7");
         new G7CfgGraphGenerator().writeAll(g7, p);
-        try (Stream<Path> s = Files.list(g7)) {
-            List<Path> files = s.toList();
-            assertEquals(1, files.size());
-            assertTrue(files.get(0).getFileName().toString().endsWith(".dot"));
-        }
+        Path dotFile = g7.resolve("g7_cfg").resolve("T_go.dot");
+        assertTrue(Files.isRegularFile(dotFile), "expected " + dotFile);
     }
 
     @Test
@@ -78,7 +81,10 @@ class G7CfgGraphGeneratorTest {
         ParsedProject p = ParsedProject.fromArtifacts(List.of(new AstArtifact("/t.java", t)));
         Path g7 = tmp.resolve("g7");
         new G7CfgGraphGenerator().writeAll(g7, p);
-        String dot = Files.readString(g7.resolve("T_registrarTransacoes.dot"), StandardCharsets.UTF_8);
+        String dot =
+                Files.readString(
+                        g7.resolve("g7_cfg").resolve("T_registrarTransacoes.dot"),
+                        StandardCharsets.UTF_8);
         long entryOutEdges = dot.lines().filter(l -> l.trim().startsWith("entry ->")).count();
         assertEquals(1, entryOutEdges, "only the outermost control-flow root should leave entry");
         assertTrue(dot.contains("foreach"), dot);

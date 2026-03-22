@@ -1,8 +1,11 @@
 package com.solidanalysis.scoring;
 
 /**
- * Fixed-threshold classification with effective bounds {@code threshold_base / f(n)} (capped where
- * needed). Used only for the continuous metrics listed in {@link IndicatorPolicies}.
+ * Fixed-threshold classification for small projects using the relaxed/scaled value.
+ *
+ * <p>For indicators in {@link IndicatorPolicies#isThresholdRelaxedContinuous(IndicatorTemplate)}, the
+ * score band is computed from {@code value = rawMetric * f(n)} against the nominal thresholds from
+ * {@link ThresholdConfiguration}.
  */
 public final class RelaxedFixedClassification {
 
@@ -19,44 +22,45 @@ public final class RelaxedFixedClassification {
         return (double) classCount / (double) (classCount + kk);
     }
 
-    private static double effRatioBound(double base, double f) {
+    private static double normalizedF(double f) {
         if (f <= 0 || f > 1.0 || Double.isNaN(f)) {
-            return base;
+            return 1.0;
         }
-        return Math.min(1.0, base / f);
+        return f;
+    }
+
+    private static double scaled(double raw, double f) {
+        return raw * normalizedF(f);
     }
 
     public static ScoreLevel classifyLcom(double lcom, double f, ThresholdConfiguration t) {
-        double m = effRatioBound(t.lcomMedio(), f);
-        double a = effRatioBound(t.lcomAlto(), f);
-        if (lcom < m) {
+        double value = scaled(lcom, f);
+        if (value < t.lcomMedio()) {
             return ScoreLevel.BAIXO;
         }
-        if (lcom < a) {
+        if (value < t.lcomAlto()) {
             return ScoreLevel.MEDIO;
         }
         return ScoreLevel.ALTO;
     }
 
     public static ScoreLevel classifyIsolatedRatio(double ratio, double f, ThresholdConfiguration t) {
-        double m = effRatioBound(t.isolatedMedio(), f);
-        double a = effRatioBound(t.isolatedAlto(), f);
-        if (ratio < m) {
+        double value = scaled(ratio, f);
+        if (value < t.isolatedMedio()) {
             return ScoreLevel.BAIXO;
         }
-        if (ratio < a) {
+        if (value < t.isolatedAlto()) {
             return ScoreLevel.MEDIO;
         }
         return ScoreLevel.ALTO;
     }
 
     public static ScoreLevel classifyOutDegreeNormalized(double ratio, double f, ThresholdConfiguration t) {
-        double m = effRatioBound(t.outNormMedio(), f);
-        double a = effRatioBound(t.outNormAlto(), f);
-        if (ratio < m) {
+        double value = scaled(ratio, f);
+        if (value < t.outNormMedio()) {
             return ScoreLevel.BAIXO;
         }
-        if (ratio < a) {
+        if (value < t.outNormAlto()) {
             return ScoreLevel.MEDIO;
         }
         return ScoreLevel.ALTO;
@@ -64,12 +68,11 @@ public final class RelaxedFixedClassification {
 
     /** Higher concrete ratio = worse (more ALTO). */
     public static ScoreLevel classifyConcreteDependencyRatio(double ratio, double f, ThresholdConfiguration t) {
-        double m = effRatioBound(t.concreteRatioMedio(), f);
-        double a = effRatioBound(t.concreteRatioAlto(), f);
-        if (ratio < m) {
+        double value = scaled(ratio, f);
+        if (value < t.concreteRatioMedio()) {
             return ScoreLevel.BAIXO;
         }
-        if (ratio < a) {
+        if (value < t.concreteRatioAlto()) {
             return ScoreLevel.MEDIO;
         }
         return ScoreLevel.ALTO;
@@ -80,15 +83,11 @@ public final class RelaxedFixedClassification {
      * < implMedio} BAIXO, {@code count < implAlto} MEDIO, else ALTO.
      */
     public static ScoreLevel classifyImplementsCount(int count, double f, ThresholdConfiguration t) {
-        if (f <= 0 || f > 1.0 || Double.isNaN(f)) {
-            f = 1.0;
-        }
-        double b1 = t.implMedio() / f;
-        double b2 = t.implAlto() / f;
-        if (count < b1) {
+        double value = scaled(count, f);
+        if (value < t.implMedio()) {
             return ScoreLevel.BAIXO;
         }
-        if (count < b2) {
+        if (value < t.implAlto()) {
             return ScoreLevel.MEDIO;
         }
         return ScoreLevel.ALTO;
@@ -99,15 +98,47 @@ public final class RelaxedFixedClassification {
      * < depthAlto} MEDIO, else ALTO.
      */
     public static ScoreLevel classifyDepth(int depth, double f, ThresholdConfiguration t) {
-        if (f <= 0 || f > 1.0 || Double.isNaN(f)) {
-            f = 1.0;
-        }
-        double b1 = t.depthMedio() / f;
-        double b2 = t.depthAlto() / f;
-        if (depth < b1) {
+        double value = scaled(depth, f);
+        if (value < t.depthMedio()) {
             return ScoreLevel.BAIXO;
         }
-        if (depth < b2) {
+        if (value < t.depthAlto()) {
+            return ScoreLevel.MEDIO;
+        }
+        return ScoreLevel.ALTO;
+    }
+
+    /** Uses scaled value ({@code count*f}) against nominal projection thresholds. */
+    public static ScoreLevel classifyProjectionClusters(int count, double f, ThresholdConfiguration t) {
+        double value = scaled(count, f);
+        if (value < t.projectionMedio()) {
+            return ScoreLevel.BAIXO;
+        }
+        if (value < t.projectionAlto()) {
+            return ScoreLevel.MEDIO;
+        }
+        return ScoreLevel.ALTO;
+    }
+
+    /** Concrete class in-degree (G2), using {@link ThresholdConfiguration#indegreeMedio()}. */
+    public static ScoreLevel classifyConcreteIndegree(int indegree, double f, ThresholdConfiguration t) {
+        double value = scaled(indegree, f);
+        if (value < t.indegreeMedio()) {
+            return ScoreLevel.BAIXO;
+        }
+        if (value < t.indegreeAlto()) {
+            return ScoreLevel.MEDIO;
+        }
+        return ScoreLevel.ALTO;
+    }
+
+    /** Direct instantiations (G1), using {@link ThresholdConfiguration#instMedio()}. */
+    public static ScoreLevel classifyInstantiations(int n, double f, ThresholdConfiguration t) {
+        double value = scaled(n, f);
+        if (value < t.instMedio()) {
+            return ScoreLevel.BAIXO;
+        }
+        if (value < t.instAlto()) {
             return ScoreLevel.MEDIO;
         }
         return ScoreLevel.ALTO;

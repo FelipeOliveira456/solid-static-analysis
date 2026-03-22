@@ -34,4 +34,22 @@ class ProjectJsonLoaderTest {
         List<AstArtifact> list = ProjectJsonLoader.loadArtifacts(tmp);
         assertEquals(2, list.size());
     }
+
+    @Test
+    void carregaJsonEmSubpastasEIgnoraAlgorithmsNaRaiz(@TempDir Path tmp) throws Exception {
+        String artifact =
+                "{\"sourceFile\":\"/x.java\",\"primaryType\":{\"kind\":\"class\",\"name\":\"X\","
+                        + "\"abstract\":false,\"superclass\":null,\"implementedInterfaces\":[],"
+                        + "\"fields\":[],\"methods\":[]}}";
+        Path nested = tmp.resolve("src").resolve("main").resolve("X.json");
+        Files.createDirectories(nested.getParent());
+        Files.writeString(nested, artifact, StandardCharsets.UTF_8);
+        Path alg = tmp.resolve("algorithms").resolve("g1_algorithms.json");
+        Files.createDirectories(alg.getParent());
+        Files.writeString(alg, "{}", StandardCharsets.UTF_8);
+
+        List<AstArtifact> list = ProjectJsonLoader.loadArtifacts(tmp);
+        assertEquals(1, list.size());
+        assertEquals("X", list.get(0).primaryType().name());
+    }
 }

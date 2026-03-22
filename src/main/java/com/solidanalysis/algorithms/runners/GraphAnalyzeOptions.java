@@ -1,9 +1,9 @@
 package com.solidanalysis.algorithms.runners;
 
 /**
- * Options for {@link GraphAlgorithmsRunner}. Louvain clustering is optional (CLI {@code
- * --clustering}); the boolean name is kept for binary compatibility with {@code
- * SolidAnalysisCli}.
+ * Options for {@link GraphAlgorithmsRunner}. The CLI enables Louvain by default for {@code --analyze}
+ * / {@code --all} unless {@code --no-clustering} is passed; programmatic use often calls {@link
+ * #defaults()} (metrics only, no Louvain) for fast tests. The boolean field name is historical.
  */
 public final class GraphAnalyzeOptions {
 

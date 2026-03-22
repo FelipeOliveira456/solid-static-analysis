@@ -132,34 +132,25 @@ public final class GraphAlgorithmsRunner {
             errors.warn("G5: missing file " + g5.toAbsolutePath());
         }
 
-        Path g7dir = mapper.getGraphsDir().resolve("g7_cfg");
-        if (Files.isDirectory(g7dir)) {
-            Path outDir = algorithmsDir.resolve("g7_algorithms");
-            try (var stream = Files.list(g7dir)) {
-                stream.filter(p -> p.toString().endsWith(".dot"))
-                        .sorted()
-                        .forEach(
-                                dot -> {
-                                    try {
-                                        DirectedPseudograph<String, DefaultEdge> g =
-                                                GraphDotLoader.loadDirected(dot);
-                                        G7AlgorithmsDocument doc = G7CfgAnalyzer.analyze(g);
-                                        String name =
-                                                dot.getFileName()
-                                                        .toString()
-                                                        .replaceAll("\\.dot$", "");
-                                        json.write(outDir.resolve(name + ".json"), doc);
-                                    } catch (Exception e) {
-                                        errors.warn(
-                                                "G7: failed to analyze "
-                                                        + dot
-                                                        + ": "
-                                                        + e.getMessage());
-                                    }
-                                });
-            }
+        List<GraphFileMapper.MirroredDot> g7dots = mapper.listMirroredLayerDots("g7_cfg");
+        if (g7dots.isEmpty()) {
+            errors.warn("G7: no .dot files under any .../g7_cfg/ directory");
         } else {
-            errors.warn("G7: missing directory " + g7dir.toAbsolutePath());
+            for (GraphFileMapper.MirroredDot md : g7dots) {
+                Path dot = md.dotFile();
+                try {
+                    DirectedPseudograph<String, DefaultEdge> g = GraphDotLoader.loadDirected(dot);
+                    G7AlgorithmsDocument doc = G7CfgAnalyzer.analyze(g);
+                    Path outDir =
+                            algorithmsDir
+                                    .resolve(md.mirrorRelativeToGraphs())
+                                    .resolve("g7_algorithms");
+                    Files.createDirectories(outDir);
+                    json.write(outDir.resolve(md.fileStem() + ".json"), doc);
+                } catch (Exception e) {
+                    errors.warn("G7: failed to analyze " + dot + ": " + e.getMessage());
+                }
+            }
         }
         return g5Interfaces;
     }
@@ -178,9 +169,9 @@ public final class GraphAlgorithmsRunner {
         }
         if (g5Interfaces.isEmpty()) {
             errors.warn(
-                    "G6: skipped (no interface list from G5); file present: "
-                            + g6.toAbsolutePath());
-            return;
+                    "G6: no interfaces from G5; writing empty g6_algorithms.json (file present: "
+                            + g6.toAbsolutePath()
+                            + ")");
         }
         try {
             DirectedPseudograph<String, DefaultEdge> g = GraphDotLoader.loadDirected(g6);
@@ -198,20 +189,23 @@ public final class GraphAlgorithmsRunner {
             GraphAlgorithmsErrorHandler errors,
             boolean runClustering)
             throws IOException {
-        Map<String, Path> files = mapper.listDotFilesInSubdir("g3_method_calls");
-        if (files.isEmpty()) {
-            errors.warn("G3: no .dot files under g3_method_calls/");
+        List<GraphFileMapper.MirroredDot> g3dots = mapper.listMirroredLayerDots("g3_method_calls");
+        if (g3dots.isEmpty()) {
+            errors.warn("G3: no .dot files under any .../g3_method_calls/ directory");
             return;
         }
-        Path out = algorithmsDir.resolve("g3_algorithms");
-        for (Map.Entry<String, Path> e : files.entrySet()) {
+        for (GraphFileMapper.MirroredDot md : g3dots) {
             try {
-                DirectedPseudograph<String, DefaultEdge> g =
-                        GraphDotLoader.loadDirected(e.getValue());
+                DirectedPseudograph<String, DefaultEdge> g = GraphDotLoader.loadDirected(md.dotFile());
                 G3AlgorithmsDocument doc = buildG3(g, runClustering);
-                json.write(out.resolve(e.getKey() + ".json"), doc);
+                Path outDir =
+                        algorithmsDir
+                                .resolve(md.mirrorRelativeToGraphs())
+                                .resolve("g3_algorithms");
+                Files.createDirectories(outDir);
+                json.write(outDir.resolve(md.fileStem() + ".json"), doc);
             } catch (Exception ex) {
-                errors.warn("G3: failed " + e.getValue() + ": " + ex.getMessage());
+                errors.warn("G3: failed " + md.dotFile() + ": " + ex.getMessage());
             }
         }
     }
@@ -222,20 +216,23 @@ public final class GraphAlgorithmsRunner {
             AlgorithmsJsonWriter json,
             GraphAlgorithmsErrorHandler errors)
             throws IOException {
-        Map<String, Path> files = mapper.listDotFilesInSubdir("g4_field_usage");
-        if (files.isEmpty()) {
-            errors.warn("G4 field: no .dot files under g4_field_usage/");
+        List<GraphFileMapper.MirroredDot> dots = mapper.listMirroredLayerDots("g4_field_usage");
+        if (dots.isEmpty()) {
+            errors.warn("G4 field: no .dot files under any .../g4_field_usage/ directory");
             return;
         }
-        Path out = algorithmsDir.resolve("g4_field_algorithms");
-        for (Map.Entry<String, Path> e : files.entrySet()) {
+        for (GraphFileMapper.MirroredDot md : dots) {
             try {
-                DirectedPseudograph<String, DefaultEdge> g =
-                        GraphDotLoader.loadDirected(e.getValue());
+                DirectedPseudograph<String, DefaultEdge> g = GraphDotLoader.loadDirected(md.dotFile());
                 G4FieldAlgorithmsDocument doc = buildG4Field(g);
-                json.write(out.resolve(e.getKey() + ".json"), doc);
+                Path outDir =
+                        algorithmsDir
+                                .resolve(md.mirrorRelativeToGraphs())
+                                .resolve("g4_field_algorithms");
+                Files.createDirectories(outDir);
+                json.write(outDir.resolve(md.fileStem() + ".json"), doc);
             } catch (Exception ex) {
-                errors.warn("G4 field: failed " + e.getValue() + ": " + ex.getMessage());
+                errors.warn("G4 field: failed " + md.dotFile() + ": " + ex.getMessage());
             }
         }
     }
@@ -247,20 +244,23 @@ public final class GraphAlgorithmsRunner {
             GraphAlgorithmsErrorHandler errors,
             boolean runClustering)
             throws IOException {
-        Map<String, Path> files = mapper.listDotFilesInSubdir("g4_method_projection");
-        if (files.isEmpty()) {
-            errors.warn("G4 projection: no .dot files under g4_method_projection/");
+        List<GraphFileMapper.MirroredDot> dots = mapper.listMirroredLayerDots("g4_method_projection");
+        if (dots.isEmpty()) {
+            errors.warn("G4 projection: no .dot files under any .../g4_method_projection/ directory");
             return;
         }
-        Path out = algorithmsDir.resolve("g4_projection_algorithms");
-        for (Map.Entry<String, Path> e : files.entrySet()) {
+        for (GraphFileMapper.MirroredDot md : dots) {
             try {
-                Multigraph<String, DefaultEdge> g = GraphDotLoader.loadUndirected(e.getValue());
-                G4ProjectionAlgorithmsDocument doc =
-                        buildG4Projection(g, runClustering);
-                json.write(out.resolve(e.getKey() + ".json"), doc);
+                Multigraph<String, DefaultEdge> g = GraphDotLoader.loadUndirected(md.dotFile());
+                G4ProjectionAlgorithmsDocument doc = buildG4Projection(g, runClustering);
+                Path outDir =
+                        algorithmsDir
+                                .resolve(md.mirrorRelativeToGraphs())
+                                .resolve("g4_projection_algorithms");
+                Files.createDirectories(outDir);
+                json.write(outDir.resolve(md.fileStem() + ".json"), doc);
             } catch (Exception ex) {
-                errors.warn("G4 projection: failed " + e.getValue() + ": " + ex.getMessage());
+                errors.warn("G4 projection: failed " + md.dotFile() + ": " + ex.getMessage());
             }
         }
     }

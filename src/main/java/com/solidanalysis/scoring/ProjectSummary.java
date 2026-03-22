@@ -57,5 +57,10 @@ public final class ProjectSummary {
     }
 
     /** One row in {@code ranking}. */
-    public record RankingEntry(String className, ScoreLevel overall, String worst) {}
+    public record RankingEntry(String className, String relativePath, ScoreLevel overall, String worst) {
+
+        public String displayLabel() {
+            return relativePath == null || relativePath.isEmpty() ? className : relativePath + "/" + className;
+        }
+    }
 }

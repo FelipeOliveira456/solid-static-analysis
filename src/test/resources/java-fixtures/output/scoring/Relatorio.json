@@ -3,21 +3,25 @@
   "classificationStrategy" : "FIXED_THRESHOLD_RELAXED",
   "overall" : "MEDIO",
   "projectPath" : "/home/felipe/Documents/AS/solid-static-analysis/src/test/resources/java-fixtures/output",
+  "relativePath" : "",
   "relaxFactor" : 0.5454545454545454,
   "scores" : {
     "D" : {
       "indicators" : [ {
         "detail" : "não instancia classes concretas via new",
+        "rawMetric" : 0,
         "templateId" : "INSTANTIATION_COUNT",
-        "value" : 0
+        "value" : 0.0
       }, {
         "detail" : "depende de 3 de 6 classes do projeto (50%) — espalhamento moderado de dependências",
+        "rawMetric" : 0.5,
         "templateId" : "OUT_DEGREE_NORMALIZED",
-        "value" : 0.5
+        "value" : 0.2727272727272727
       }, {
         "detail" : "50% das dependências são classes concretas — 1 de 2 (predominam dependências concretas)",
+        "rawMetric" : 0.5,
         "templateId" : "CONCRETE_DEPENDENCY_RATIO",
-        "value" : 0.5
+        "value" : 0.2727272727272727
       }, {
         "detail" : "out-centrality 0.6000 — alcance moderado de dependências",
         "templateId" : "G1_OUT_CENTRALITY",
@@ -28,20 +32,23 @@
     "I" : {
       "indicators" : [ {
         "detail" : "implementa 0 interfaces — escopo enxuto",
+        "rawMetric" : 0,
         "templateId" : "IMPLEMENTS_COUNT",
-        "value" : 0
+        "value" : 0.0
       } ],
       "score" : "BAIXO"
     },
     "L" : {
       "indicators" : [ {
         "detail" : "profundidade de herança da classe Relatorio: 0",
+        "rawMetric" : 0,
         "templateId" : "INHERITANCE_DEPTH",
-        "value" : 0
+        "value" : 0.0
       }, {
         "detail" : "0 referências como superclasse concreta (G2) — baixo acoplamento por herança",
+        "rawMetric" : 0,
         "templateId" : "CONCRETE_CLASS_INDEGREE",
-        "value" : 0
+        "value" : 0.0
       } ],
       "score" : "BAIXO"
     },
@@ -52,16 +59,19 @@
     "S" : {
       "indicators" : [ {
         "detail" : "LCOM 0.2667 — 27% dos pares de métodos sem atributo em comum",
+        "rawMetric" : 0.26666666666666666,
         "templateId" : "LCOM_VALUE",
-        "value" : 0.26666666666666666
+        "value" : 0.14545454545454545
       }, {
         "detail" : "1 cluster de métodos na projeção — baixa evidência de responsabilidades separadas",
+        "rawMetric" : 1,
         "templateId" : "PROJECTION_CLUSTERS",
-        "value" : 1
+        "value" : 0.5454545454545454
       }, {
         "detail" : "4 de 8 métodos isolados (50%) — sem colaboração interna",
+        "rawMetric" : 0.5,
         "templateId" : "ISOLATED_METHODS_RATIO",
-        "value" : 0.5
+        "value" : 0.2727272727272727
       } ],
       "score" : "BAIXO"
     }

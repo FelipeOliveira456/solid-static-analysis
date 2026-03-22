@@ -14,8 +14,16 @@ target/
 
 # Generated scanner output (keep directory via output/.gitkeep)
 output/*.json
-# CLI --all default layout: sanitized path under output/ (machine-specific)
+# CLI --all from repo root: output/<project-name>/...; external abs paths: underscore segment
 output/__*/
+# common benchmark output roots
+output/bad-project/
+output/good-project/
+output/*_bad/
+output/*_good/
+
+# Never commit pipeline output nested inside benchmark trees
+benchmarks/**/output/
 
 # Speckit / Cursor tooling (not part of source tree)
 .cursor/

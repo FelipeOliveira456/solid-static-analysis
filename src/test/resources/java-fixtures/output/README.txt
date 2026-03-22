@@ -1,11 +1,15 @@
-Este diretório fica vazio no repositório (apenas este README).
+Snapshot de referência: scan, graphs/, algorithms/, scoring/ e results/ (Etapas 1–5).
+O `relaxFactor` nos JSON segue `scoring.relax.k` em `analysis.properties` na raiz do repo (atualmente k=100 para fixtures pequenos).
 
-Para regenerar scan + graphs + algorithms + scoring a partir dos *.java em ../ :
+Regenerar a partir dos *.java em ../ (na raiz do repositório solid-static-analysis, Louvain por defeito):
 
-  cd <raiz do solid-static-analysis>
   mvn -q package
   java -jar target/solid-static-analysis.jar --all "$(pwd)/src/test/resources/java-fixtures" \
-    --output "$(pwd)/src/test/resources/java-fixtures/output" --clustering
+    --output "$(pwd)/src/test/resources/java-fixtures/output"
 
-Os testes JUnit geram artefactos em target/java-fixtures-pipeline-cache/ (ou @TempDir) e não
-dependem de ficheiros commitados aqui.
+Para algoritmos sem Louvain (só métricas):
+
+  java -jar target/solid-static-analysis.jar --analyze "$(pwd)/src/test/resources/java-fixtures/output" --no-clustering
+
+Os testes JUnit geram artefactos em target/java-fixtures-pipeline-cache/ (ou @TempDir) quando
+aplicável.

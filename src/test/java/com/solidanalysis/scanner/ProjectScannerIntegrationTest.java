@@ -33,8 +33,8 @@ class ProjectScannerIntegrationTest {
 
         assertEquals(2, r.getSuccessCount());
         assertEquals(0, r.getFailureCount());
-        Path j1 = out.resolve("p1__A.json");
-        Path j2 = out.resolve("p2__B.json");
+        Path j1 = out.resolve("p1").resolve("A.json");
+        Path j2 = out.resolve("p2").resolve("B.json");
         assertTrue(Files.exists(j1));
         assertTrue(Files.exists(j2));
         assertTrue(Files.size(j1) > 0);

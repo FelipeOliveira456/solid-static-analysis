@@ -6,6 +6,7 @@ import com.solidanalysis.graphs.filter.TypeRelevanceFilter;
 import com.solidanalysis.graphs.internal.CallSignatureParser;
 import com.solidanalysis.graphs.internal.TypeNames;
 import com.solidanalysis.graphs.model.MethodSummary;
+import com.solidanalysis.graphs.model.PlacedArtifact;
 import com.solidanalysis.graphs.model.ParsedProject;
 import com.solidanalysis.graphs.model.TypeSummary;
 import java.io.IOException;
@@ -63,19 +64,25 @@ public final class G3MethodCallsGraphGenerator {
     }
 
     /**
-     * Writes one call graph per class under {@code outputDir}. Each file contains only methods from
-     * that class as call origins, but may include external target nodes/edges.
+     * Writes one call graph per class under {@code graphsRoot/<mirror>/g3_method_calls/}. Each file
+     * contains only methods from that class as call origins, but may include external target
+     * nodes/edges.
      */
-    public void writePerClass(Path outputDir, ParsedProject project) throws IOException {
-        Files.createDirectories(outputDir);
+    public void writePerClass(Path graphsRoot, ParsedProject project) throws IOException {
         Set<String> types = project.projectTypeNames();
         Set<String> methodKeys = project.projectMethodKeys();
 
-        for (TypeSummary type : project.typesInStableOrder()) {
+        for (PlacedArtifact pa : project.placedArtifacts()) {
+            TypeSummary type = pa.artifact().primaryType();
+            if (type == null) {
+                continue;
+            }
             String owner = type.name();
             if (!types.contains(owner)) {
                 continue;
             }
+            Path outDir = graphsRoot.resolve(pa.relativeOutputDir()).resolve("g3_method_calls");
+            Files.createDirectories(outDir);
             DirectedDotGraph g = new DirectedDotGraph("G3_" + owner);
             TreeSet<String> ownMethodKeys = new TreeSet<>();
             for (MethodSummary m : type.methods()) {
@@ -113,7 +120,7 @@ public final class G3MethodCallsGraphGenerator {
             for (Edge e : edges) {
                 g.addEdge(DotText.sanitizeId(e.from), DotText.sanitizeId(e.to), null);
             }
-            Path out = outputDir.resolve(safeFile(owner) + ".dot");
+            Path out = outDir.resolve(safeFile(owner) + ".dot");
             Files.writeString(out, g.toDot(), StandardCharsets.UTF_8);
         }
     }

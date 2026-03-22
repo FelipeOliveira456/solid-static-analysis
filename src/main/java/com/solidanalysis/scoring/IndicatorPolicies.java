@@ -23,11 +23,15 @@ public final class IndicatorPolicies {
     public static boolean isThresholdRelaxedContinuous(IndicatorTemplate t) {
         return switch (t) {
             case LCOM_VALUE,
+                    PROJECTION_CLUSTERS,
                     ISOLATED_METHODS_RATIO,
                     OUT_DEGREE_NORMALIZED,
                     CONCRETE_DEPENDENCY_RATIO,
                     IMPLEMENTS_COUNT,
-                    INHERITANCE_DEPTH -> true;
+                    INHERITANCE_DEPTH,
+                    CONCRETE_CLASS_INDEGREE,
+                    CONCRETE_SUBCLASS_COUNT,
+                    INSTANTIATION_COUNT -> true;
             default -> false;
         };
     }

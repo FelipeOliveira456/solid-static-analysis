@@ -48,7 +48,9 @@ class G3MethodCallsGraphGeneratorTest {
         Path outDir = tmp.resolve("g3");
         new G3MethodCallsGraphGenerator().writePerClass(outDir, p);
 
-        String aDot = Files.readString(outDir.resolve("A.dot"), StandardCharsets.UTF_8);
+        String aDot =
+                Files.readString(
+                        outDir.resolve("g3_method_calls").resolve("A.dot"), StandardCharsets.UTF_8);
         assertTrue(aDot.contains("A.m1"));
         assertTrue(aDot.contains("B.m2"));
         assertFalse(aDot.toLowerCase().contains("printstream"));
@@ -78,7 +80,9 @@ class G3MethodCallsGraphGeneratorTest {
 
         Path outDir = tmp.resolve("g3b");
         new G3MethodCallsGraphGenerator().writePerClass(outDir, p);
-        String s = Files.readString(outDir.resolve("A.dot"), StandardCharsets.UTF_8);
+        String s =
+                Files.readString(
+                        outDir.resolve("g3_method_calls").resolve("A.dot"), StandardCharsets.UTF_8);
         assertTrue(s.contains("A.build"));
         assertTrue(s.contains("B.<init>"));
     }

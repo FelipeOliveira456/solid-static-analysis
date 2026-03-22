@@ -3,21 +3,25 @@
   "classificationStrategy" : "FIXED_THRESHOLD_RELAXED",
   "overall" : "ALTO",
   "projectPath" : "/home/felipe/Documents/AS/solid-static-analysis/src/test/resources/java-fixtures/output",
+  "relativePath" : "",
   "relaxFactor" : 0.5454545454545454,
   "scores" : {
     "D" : {
       "indicators" : [ {
         "detail" : "instancia diretamente 3 classes concretas via new: ContaCorrente, ContaPoupanca, Relatorio",
+        "rawMetric" : 3,
         "templateId" : "INSTANTIATION_COUNT",
-        "value" : 3
+        "value" : 1.6363636363636362
       }, {
         "detail" : "depende de 9 de 6 classes do projeto (150%) — alto espalhamento de dependências",
+        "rawMetric" : 1.5,
         "templateId" : "OUT_DEGREE_NORMALIZED",
-        "value" : 1.5
+        "value" : 0.8181818181818181
       }, {
         "detail" : "100% das dependências são classes concretas — 3 de 3 (predominam dependências concretas)",
+        "rawMetric" : 1.0,
         "templateId" : "CONCRETE_DEPENDENCY_RATIO",
-        "value" : 1.0
+        "value" : 0.5454545454545454
       }, {
         "detail" : "out-centrality 1.800 — classe conhece grande parte do projeto",
         "templateId" : "G1_OUT_CENTRALITY",
@@ -28,20 +32,23 @@
     "I" : {
       "indicators" : [ {
         "detail" : "implementa 0 interfaces — escopo enxuto",
+        "rawMetric" : 0,
         "templateId" : "IMPLEMENTS_COUNT",
-        "value" : 0
+        "value" : 0.0
       } ],
       "score" : "BAIXO"
     },
     "L" : {
       "indicators" : [ {
         "detail" : "profundidade de herança da classe GerenciadorContas: 0",
+        "rawMetric" : 0,
         "templateId" : "INHERITANCE_DEPTH",
-        "value" : 0
+        "value" : 0.0
       }, {
         "detail" : "0 referências como superclasse concreta (G2) — baixo acoplamento por herança",
+        "rawMetric" : 0,
         "templateId" : "CONCRETE_CLASS_INDEGREE",
-        "value" : 0
+        "value" : 0.0
       } ],
       "score" : "BAIXO"
     },
@@ -56,14 +63,16 @@
         "value" : 0.0
       }, {
         "detail" : "5 clusters de métodos na projeção — possível divisão de responsabilidades",
+        "rawMetric" : 5,
         "templateId" : "PROJECTION_CLUSTERS",
-        "value" : 5
+        "value" : 2.727272727272727
       }, {
         "detail" : "2 de 9 métodos isolados (22%) — sem colaboração interna",
+        "rawMetric" : 0.2222222222222222,
         "templateId" : "ISOLATED_METHODS_RATIO",
-        "value" : 0.2222222222222222
+        "value" : 0.1212121212121212
       } ],
-      "score" : "ALTO"
+      "score" : "MEDIO"
     }
   }
 }

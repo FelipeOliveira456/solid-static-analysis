@@ -1,15 +1,17 @@
 {
   "class" : "Tributavel",
   "classificationStrategy" : "FIXED_THRESHOLD_RELAXED",
-  "overall" : "ALTO",
+  "overall" : "MEDIO",
   "projectPath" : "/home/felipe/Documents/AS/solid-static-analysis/src/test/resources/java-fixtures/output",
+  "relativePath" : "",
   "relaxFactor" : 0.5454545454545454,
   "scores" : {
     "D" : {
       "indicators" : [ {
         "detail" : "não instancia classes concretas via new",
+        "rawMetric" : 0,
         "templateId" : "INSTANTIATION_COUNT",
-        "value" : 0
+        "value" : 0.0
       }, {
         "detail" : "depende de 0 de 6 classes do projeto (0%) — baixo espalhamento de dependências",
         "templateId" : "OUT_DEGREE_NORMALIZED",
@@ -28,16 +30,18 @@
     "I" : {
       "indicators" : [ {
         "detail" : "implementa 0 interfaces — escopo enxuto",
+        "rawMetric" : 0,
         "templateId" : "IMPLEMENTS_COUNT",
-        "value" : 0
+        "value" : 0.0
       } ],
       "score" : "BAIXO"
     },
     "L" : {
       "indicators" : [ {
         "detail" : "profundidade de herança da classe Tributavel: 0",
+        "rawMetric" : 0,
         "templateId" : "INHERITANCE_DEPTH",
-        "value" : 0
+        "value" : 0.0
       } ],
       "score" : "BAIXO"
     },
@@ -52,14 +56,16 @@
         "value" : 0.0
       }, {
         "detail" : "0 clusters de métodos na projeção — baixa evidência de responsabilidades separadas",
+        "rawMetric" : 0,
         "templateId" : "PROJECTION_CLUSTERS",
-        "value" : 0
+        "value" : 0.0
       }, {
         "detail" : "2 de 2 métodos isolados (100%) — sem colaboração interna",
+        "rawMetric" : 1.0,
         "templateId" : "ISOLATED_METHODS_RATIO",
-        "value" : 1.0
+        "value" : 0.5454545454545454
       } ],
-      "score" : "ALTO"
+      "score" : "MEDIO"
     }
   }
 }

@@ -9,9 +9,11 @@ import com.solidanalysis.algorithms.model.G5AlgorithmsDocument;
 import com.solidanalysis.algorithms.model.G3AlgorithmsDocument;
 import com.solidanalysis.algorithms.model.G6AlgorithmsDocument;
 import com.solidanalysis.algorithms.model.G7AlgorithmsDocument;
+import com.solidanalysis.algorithms.runners.GraphFileMapper;
 import com.solidanalysis.graphs.GraphObjectMapper;
 import com.solidanalysis.graphs.io.ProjectJsonLoader;
 import com.solidanalysis.graphs.model.AstArtifact;
+import com.solidanalysis.graphs.model.PlacedArtifact;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -50,6 +52,10 @@ public final class ScoringArtifactReader {
         return ProjectJsonLoader.loadArtifacts(projectOutputDir);
     }
 
+    public List<PlacedArtifact> loadPlacedArtifacts(Path projectOutputDir) throws IOException {
+        return ProjectJsonLoader.loadPlacedArtifacts(projectOutputDir);
+    }
+
     public G1AlgorithmsDocument loadG1Algorithms(Path algorithmsDir) throws IOException {
         return mapper.readValue(algorithmsDir.resolve("g1_algorithms.json").toFile(), G1AlgorithmsDocument.class);
     }
@@ -66,25 +72,47 @@ public final class ScoringArtifactReader {
         return mapper.readValue(algorithmsDir.resolve("g6_algorithms.json").toFile(), G6AlgorithmsDocument.class);
     }
 
-    public G4FieldAlgorithmsDocument loadG4Field(Path algorithmsDir, String className) throws IOException {
-        Path p = algorithmsDir.resolve("g4_field_algorithms").resolve(className + ".json");
+    public G4FieldAlgorithmsDocument loadG4Field(Path algorithmsDir, Path mirror, String className)
+            throws IOException {
+        Path p =
+                algorithmsUnderMirror(algorithmsDir, mirror)
+                        .resolve("g4_field_algorithms")
+                        .resolve(className + ".json");
         return mapper.readValue(p.toFile(), G4FieldAlgorithmsDocument.class);
     }
 
-    public G4ProjectionAlgorithmsDocument loadG4Projection(Path algorithmsDir, String className)
-            throws IOException {
-        Path p = algorithmsDir.resolve("g4_projection_algorithms").resolve(className + ".json");
+    public G4ProjectionAlgorithmsDocument loadG4Projection(
+            Path algorithmsDir, Path mirror, String className) throws IOException {
+        Path p =
+                algorithmsUnderMirror(algorithmsDir, mirror)
+                        .resolve("g4_projection_algorithms")
+                        .resolve(className + ".json");
         return mapper.readValue(p.toFile(), G4ProjectionAlgorithmsDocument.class);
     }
 
-    public G3AlgorithmsDocument loadG3(Path algorithmsDir, String className) throws IOException {
-        Path p = algorithmsDir.resolve("g3_algorithms").resolve(className + ".json");
+    public G3AlgorithmsDocument loadG3(Path algorithmsDir, Path mirror, String className)
+            throws IOException {
+        Path p =
+                algorithmsUnderMirror(algorithmsDir, mirror)
+                        .resolve("g3_algorithms")
+                        .resolve(className + ".json");
         return mapper.readValue(p.toFile(), G3AlgorithmsDocument.class);
     }
 
-    public G7AlgorithmsDocument loadG7(Path algorithmsDir, String baseName) throws IOException {
-        Path p = algorithmsDir.resolve("g7_algorithms").resolve(baseName + ".json");
+    public G7AlgorithmsDocument loadG7(Path algorithmsDir, Path mirror, String baseName)
+            throws IOException {
+        Path p =
+                algorithmsUnderMirror(algorithmsDir, mirror)
+                        .resolve("g7_algorithms")
+                        .resolve(baseName + ".json");
         return mapper.readValue(p.toFile(), G7AlgorithmsDocument.class);
+    }
+
+    private static Path algorithmsUnderMirror(Path algorithmsDir, Path mirror) {
+        if (mirror == null || mirror.getNameCount() == 0) {
+            return algorithmsDir;
+        }
+        return algorithmsDir.resolve(mirror);
     }
 
     /**
@@ -216,22 +244,13 @@ public final class ScoringArtifactReader {
         return max;
     }
 
-    /** G7 JSON filenames under {@code graphs/g7_cfg} without extension, sorted. */
-    public List<String> listG7DotBasenames(Path graphsDir) throws IOException {
-        Path g7 = graphsDir.resolve("g7_cfg");
-        if (!Files.isDirectory(g7)) {
-            return List.of();
-        }
-        List<String> names = new ArrayList<>();
-        try (var s = Files.list(g7)) {
-            s.filter(p -> p.getFileName().toString().endsWith(".dot"))
-                    .sorted()
-                    .forEach(p -> {
-                        String n = p.getFileName().toString();
-                        names.add(n.substring(0, n.length() - ".dot".length()));
-                    });
-        }
-        return names;
+    /**
+     * All G7 CFG {@code .dot} files under {@code graphs/} (any {@code .../g7_cfg/*.dot}), with mirror
+     * path relative to {@code graphs/}.
+     */
+    public List<GraphFileMapper.MirroredDot> listG7MirroredDots(Path projectOutputDir)
+            throws IOException {
+        return new GraphFileMapper(projectOutputDir).listMirroredLayerDots("g7_cfg");
     }
 
     public static String classNameFromG7Base(String base) {

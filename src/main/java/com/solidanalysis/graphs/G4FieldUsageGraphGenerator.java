@@ -6,6 +6,7 @@ import com.solidanalysis.graphs.dot.DotText;
 import com.solidanalysis.graphs.filter.TypeRelevanceFilter;
 import com.solidanalysis.graphs.internal.TypeNames;
 import com.solidanalysis.graphs.model.MethodSummary;
+import com.solidanalysis.graphs.model.PlacedArtifact;
 import com.solidanalysis.graphs.model.ParsedProject;
 import com.solidanalysis.graphs.model.TypeSummary;
 import java.io.IOException;
@@ -82,15 +83,20 @@ public final class G4FieldUsageGraphGenerator {
         Files.writeString(outputFile, g.toDot(), StandardCharsets.UTF_8);
     }
 
-    /** Writes one field-usage graph per class into {@code outputDir}. */
-    public void writeFieldUsagePerClass(Path outputDir, ParsedProject project) throws IOException {
-        Files.createDirectories(outputDir);
+    /** Writes one field-usage graph per class under {@code graphsRoot/<mirror>/g4_field_usage/}. */
+    public void writeFieldUsagePerClass(Path graphsRoot, ParsedProject project) throws IOException {
         Set<String> types = project.projectTypeNames();
-        for (TypeSummary type : project.typesInStableOrder()) {
+        for (PlacedArtifact pa : project.placedArtifacts()) {
+            TypeSummary type = pa.artifact().primaryType();
+            if (type == null) {
+                continue;
+            }
             String owner = type.name();
             if (!types.contains(owner)) {
                 continue;
             }
+            Path outDir = graphsRoot.resolve(pa.relativeOutputDir()).resolve("g4_field_usage");
+            Files.createDirectories(outDir);
             DirectedDotGraph g = new DirectedDotGraph("G4_field_" + owner);
             TreeSet<String> methodNodes = new TreeSet<>();
             TreeSet<String> fieldNodes = new TreeSet<>();
@@ -113,19 +119,24 @@ public final class G4FieldUsageGraphGenerator {
                         e.access);
             }
             Files.writeString(
-                    outputDir.resolve(safeFile(owner) + ".dot"), g.toDot(), StandardCharsets.UTF_8);
+                    outDir.resolve(safeFile(owner) + ".dot"), g.toDot(), StandardCharsets.UTF_8);
         }
     }
 
-    /** Writes one method-projection graph per class into {@code outputDir}. */
-    public void writeMethodProjectionPerClass(Path outputDir, ParsedProject project) throws IOException {
-        Files.createDirectories(outputDir);
+    /** Writes one method-projection graph per class under {@code graphsRoot/<mirror>/g4_method_projection/}. */
+    public void writeMethodProjectionPerClass(Path graphsRoot, ParsedProject project) throws IOException {
         Set<String> types = project.projectTypeNames();
-        for (TypeSummary type : project.typesInStableOrder()) {
+        for (PlacedArtifact pa : project.placedArtifacts()) {
+            TypeSummary type = pa.artifact().primaryType();
+            if (type == null) {
+                continue;
+            }
             String owner = type.name();
             if (!types.contains(owner)) {
                 continue;
             }
+            Path outDir = graphsRoot.resolve(pa.relativeOutputDir()).resolve("g4_method_projection");
+            Files.createDirectories(outDir);
             TreeSet<Edge3> edges = collectPerOwner(types, owner, type.methods());
             Map<String, List<String>> fieldToMethods = new HashMap<>();
             for (Edge3 e : edges) {
@@ -153,7 +164,7 @@ public final class G4FieldUsageGraphGenerator {
                 g.addEdge(DotText.sanitizeId(e.from), DotText.sanitizeId(e.to), null);
             }
             Files.writeString(
-                    outputDir.resolve(safeFile(owner) + ".dot"), g.toDot(), StandardCharsets.UTF_8);
+                    outDir.resolve(safeFile(owner) + ".dot"), g.toDot(), StandardCharsets.UTF_8);
         }
     }
 

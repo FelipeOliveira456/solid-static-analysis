@@ -42,6 +42,8 @@ class SolidAnalysisCliTest {
         assertEquals(SolidAnalysisCli.EXIT_OK, code, err.toString(StandardCharsets.UTF_8));
         assertTrue(Files.exists(fixture.resolve("scoring").resolve("project_summary.json")));
         assertTrue(Files.exists(fixture.resolve("scoring").resolve("ContaCorrente.json")));
+        assertTrue(Files.exists(fixture.resolve("results").resolve("project_summary.txt")));
+        assertTrue(Files.exists(fixture.resolve("results").resolve("ContaCorrente.txt")));
     }
 
     @Test

@@ -9,7 +9,7 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>solid-static-analysis</name>
-    <description>Static analysis — AST scanner (001), DOT graphs (002), graph algorithms (003)</description>
+    <description>Static analysis pipeline: AST scan (JavaParser), Graphviz DOT graphs, JGraphT algorithms, SOLID scoring (thresholds + small-project relaxation)</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -87,6 +87,17 @@
                 <configuration>
                     <excludedGroups>${surefire.excludedGroups}</excludedGroups>
                     <forkedProcessTimeoutInSeconds>600</forkedProcessTimeoutInSeconds>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.6.3</version>
+                <configuration>
+                    <source>17</source>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <doclint>none</doclint>
+                    <quiet>true</quiet>
                 </configuration>
             </plugin>
             <plugin>

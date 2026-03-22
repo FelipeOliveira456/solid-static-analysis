@@ -48,12 +48,13 @@ public final class ProjectSummaryBuilder {
         sorted.sort(
                 Comparator.comparing(ClassScore::overall)
                         .reversed()
+                        .thenComparing(ClassScore::relativePath)
                         .thenComparing(ClassScore::className));
         List<ProjectSummary.RankingEntry> ranking = new ArrayList<>();
         for (ClassScore cs : sorted) {
             ranking.add(
                     new ProjectSummary.RankingEntry(
-                            cs.className(), cs.overall(), worstPrincipleLetter(cs)));
+                            cs.className(), cs.relativePath(), cs.overall(), worstPrincipleLetter(cs)));
         }
         return new ProjectSummary(projectPath, strategy, relaxFactor, mostViolated, dist, ranking);
     }

@@ -106,8 +106,7 @@ class GraphAlgorithmsPipelineSmokeTest {
                             "--all",
                             fixtureRoot.toString(),
                             "--output",
-                            out.toString(),
-                            "--clustering"
+                            out.toString()
                         },
                         new PrintStream(new ByteArrayOutputStream()),
                         new PrintStream(berr));
@@ -118,6 +117,37 @@ class GraphAlgorithmsPipelineSmokeTest {
         assertTrue(g1.get("clusters").isArray());
         assertTrue(
                 g1.get("clusters").size() >= 1,
-                "Louvain should produce at least one community on fixture G1");
+                "Louvain should produce at least one community on fixture G1 (default --all)");
+    }
+
+    @Test
+    void analyzeWithNoClusteringLeavesG1ClustersEmpty(@TempDir Path tmp) throws Exception {
+        Path graphs = tmp.resolve("graphs");
+        Files.createDirectories(graphs);
+        String tinyG1 =
+                """
+                digraph G1_tiny {
+                  a1 -> a2;
+                  a2 -> a3;
+                  a3 -> a1;
+                }
+                """;
+        Files.writeString(graphs.resolve("g1_dependency.dot"), tinyG1);
+        ByteArrayOutputStream berr = new ByteArrayOutputStream();
+        int code =
+                SolidAnalysisCli.run(
+                        new String[] {
+                            "--analyze",
+                            tmp.toAbsolutePath().toString(),
+                            "--no-clustering"
+                        },
+                        new PrintStream(new ByteArrayOutputStream()),
+                        new PrintStream(berr));
+        assertEquals(SolidAnalysisCli.EXIT_OK, code, berr.toString(StandardCharsets.UTF_8));
+        var root =
+                new ObjectMapper()
+                        .readTree(tmp.resolve("algorithms/g1_algorithms.json").toFile());
+        assertTrue(root.get("clusters").isArray());
+        assertEquals(0, root.get("clusters").size());
     }
 }

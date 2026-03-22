@@ -48,8 +48,9 @@ class G4FieldUsageGraphGeneratorTest {
         Path outDir = tmp.resolve("g4_field_usage");
         new G4FieldUsageGraphGenerator().writeFieldUsagePerClass(outDir, p);
 
-        String aDot = Files.readString(outDir.resolve("A.dot"), StandardCharsets.UTF_8);
-        String bDot = Files.readString(outDir.resolve("B.dot"), StandardCharsets.UTF_8);
+        Path layer = outDir.resolve("g4_field_usage");
+        String aDot = Files.readString(layer.resolve("A.dot"), StandardCharsets.UTF_8);
+        String bDot = Files.readString(layer.resolve("B.dot"), StandardCharsets.UTF_8);
         assertTrue(aDot.contains("A.run"));
         assertFalse(aDot.contains("B.pay"));
         assertTrue(bDot.contains("B.pay"));
@@ -99,8 +100,9 @@ class G4FieldUsageGraphGeneratorTest {
         Path projDir = tmp.resolve("g4_method_projection");
         new G4FieldUsageGraphGenerator().writeMethodProjectionPerClass(projDir, p);
 
-        String baseDot = Files.readString(projDir.resolve("ContaBancaria.dot"), StandardCharsets.UTF_8);
-        String childDot = Files.readString(projDir.resolve("ContaCorrente.dot"), StandardCharsets.UTF_8);
+        Path layer = projDir.resolve("g4_method_projection");
+        String baseDot = Files.readString(layer.resolve("ContaBancaria.dot"), StandardCharsets.UTF_8);
+        String childDot = Files.readString(layer.resolve("ContaCorrente.dot"), StandardCharsets.UTF_8);
 
         // one method per class => no projection edges; method–method projection is undirected
         assertTrue(baseDot.trim().startsWith("graph "));
@@ -135,7 +137,8 @@ class G4FieldUsageGraphGeneratorTest {
                 ParsedProject.fromArtifacts(List.of(new AstArtifact("/a.java", t)));
         Path out = tmp.resolve("g4_method_projection");
         new G4FieldUsageGraphGenerator().writeMethodProjectionPerClass(out, p);
-        String dot = Files.readString(out.resolve("A.dot"), StandardCharsets.UTF_8);
+        String dot =
+                Files.readString(out.resolve("g4_method_projection").resolve("A.dot"), StandardCharsets.UTF_8);
         assertTrue(dot.trim().startsWith("graph "));
         assertTrue(dot.contains(" -- "));
         assertFalse(dot.contains("->"));

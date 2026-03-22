@@ -70,7 +70,7 @@ public final class JavaFixturesPipeline {
         }
     }
 
-    /** Scan → graphs → analyze (Louvain clustering on, aligned with {@code --all --clustering}). */
+    /** Scan → graphs → analyze (Louvain on, aligned with default {@code --all} / {@code --analyze}). */
     public static void runThroughAnalyze(Path projectOut, Path repoRoot) throws Exception {
         runScan(projectOut, null);
         runGraphs(projectOut);

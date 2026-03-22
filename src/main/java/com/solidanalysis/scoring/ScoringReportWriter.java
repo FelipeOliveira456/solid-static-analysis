@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /** Writes {@code scoring/<Class>.json} and {@code project_summary.json}. */
 public final class ScoringReportWriter {
@@ -24,8 +25,12 @@ public final class ScoringReportWriter {
     }
 
     public void writeClassScore(Path scoringDir, ClassScore cs) throws IOException {
-        Files.createDirectories(scoringDir);
-        Path out = scoringDir.resolve(cs.className() + ".json");
+        Path dir = scoringDir;
+        if (!cs.relativePath().isEmpty()) {
+            dir = scoringDir.resolve(cs.relativePath());
+        }
+        Files.createDirectories(dir);
+        Path out = dir.resolve(cs.className() + ".json");
         mapper.writeValue(out.toFile(), toJsonMap(cs));
     }
 
@@ -38,6 +43,7 @@ public final class ScoringReportWriter {
     private static Map<String, Object> toJsonMap(ClassScore cs) {
         Map<String, Object> root = new LinkedHashMap<>();
         root.put("class", cs.className());
+        root.put("relativePath", cs.relativePath());
         root.put("classificationStrategy", cs.classificationStrategy().name());
         root.put("overall", cs.overall().name());
         root.put("projectPath", cs.projectPath());
@@ -58,6 +64,9 @@ public final class ScoringReportWriter {
             Map<String, Object> im = new LinkedHashMap<>();
             im.put("templateId", ir.templateId().jsonName());
             im.put("value", ir.value());
+            if (!Objects.equals(ir.rawMetric(), ir.value())) {
+                im.put("rawMetric", ir.rawMetric());
+            }
             im.put("detail", ir.detail());
             inds.add(im);
         }
@@ -76,6 +85,7 @@ public final class ScoringReportWriter {
         for (ProjectSummary.RankingEntry e : s.ranking()) {
             Map<String, Object> row = new LinkedHashMap<>();
             row.put("class", e.className());
+            row.put("relativePath", e.relativePath());
             row.put("overall", e.overall().name());
             row.put("worst", e.worst());
             rank.add(row);

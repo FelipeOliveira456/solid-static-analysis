@@ -3,21 +3,25 @@
   "classificationStrategy" : "FIXED_THRESHOLD_RELAXED",
   "overall" : "ALTO",
   "projectPath" : "/home/felipe/Documents/AS/solid-static-analysis/src/test/resources/java-fixtures/output",
+  "relativePath" : "",
   "relaxFactor" : 0.5454545454545454,
   "scores" : {
     "D" : {
       "indicators" : [ {
         "detail" : "não instancia classes concretas via new",
+        "rawMetric" : 0,
         "templateId" : "INSTANTIATION_COUNT",
-        "value" : 0
+        "value" : 0.0
       }, {
         "detail" : "depende de 1 de 6 classes do projeto (17%) — baixo espalhamento de dependências",
+        "rawMetric" : 0.16666666666666666,
         "templateId" : "OUT_DEGREE_NORMALIZED",
-        "value" : 0.16666666666666666
+        "value" : 0.0909090909090909
       }, {
         "detail" : "100% das dependências são classes concretas — 1 de 1 (predominam dependências concretas)",
+        "rawMetric" : 1.0,
         "templateId" : "CONCRETE_DEPENDENCY_RATIO",
-        "value" : 1.0
+        "value" : 0.5454545454545454
       }, {
         "detail" : "out-centrality 0.2000 — baixo alcance de dependências",
         "templateId" : "G1_OUT_CENTRALITY",
@@ -28,20 +32,23 @@
     "I" : {
       "indicators" : [ {
         "detail" : "implementa 1 interface — escopo enxuto",
+        "rawMetric" : 1,
         "templateId" : "IMPLEMENTS_COUNT",
-        "value" : 1
+        "value" : 0.5454545454545454
       } ],
       "score" : "BAIXO"
     },
     "L" : {
       "indicators" : [ {
         "detail" : "profundidade de herança da classe ContaPoupanca: 1",
+        "rawMetric" : 1,
         "templateId" : "INHERITANCE_DEPTH",
-        "value" : 1
+        "value" : 0.5454545454545454
       }, {
         "detail" : "0 referências como superclasse concreta (G2) — baixo acoplamento por herança",
+        "rawMetric" : 0,
         "templateId" : "CONCRETE_CLASS_INDEGREE",
-        "value" : 0
+        "value" : 0.0
       } ],
       "score" : "BAIXO"
     },
@@ -52,18 +59,21 @@
     "S" : {
       "indicators" : [ {
         "detail" : "LCOM 0.2667 — 27% dos pares de métodos sem atributo em comum",
+        "rawMetric" : 0.26666666666666666,
         "templateId" : "LCOM_VALUE",
-        "value" : 0.26666666666666666
+        "value" : 0.14545454545454545
       }, {
         "detail" : "2 clusters de métodos na projeção — possível divisão de responsabilidades",
+        "rawMetric" : 2,
         "templateId" : "PROJECTION_CLUSTERS",
-        "value" : 2
+        "value" : 1.0909090909090908
       }, {
         "detail" : "4 de 7 métodos isolados (57%) — sem colaboração interna",
+        "rawMetric" : 0.5714285714285714,
         "templateId" : "ISOLATED_METHODS_RATIO",
-        "value" : 0.5714285714285714
+        "value" : 0.3116883116883116
       } ],
-      "score" : "MEDIO"
+      "score" : "BAIXO"
     }
   }
 }

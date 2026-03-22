@@ -4,6 +4,7 @@ import com.solidanalysis.graphs.dot.DirectedDotGraph;
 import com.solidanalysis.graphs.dot.DotText;
 import com.solidanalysis.graphs.model.ControlFlowStatementSummary;
 import com.solidanalysis.graphs.model.MethodSummary;
+import com.solidanalysis.graphs.model.PlacedArtifact;
 import com.solidanalysis.graphs.model.ParsedProject;
 import com.solidanalysis.graphs.model.TypeSummary;
 import java.io.IOException;
@@ -20,10 +21,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** G7 — per-method simplified CFG as individual DOT files under {@code g7_cfg/}. */
 public final class G7CfgGraphGenerator {
 
-    public void writeAll(Path g7Dir, ParsedProject project) throws IOException {
-        Files.createDirectories(g7Dir);
-        for (TypeSummary type : project.typesInStableOrder()) {
+    public void writeAll(Path graphsRoot, ParsedProject project) throws IOException {
+        for (PlacedArtifact pa : project.placedArtifacts()) {
+            TypeSummary type = pa.artifact().primaryType();
+            if (type == null) {
+                continue;
+            }
             String owner = type.name();
+            Path g7Dir = graphsRoot.resolve(pa.relativeOutputDir()).resolve("g7_cfg");
+            Files.createDirectories(g7Dir);
             for (MethodSummary m : type.methods()) {
                 List<ControlFlowStatementSummary> cf = m.controlFlowStatements();
                 if (cf == null || cf.isEmpty()) {

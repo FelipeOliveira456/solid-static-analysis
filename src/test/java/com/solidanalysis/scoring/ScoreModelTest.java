@@ -44,6 +44,7 @@ class ScoreModelTest {
         ClassScore cs =
                 new ClassScore(
                         "Foo",
+                        "",
                         "/p",
                         ScoringStrategy.FIXED_THRESHOLD_RELAXED,
                         0.5,
@@ -56,8 +57,9 @@ class ScoreModelTest {
     @Test
     void projectSummaryRankingEntry() {
         ProjectSummary.RankingEntry e =
-                new ProjectSummary.RankingEntry("A", ScoreLevel.MEDIO, "O");
+                new ProjectSummary.RankingEntry("A", "", ScoreLevel.MEDIO, "O");
         assertEquals("A", e.className());
+        assertEquals("", e.relativePath());
         assertEquals(ScoreLevel.MEDIO, e.overall());
         assertEquals("O", e.worst());
     }

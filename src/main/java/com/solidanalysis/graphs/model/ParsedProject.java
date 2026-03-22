@@ -1,7 +1,9 @@
 package com.solidanalysis.graphs.model;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,32 +18,53 @@ import java.util.stream.Collectors;
 public final class ParsedProject {
 
     private final List<AstArtifact> artifacts;
+    private final List<PlacedArtifact> placedArtifacts;
     private final Set<String> projectTypeNames;
     private final Map<String, TypeSummary> typesBySimpleName;
 
     private ParsedProject(
             List<AstArtifact> artifacts,
+            List<PlacedArtifact> placedArtifacts,
             Set<String> projectTypeNames,
             Map<String, TypeSummary> typesBySimpleName) {
         this.artifacts = List.copyOf(artifacts);
+        this.placedArtifacts = List.copyOf(placedArtifacts);
         this.projectTypeNames = Set.copyOf(projectTypeNames);
         this.typesBySimpleName = Map.copyOf(typesBySimpleName);
     }
 
+    /** Legacy: every artifact treated as if its JSON lived at the project output root. */
     public static ParsedProject fromArtifacts(List<AstArtifact> artifacts) {
-        List<AstArtifact> normalized = new ArrayList<>();
+        List<PlacedArtifact> placed = new ArrayList<>();
         for (AstArtifact a : artifacts) {
-            normalized.add(normalizeArtifact(a));
+            placed.add(new PlacedArtifact(Path.of(""), a));
         }
+        return fromPlaced(placed);
+    }
+
+    /**
+     * Builds from scanner outputs with mirrored relative directories (parent of each {@code .json}
+     * under the project output).
+     */
+    public static ParsedProject fromPlaced(List<PlacedArtifact> raw) {
+        List<PlacedArtifact> placed = new ArrayList<>();
+        for (PlacedArtifact pa : raw) {
+            AstArtifact norm = normalizeArtifact(pa.artifact());
+            placed.add(new PlacedArtifact(pa.relativeOutputDir(), norm));
+        }
+        placed.sort(
+                Comparator.comparing(PlacedArtifact::relativeOutputDir)
+                        .thenComparing(PlacedArtifact::simpleTypeName));
+        List<AstArtifact> arts = placed.stream().map(PlacedArtifact::artifact).toList();
         Map<String, TypeSummary> byName = new LinkedHashMap<>();
-        for (AstArtifact a : normalized) {
-            TypeSummary t = a.primaryType();
+        for (PlacedArtifact pa : placed) {
+            TypeSummary t = pa.artifact().primaryType();
             if (t != null && t.name() != null) {
                 byName.put(t.name(), t);
             }
         }
         Set<String> names = byName.keySet().stream().collect(Collectors.toUnmodifiableSet());
-        return new ParsedProject(normalized, names, byName);
+        return new ParsedProject(arts, placed, names, byName);
     }
 
     private static AstArtifact normalizeArtifact(AstArtifact a) {
@@ -92,6 +115,11 @@ public final class ParsedProject {
         return artifacts;
     }
 
+    /** Placement order is stable (sorted by relative path + type name). */
+    public List<PlacedArtifact> placedArtifacts() {
+        return placedArtifacts;
+    }
+
     public Set<String> projectTypeNames() {
         return projectTypeNames;
     }
@@ -135,6 +163,6 @@ public final class ParsedProject {
     }
 
     public static ParsedProject empty() {
-        return new ParsedProject(List.of(), Set.of(), Map.of());
+        return new ParsedProject(List.of(), List.of(), Set.of(), Map.of());
     }
 }

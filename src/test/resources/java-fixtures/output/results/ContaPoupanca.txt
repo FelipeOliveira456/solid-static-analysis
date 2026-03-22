@@ -1,0 +1,32 @@
+================================================================================
+CLASSE: ContaPoupanca
+PROJETO: /home/felipe/Documents/AS/solid-static-analysis/src/test/resources/java-fixtures/output
+SCORE GERAL: ALTO
+ESTRATÉGIA: FIXED_THRESHOLD_RELAXED (fator de relaxamento: 0.5455)
+================================================================================
+
+O — Open/Closed: BAIXO
+  [ok] sem indicadores listados
+
+S — Single Responsibility: BAIXO
+  [ok] LCOM 0.2667 — 27% dos pares de métodos sem atributo em comum
+  [ok] 2 clusters de métodos na projeção — possível divisão de responsabilidades
+  [ok] 4 de 7 métodos isolados (57%) — sem colaboração interna
+
+L — Liskov Substitution: BAIXO
+  [ok] profundidade de herança da classe ContaPoupanca: 1
+  [ok] 0 referências como superclasse concreta (G2) — baixo acoplamento por herança
+
+I — Interface Segregation: BAIXO
+  [ok] implementa 1 interface — escopo enxuto
+
+D — Dependency Inversion: ALTO
+  [!] não instancia classes concretas via new
+  [!] depende de 1 de 6 classes do projeto (17%) — baixo espalhamento de dependências
+  [!] 100% das dependências são classes concretas — 1 de 1 (predominam dependências concretas)
+  [!] out-centrality 0.2000 — baixo alcance de dependências
+
+Legenda de símbolos:
+[!]  ALTO  — risco elevado, requer atenção
+[~]  MEDIO — risco moderado, avaliar
+[ok] BAIXO — sem risco identificado

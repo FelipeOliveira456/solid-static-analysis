@@ -8,12 +8,14 @@ import com.solidanalysis.algorithms.model.G4ProjectionAlgorithmsDocument;
 import com.solidanalysis.algorithms.model.G5AlgorithmsDocument;
 import com.solidanalysis.algorithms.model.G6AlgorithmsDocument;
 import com.solidanalysis.algorithms.model.G7AlgorithmsDocument;
-import com.solidanalysis.graphs.model.AstArtifact;
+import com.solidanalysis.algorithms.runners.GraphFileMapper;
+import com.solidanalysis.graphs.model.PlacedArtifact;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -53,25 +55,27 @@ public final class ScoringRunner {
         requireFile(graphs.resolve("g2_inheritance.dot"));
         requireFile(graphs.resolve("g5_interface_impl.dot"));
         requireFile(graphs.resolve("g6_interface_usage.dot"));
-        Path g7dir = graphs.resolve("g7_cfg");
-        if (!Files.isDirectory(g7dir)) {
-            throw new IOException("Missing graphs/g7_cfg directory: " + g7dir.toAbsolutePath());
-        }
-
         ScoringArtifactReader reader = new ScoringArtifactReader();
-        List<AstArtifact> artifacts = reader.loadAstArtifacts(projectOutputDir);
-        if (artifacts.isEmpty()) {
+        List<PlacedArtifact> placed = new ArrayList<>(reader.loadPlacedArtifacts(projectOutputDir));
+        placed.removeIf(pa -> pa.simpleTypeName().isEmpty());
+        placed.sort(Comparator.comparing(PlacedArtifact::slotKey));
+        if (placed.isEmpty()) {
             throw new IOException("No AST JSON files in project output root: " + projectOutputDir);
         }
-        List<String> classNames = ScoringArtifactReader.classNamesSorted(artifacts);
-        for (String cn : classNames) {
-            requireFile(algorithms.resolve("g4_field_algorithms").resolve(cn + ".json"));
-            requireFile(algorithms.resolve("g4_projection_algorithms").resolve(cn + ".json"));
-            requireFile(algorithms.resolve("g3_algorithms").resolve(cn + ".json"));
+        List<GraphFileMapper.MirroredDot> g7All = reader.listG7MirroredDots(projectOutputDir);
+        for (PlacedArtifact pa : placed) {
+            Path mirror = pa.relativeOutputDir();
+            String cn = pa.simpleTypeName();
+            requireFile(algorithmsUnderMirror(algorithms, mirror).resolve("g4_field_algorithms").resolve(cn + ".json"));
+            requireFile(
+                    algorithmsUnderMirror(algorithms, mirror)
+                            .resolve("g4_projection_algorithms")
+                            .resolve(cn + ".json"));
+            requireFile(algorithmsUnderMirror(algorithms, mirror).resolve("g3_algorithms").resolve(cn + ".json"));
         }
 
         ThresholdConfiguration thresholds = ThresholdConfiguration.load(repoRoot);
-        int n = classNames.size();
+        int n = placed.size();
         ScoringStrategy strategy =
                 n < 10 ? ScoringStrategy.FIXED_THRESHOLD_RELAXED : ScoringStrategy.Z_SCORE;
         double relaxF = RelaxedFixedClassification.relaxFactor(n, thresholds.relaxK());
@@ -90,14 +94,14 @@ public final class ScoringRunner {
         }
         knownIfaces.addAll(g5IfaceNodes);
 
-        Map<String, Boolean> abstractBy = ScoringArtifactReader.abstractByClass(artifacts);
+        Map<String, Boolean> abstractBy = abstractByClassFromPlaced(placed);
         int g1NodeCount = g1.outDegree == null ? 0 : g1.outDegree.size();
 
-        Map<String, List<ScoredInd>> sMap = newMaps(classNames);
-        Map<String, List<ScoredInd>> oMap = newMaps(classNames);
-        Map<String, List<ScoredInd>> lMap = newMaps(classNames);
-        Map<String, List<ScoredInd>> iMap = newMaps(classNames);
-        Map<String, List<ScoredInd>> dMap = newMaps(classNames);
+        Map<String, List<ScoredInd>> sMap = newMapsForPlaced(placed);
+        Map<String, List<ScoredInd>> oMap = newMapsForPlaced(placed);
+        Map<String, List<ScoredInd>> lMap = newMapsForPlaced(placed);
+        Map<String, List<ScoredInd>> iMap = newMapsForPlaced(placed);
+        Map<String, List<ScoredInd>> dMap = newMapsForPlaced(placed);
 
         Map<String, Double> lcomV = new LinkedHashMap<>();
         Map<String, Double> isoV = new LinkedHashMap<>();
@@ -114,55 +118,66 @@ public final class ScoringRunner {
 
         Map<String, Integer> subclassCount = subclassCounts(extendsMap, abstractBy);
 
-        for (String cn : classNames) {
-            G4FieldAlgorithmsDocument g4f = reader.loadG4Field(algorithms, cn);
-            G4ProjectionAlgorithmsDocument g4p = reader.loadG4Projection(algorithms, cn);
-            G3AlgorithmsDocument g3 = reader.loadG3(algorithms, cn);
+        for (PlacedArtifact pa : placed) {
+            Path mirror = pa.relativeOutputDir();
+            String cn = pa.simpleTypeName();
+            String sk = pa.slotKey();
+            G4FieldAlgorithmsDocument g4f = reader.loadG4Field(algorithms, mirror, cn);
+            G4ProjectionAlgorithmsDocument g4p = reader.loadG4Projection(algorithms, mirror, cn);
+            G3AlgorithmsDocument g3 = reader.loadG3(algorithms, mirror, cn);
 
             double lcom = g4f.lcom;
-            lcomV.put(cn, lcom);
+            lcomV.put(sk, lcom);
             int pctLcom = (int) Math.round(lcom * 100.0);
             add(
                     sMap,
-                    cn,
+                    sk,
                     IndicatorTemplate.LCOM_VALUE,
                     lcom,
                     IndicatorTemplate.formatLcomValue(lcom, pctLcom),
-                    classifyLcom(lcom, strategy, fixed, lcomV, cn, relaxF, thresholds));
+                    classifyLcom(lcom, strategy, fixed, lcomV, sk, relaxF, thresholds),
+                    strategy,
+                    relaxF);
 
             int pc = g4p.clusters == null ? 0 : g4p.clusters.size();
-            projV.put(cn, (double) pc);
+            projV.put(sk, (double) pc);
             add(
                     sMap,
-                    cn,
+                    sk,
                     IndicatorTemplate.PROJECTION_CLUSTERS,
                     pc,
                     IndicatorTemplate.formatProjectionClusters(pc),
-                    classifyProj(pc, strategy, fixed, projV, cn));
+                    classifyProj(pc, strategy, fixed, projV, sk, relaxF, thresholds),
+                    strategy,
+                    relaxF);
 
             int isoN = g3.isolatedNodes == null ? 0 : g3.isolatedNodes.size();
             int inDegKeys = g3.inDegree == null ? 0 : g3.inDegree.size();
             double isoRatio = inDegKeys == 0 ? 0.0 : (double) isoN / inDegKeys;
-            isoV.put(cn, isoRatio);
+            isoV.put(sk, isoRatio);
             int isoPct = inDegKeys == 0 ? 0 : (int) Math.round(100.0 * isoN / inDegKeys);
             add(
                     sMap,
-                    cn,
+                    sk,
                     IndicatorTemplate.ISOLATED_METHODS_RATIO,
                     isoRatio,
                     IndicatorTemplate.formatIsolatedMethodsRatio(isoN, inDegKeys, isoPct),
-                    classifyIso(isoRatio, strategy, fixed, isoV, cn, relaxF, thresholds));
+                    classifyIso(isoRatio, strategy, fixed, isoV, sk, relaxF, thresholds),
+                    strategy,
+                    relaxF);
 
             if (g3.stronglyConnectedComponents != null) {
                 for (List<String> comp : g3.stronglyConnectedComponents) {
                     if (comp != null && comp.size() > 1) {
                         add(
                                 sMap,
-                                cn,
+                                sk,
                                 IndicatorTemplate.G3_SCC_CYCLE,
                                 comp.size(),
                                 IndicatorTemplate.formatG3SccCycle(comp),
-                                ScoreLevel.ALTO);
+                                ScoreLevel.ALTO,
+                                strategy,
+                                relaxF);
                         break;
                     }
                 }
@@ -170,16 +185,20 @@ public final class ScoringRunner {
 
             int swMax = 0;
             String swMethod = "";
-            for (String base : reader.listG7DotBasenames(graphs)) {
+            for (GraphFileMapper.MirroredDot md : g7All) {
+                if (!md.mirrorRelativeToGraphs().normalize().equals(mirror.normalize())) {
+                    continue;
+                }
+                String base = md.fileStem();
                 if (!ScoringArtifactReader.classNameFromG7Base(base).equals(cn)) {
                     continue;
                 }
-                Path dot = g7dir.resolve(base + ".dot");
+                Path dot = md.dotFile();
                 int fan = reader.parseG7MaxSwitchFanout(dot);
                 if (fan <= 0) {
                     continue;
                 }
-                G7AlgorithmsDocument g7j = reader.loadG7(algorithms, base);
+                G7AlgorithmsDocument g7j = reader.loadG7(algorithms, mirror, base);
                 if (g7j.maxDecisionOutDegree <= 0) {
                     continue;
                 }
@@ -188,15 +207,17 @@ public final class ScoringRunner {
                     swMethod = ScoringArtifactReader.methodNameFromG7Base(base);
                 }
             }
-            swV.put(cn, (double) swMax);
+            swV.put(sk, (double) swMax);
             if (swMax > 0) {
                 add(
                         oMap,
-                        cn,
+                        sk,
                         IndicatorTemplate.SWITCH_CASES,
                         swMax,
                         IndicatorTemplate.formatSwitchCases(swMax, swMethod),
-                        classifySwitch(swMax, strategy, fixed, swV, cn));
+                        classifySwitch(swMax, strategy, fixed, swV, sk),
+                        strategy,
+                        relaxF);
             }
 
             String parent = extendsMap.get(cn);
@@ -205,115 +226,135 @@ public final class ScoringRunner {
                     && !Boolean.TRUE.equals(abstractBy.get(cn))) {
                 add(
                         oMap,
-                        cn,
+                        sk,
                         IndicatorTemplate.EXTENDS_CONCRETE,
                         1,
                         IndicatorTemplate.formatExtendsConcrete(parent),
-                        ScoreLevel.ALTO);
+                        ScoreLevel.ALTO,
+                        strategy,
+                        relaxF);
             }
 
             int depth =
                     g2.maxDepthFromRootEdges == null ? 0 : g2.maxDepthFromRootEdges.getOrDefault(cn, 0);
-            depthV.put(cn, (double) depth);
+            depthV.put(sk, (double) depth);
             add(
                     lMap,
-                    cn,
+                    sk,
                     IndicatorTemplate.INHERITANCE_DEPTH,
                     depth,
                     IndicatorTemplate.formatInheritanceDepth(depth, cn),
-                    classifyDepth(depth, strategy, fixed, depthV, cn, relaxF, thresholds));
+                    classifyDepth(depth, strategy, fixed, depthV, sk, relaxF, thresholds),
+                    strategy,
+                    relaxF);
 
             if (!Boolean.TRUE.equals(abstractBy.get(cn))) {
                 int indeg = g2.inDegree == null ? 0 : g2.inDegree.getOrDefault(cn, 0);
-                ciV.put(cn, (double) indeg);
+                ciV.put(sk, (double) indeg);
                 add(
                         lMap,
-                        cn,
+                        sk,
                         IndicatorTemplate.CONCRETE_CLASS_INDEGREE,
                         indeg,
                         IndicatorTemplate.formatConcreteClassIndegree(indeg),
-                        classifyConcIndeg(indeg, strategy, fixed, ciV, cn));
+                        classifyConcIndeg(indeg, strategy, fixed, ciV, sk, relaxF, thresholds),
+                        strategy,
+                        relaxF);
             }
 
             int subN = subclassCount.getOrDefault(cn, 0);
-            subV.put(cn, (double) subN);
+            subV.put(sk, (double) subN);
             if (subN > 0 && !Boolean.TRUE.equals(abstractBy.get(cn))) {
                 add(
                         lMap,
-                        cn,
+                        sk,
                         IndicatorTemplate.CONCRETE_SUBCLASS_COUNT,
                         subN,
                         IndicatorTemplate.formatConcreteSubclassCount(subN, cn),
-                        classifyConcIndeg(subN, strategy, fixed, subV, cn));
+                        classifyConcIndeg(subN, strategy, fixed, subV, sk, relaxF, thresholds),
+                        strategy,
+                        relaxF);
             }
 
             int impl =
                     g5.classOutDegree == null ? 0 : g5.classOutDegree.getOrDefault(cn, 0);
-            implV.put(cn, (double) impl);
+            implV.put(sk, (double) impl);
             add(
                     iMap,
-                    cn,
+                    sk,
                     IndicatorTemplate.IMPLEMENTS_COUNT,
                     impl,
                     IndicatorTemplate.formatImplementsCount(impl),
-                    classifyImpl(impl, strategy, fixed, implV, cn, relaxF, thresholds));
+                    classifyImpl(impl, strategy, fixed, implV, sk, relaxF, thresholds),
+                    strategy,
+                    relaxF);
 
             int inst = instOut.getOrDefault(cn, 0);
-            instV.put(cn, (double) inst);
+            instV.put(sk, (double) inst);
             List<String> instTargets = instantiationTargets(g1Dot, cn);
             add(
                     dMap,
-                    cn,
+                    sk,
                     IndicatorTemplate.INSTANTIATION_COUNT,
                     inst,
                     IndicatorTemplate.formatInstantiationCount(inst, instTargets),
-                    classifyInst(inst, strategy, fixed, instV, cn));
+                    classifyInst(inst, strategy, fixed, instV, sk, relaxF, thresholds),
+                    strategy,
+                    relaxF);
 
             int od = g1.outDegree == null ? 0 : g1.outDegree.getOrDefault(cn, 0);
             double onorm = g1NodeCount == 0 ? 0.0 : (double) od / g1NodeCount;
-            onormV.put(cn, onorm);
+            onormV.put(sk, onorm);
             int onPct = g1NodeCount == 0 ? 0 : (int) Math.round(100.0 * od / g1NodeCount);
             add(
                     dMap,
-                    cn,
+                    sk,
                     IndicatorTemplate.OUT_DEGREE_NORMALIZED,
                     onorm,
                     IndicatorTemplate.formatOutDegreeNormalized(od, g1NodeCount, onPct),
-                    classifyOnorm(onorm, strategy, fixed, onormV, cn, relaxF, thresholds));
+                    classifyOnorm(onorm, strategy, fixed, onormV, sk, relaxF, thresholds),
+                    strategy,
+                    relaxF);
 
             int[] cdc = concreteDepCounts(reader, g1Dot, cn, knownIfaces);
             double cdr = cdc[1] == 0 ? 0.0 : (double) cdc[0] / cdc[1];
-            cdrV.put(cn, cdr);
+            cdrV.put(sk, cdr);
             int cPct = cdc[1] == 0 ? 0 : (int) Math.round(100.0 * cdc[0] / cdc[1]);
             add(
                     dMap,
-                    cn,
+                    sk,
                     IndicatorTemplate.CONCRETE_DEPENDENCY_RATIO,
                     cdr,
                     IndicatorTemplate.formatConcreteDependencyRatio(cPct, cdc[0], cdc[1]),
-                    classifyCdr(cdr, strategy, fixed, cdrV, cn, relaxF, thresholds));
+                    classifyCdr(cdr, strategy, fixed, cdrV, sk, relaxF, thresholds),
+                    strategy,
+                    relaxF);
 
             double oc =
                     g1.outCentrality == null ? 0.0 : g1.outCentrality.getOrDefault(cn, 0.0);
-            ocentV.put(cn, oc);
+            ocentV.put(sk, oc);
             add(
                     dMap,
-                    cn,
+                    sk,
                     IndicatorTemplate.G1_OUT_CENTRALITY,
                     oc,
                     IndicatorTemplate.formatG1OutCentrality(oc),
-                    classifyCentrality(oc, strategy, fixed, ocentV, cn, thresholds));
+                    classifyCentrality(oc, strategy, fixed, ocentV, sk, thresholds),
+                    strategy,
+                    relaxF);
 
             if (g1.stronglyConnectedComponents != null) {
                 for (List<String> comp : g1.stronglyConnectedComponents) {
                     if (comp != null && comp.contains(cn) && comp.size() > 1) {
                         add(
                                 dMap,
-                                cn,
+                                sk,
                                 IndicatorTemplate.G1_CYCLE,
                                 comp.size(),
                                 IndicatorTemplate.formatG1Cycle(comp),
-                                ScoreLevel.ALTO);
+                                ScoreLevel.ALTO,
+                                strategy,
+                                relaxF);
                         break;
                     }
                 }
@@ -322,42 +363,49 @@ public final class ScoringRunner {
 
         if (g5.interfacesWithZeroInDegree != null) {
             for (String iface : g5.interfacesWithZeroInDegree) {
-                for (String cn : classNames) {
+                for (PlacedArtifact pa : placed) {
                     add(
                             iMap,
-                            cn,
+                            pa.slotKey(),
                             IndicatorTemplate.INTERFACE_ZERO_INDEGREE_IMPL,
                             iface,
                             IndicatorTemplate.formatInterfaceZeroIndegreeImpl(iface),
-                            ScoreLevel.ALTO);
+                            ScoreLevel.ALTO,
+                            strategy,
+                            relaxF);
                 }
             }
         }
         if (g6.interfacesWithZeroInDegree != null) {
             for (String iface : g6.interfacesWithZeroInDegree) {
-                for (String cn : classNames) {
+                for (PlacedArtifact pa : placed) {
                     add(
                             iMap,
-                            cn,
+                            pa.slotKey(),
                             IndicatorTemplate.INTERFACE_ZERO_INDEGREE_USAGE,
                             iface,
                             IndicatorTemplate.formatInterfaceZeroIndegreeUsage(iface),
-                            ScoreLevel.ALTO);
+                            ScoreLevel.ALTO,
+                            strategy,
+                            relaxF);
                 }
             }
         }
 
         String projectPath = projectOutputDir.toAbsolutePath().normalize().toString();
         List<ClassScore> outClasses = new ArrayList<>();
-        for (String cn : classNames) {
+        for (PlacedArtifact pa : placed) {
+            String sk = pa.slotKey();
+            String cn = pa.simpleTypeName();
+            String rel = mirrorToString(pa.relativeOutputDir());
             Map<String, PrincipleScore> pmap = new LinkedHashMap<>();
             ScoreLevel overall = ScoreLevel.BAIXO;
-            overall = ScoreLevel.worst(overall, finishPrinciple(pmap, "S", sMap.get(cn), n));
-            overall = ScoreLevel.worst(overall, finishPrinciple(pmap, "O", oMap.get(cn), n));
-            overall = ScoreLevel.worst(overall, finishPrinciple(pmap, "L", lMap.get(cn), n));
-            overall = ScoreLevel.worst(overall, finishPrinciple(pmap, "I", iMap.get(cn), n));
-            overall = ScoreLevel.worst(overall, finishPrinciple(pmap, "D", dMap.get(cn), n));
-            outClasses.add(new ClassScore(cn, projectPath, strategy, relaxF, pmap, overall));
+            overall = ScoreLevel.worst(overall, finishPrinciple(pmap, "S", sMap.get(sk), n));
+            overall = ScoreLevel.worst(overall, finishPrinciple(pmap, "O", oMap.get(sk), n));
+            overall = ScoreLevel.worst(overall, finishPrinciple(pmap, "L", lMap.get(sk), n));
+            overall = ScoreLevel.worst(overall, finishPrinciple(pmap, "I", iMap.get(sk), n));
+            overall = ScoreLevel.worst(overall, finishPrinciple(pmap, "D", dMap.get(sk), n));
+            outClasses.add(new ClassScore(cn, rel, projectPath, strategy, relaxF, pmap, overall));
         }
 
         Path scoringDir = projectOutputDir.resolve("scoring");
@@ -368,24 +416,58 @@ public final class ScoringRunner {
         ProjectSummary summary =
                 ProjectSummaryBuilder.build(projectPath, strategy, relaxF, outClasses);
         writer.writeProjectSummary(scoringDir, summary);
+
+        Path resultsDir = projectOutputDir.resolve("results");
+        HumanReadableResultsWriter humanWriter = new HumanReadableResultsWriter();
+        humanWriter.writeClassReports(resultsDir, outClasses);
+        humanWriter.writeProjectSummary(resultsDir, summary);
     }
 
-    private static Map<String, List<ScoredInd>> newMaps(List<String> classNames) {
+    private static Map<String, List<ScoredInd>> newMapsForPlaced(List<PlacedArtifact> placed) {
         Map<String, List<ScoredInd>> m = new LinkedHashMap<>();
-        for (String cn : classNames) {
-            m.put(cn, new ArrayList<>());
+        for (PlacedArtifact pa : placed) {
+            m.put(pa.slotKey(), new ArrayList<>());
+        }
+        return m;
+    }
+
+    private static Path algorithmsUnderMirror(Path algorithms, Path mirror) {
+        if (mirror == null || mirror.getNameCount() == 0) {
+            return algorithms;
+        }
+        return algorithms.resolve(mirror);
+    }
+
+    private static String mirrorToString(Path mirror) {
+        if (mirror == null || mirror.getNameCount() == 0) {
+            return "";
+        }
+        return mirror.toString().replace('\\', '/');
+    }
+
+    private static Map<String, Boolean> abstractByClassFromPlaced(List<PlacedArtifact> placed) {
+        Map<String, Boolean> m = new LinkedHashMap<>();
+        for (PlacedArtifact pa : placed) {
+            var pt = pa.artifact().primaryType();
+            if (pt != null && pt.name() != null) {
+                m.put(pt.name(), pt.abstractType());
+            }
         }
         return m;
     }
 
     private static void add(
             Map<String, List<ScoredInd>> map,
-            String cn,
+            String slotKey,
             IndicatorTemplate t,
-            Object value,
+            Object rawMetric,
             String detail,
-            ScoreLevel level) {
-        map.get(cn).add(new ScoredInd(new IndicatorResult(t, value, detail), level));
+            ScoreLevel level,
+            ScoringStrategy strategy,
+            double relaxF) {
+        Object jsonValue = RelaxationValueScaling.scaledValueForJson(t, rawMetric, strategy, relaxF);
+        map.get(slotKey)
+                .add(new ScoredInd(new IndicatorResult(t, rawMetric, jsonValue, detail), level));
     }
 
     private static ScoreLevel finishPrinciple(
@@ -533,11 +615,13 @@ public final class ScoringRunner {
             ScoringStrategy st,
             ClassificationService fixed,
             Map<String, Double> all,
-            String cn) {
+            String cn,
+            double relaxF,
+            ThresholdConfiguration thresholds) {
         if (st == ScoringStrategy.Z_SCORE) {
             return zClassify((double) v, all, cn);
         }
-        return fixed.classifyProjectionClusters(v);
+        return RelaxedFixedClassification.classifyProjectionClusters(v, relaxF, thresholds);
     }
 
     private static ScoreLevel classifyIso(
@@ -585,11 +669,13 @@ public final class ScoringRunner {
             ScoringStrategy st,
             ClassificationService fixed,
             Map<String, Double> all,
-            String cn) {
+            String cn,
+            double relaxF,
+            ThresholdConfiguration thresholds) {
         if (st == ScoringStrategy.Z_SCORE) {
             return zClassify((double) v, all, cn);
         }
-        return fixed.classifyConcreteIndegree(v);
+        return RelaxedFixedClassification.classifyConcreteIndegree(v, relaxF, thresholds);
     }
 
     private static ScoreLevel classifyImpl(
@@ -611,11 +697,13 @@ public final class ScoringRunner {
             ScoringStrategy st,
             ClassificationService fixed,
             Map<String, Double> all,
-            String cn) {
+            String cn,
+            double relaxF,
+            ThresholdConfiguration thresholds) {
         if (st == ScoringStrategy.Z_SCORE) {
             return zClassify((double) v, all, cn);
         }
-        return fixed.classifyInstantiations(v);
+        return RelaxedFixedClassification.classifyInstantiations(v, relaxF, thresholds);
     }
 
     private static ScoreLevel classifyOnorm(

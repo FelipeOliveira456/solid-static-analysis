@@ -23,36 +23,42 @@
       "MEDIO" : 0
     },
     "S" : {
-      "ALTO" : 3,
-      "BAIXO" : 2,
-      "MEDIO" : 1
+      "ALTO" : 0,
+      "BAIXO" : 3,
+      "MEDIO" : 3
     }
   },
   "projectPath" : "/home/felipe/Documents/AS/solid-static-analysis/src/test/resources/java-fixtures/output",
   "ranking" : [ {
-    "class" : "ContaBancaria",
-    "overall" : "ALTO",
-    "worst" : "S"
-  }, {
     "class" : "ContaCorrente",
     "overall" : "ALTO",
+    "relativePath" : "",
     "worst" : "D"
   }, {
     "class" : "ContaPoupanca",
     "overall" : "ALTO",
+    "relativePath" : "",
     "worst" : "D"
   }, {
     "class" : "GerenciadorContas",
     "overall" : "ALTO",
+    "relativePath" : "",
     "worst" : "D"
   }, {
-    "class" : "Tributavel",
-    "overall" : "ALTO",
+    "class" : "ContaBancaria",
+    "overall" : "MEDIO",
+    "relativePath" : "",
     "worst" : "S"
   }, {
     "class" : "Relatorio",
     "overall" : "MEDIO",
+    "relativePath" : "",
     "worst" : "D"
+  }, {
+    "class" : "Tributavel",
+    "overall" : "MEDIO",
+    "relativePath" : "",
+    "worst" : "S"
   } ],
   "relaxFactor" : 0.5454545454545454
 }

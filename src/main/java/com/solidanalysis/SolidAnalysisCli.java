@@ -42,8 +42,7 @@ public final class SolidAnalysisCli {
             return runGraphs(args[1], err);
         }
         if (args.length >= 2 && "--analyze".equals(args[0])) {
-            boolean clustering = Arrays.asList(args).contains("--clustering");
-            return runAnalyze(args[1], out, err, clustering);
+            return runAnalyzeWithArgs(args, out, err);
         }
         if (args.length == 2 && "--score".equals(args[0])) {
             return runScore(args[1], err);
@@ -57,10 +56,11 @@ public final class SolidAnalysisCli {
         err.println(
                 "Usage: java -jar solid-static-analysis.jar <ABS_ROOT_DIR>\n"
                         + "   or: java -jar solid-static-analysis.jar --graphs <ABS_PROJECT_JSON_DIR>\n"
-                        + "   or: java -jar solid-static-analysis.jar --analyze <ABS_PROJECT_OUTPUT_DIR> [--clustering]\n"
+                        + "   or: java -jar solid-static-analysis.jar --analyze <ABS_PROJECT_OUTPUT_DIR> [--no-clustering]\n"
                         + "   or: java -jar solid-static-analysis.jar --score <ABS_PROJECT_OUTPUT_DIR>\n"
-                        + "   or: java -jar solid-static-analysis.jar --all <ABS_PROJECT_ROOT_DIR> [--output <ABS_PROJECT_OUTPUT_DIR>] [--clustering]\n"
-                        + "   or: java -jar solid-static-analysis.jar --all --output <ABS_PROJECT_OUTPUT_DIR> <ABS_PROJECT_ROOT_DIR> [--clustering]");
+                        + "   or: java -jar solid-static-analysis.jar --all <ABS_PROJECT_ROOT_DIR> [--output <ABS_PROJECT_OUTPUT_DIR>] [--no-clustering]\n"
+                        + "   or: java -jar solid-static-analysis.jar --all --output <ABS_PROJECT_OUTPUT_DIR> <ABS_PROJECT_ROOT_DIR> [--no-clustering]\n"
+                        + "   (Louvain clustering in --analyze / --all is ON by default; --clustering is a no-op retained for compatibility.)");
         return EXIT_ERROR;
     }
 
@@ -81,6 +81,28 @@ public final class SolidAnalysisCli {
         return projectDir;
     }
 
+    /** Parses {@code --analyze <DIR> [--no-clustering|--clustering]}; Louvain defaults to on. */
+    private static int runAnalyzeWithArgs(String[] args, PrintStream out, PrintStream err) {
+        if (args.length < 2) {
+            err.println("Missing directory for --analyze");
+            return EXIT_ERROR;
+        }
+        String dirArg = args[1];
+        boolean clustering = true;
+        for (int i = 2; i < args.length; i++) {
+            String a = args[i];
+            if ("--no-clustering".equals(a)) {
+                clustering = false;
+            } else if ("--clustering".equals(a)) {
+                clustering = true;
+            } else {
+                err.println("Unknown option for --analyze: " + a);
+                return EXIT_ERROR;
+            }
+        }
+        return runAnalyze(dirArg, out, err, clustering);
+    }
+
     private static int runScore(String dirArg, PrintStream err) {
         Path projectDir = requireAbsoluteExistingDir(dirArg, err);
         if (projectDir == null) {
@@ -96,7 +118,7 @@ public final class SolidAnalysisCli {
     private static AllOptions parseAllOptions(String[] args, PrintStream err) {
         Path root = null;
         Path explicitOut = null;
-        boolean clustering = false;
+        boolean clustering = true;
         for (int i = 1; i < args.length; i++) {
             String a = args[i];
             if ("--output".equals(a)) {
@@ -110,6 +132,8 @@ public final class SolidAnalysisCli {
                     return null;
                 }
                 explicitOut = outDir;
+            } else if ("--no-clustering".equals(a)) {
+                clustering = false;
             } else if ("--clustering".equals(a)) {
                 clustering = true;
             } else if (a.startsWith("--")) {
@@ -183,7 +207,7 @@ public final class SolidAnalysisCli {
         }
         if (!girvanNewmanClustering) {
             out.println(
-                    "Note: Louvain clustering was skipped; add --clustering to --all or use --analyze ... --clustering.");
+                    "Note: Louvain clustering was disabled (--no-clustering); cluster fields may be empty.");
         }
 
         Path repoRoot = Paths.get(System.getProperty("user.dir"));
@@ -204,7 +228,7 @@ public final class SolidAnalysisCli {
         handler.printWarnings(err);
         if (ok && !girvanNewmanClustering) {
             out.println(
-                    "Note: Louvain clustering was skipped; add flag --clustering to compute it.");
+                    "Note: Louvain clustering was disabled (--no-clustering); cluster fields may be empty.");
         }
         return ok ? EXIT_OK : EXIT_ERROR;
     }

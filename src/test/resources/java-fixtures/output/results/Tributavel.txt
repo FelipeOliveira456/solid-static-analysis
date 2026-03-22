@@ -1,0 +1,31 @@
+================================================================================
+CLASSE: Tributavel
+PROJETO: /home/felipe/Documents/AS/solid-static-analysis/src/test/resources/java-fixtures/output
+SCORE GERAL: MEDIO
+ESTRATÉGIA: FIXED_THRESHOLD_RELAXED (fator de relaxamento: 0.5455)
+================================================================================
+
+O — Open/Closed: BAIXO
+  [ok] sem indicadores listados
+
+S — Single Responsibility: MEDIO
+  [~] LCOM 0 — 0% dos pares de métodos sem atributo em comum
+  [~] 0 clusters de métodos na projeção — baixa evidência de responsabilidades separadas
+  [~] 2 de 2 métodos isolados (100%) — sem colaboração interna
+
+L — Liskov Substitution: BAIXO
+  [ok] profundidade de herança da classe Tributavel: 0
+
+I — Interface Segregation: BAIXO
+  [ok] implementa 0 interfaces — escopo enxuto
+
+D — Dependency Inversion: BAIXO
+  [ok] não instancia classes concretas via new
+  [ok] depende de 0 de 6 classes do projeto (0%) — baixo espalhamento de dependências
+  [ok] sem dependências de saída para medir razão entre concreto e abstração
+  [ok] out-centrality 0 — baixo alcance de dependências
+
+Legenda de símbolos:
+[!]  ALTO  — risco elevado, requer atenção
+[~]  MEDIO — risco moderado, avaliar
+[ok] BAIXO — sem risco identificado

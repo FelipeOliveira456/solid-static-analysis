@@ -62,7 +62,7 @@ class ProjectSummaryBuilderTest {
             overall = ScoreLevel.worst(overall, ps.score());
         }
         return new ClassScore(
-                name, "/p", ScoringStrategy.FIXED_THRESHOLD, 1.0, m, overall);
+                name, "", "/p", ScoringStrategy.FIXED_THRESHOLD, 1.0, m, overall);
     }
 
     private static PrincipleScore letter(String p, ScoreLevel level) {
