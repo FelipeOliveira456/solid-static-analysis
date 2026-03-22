@@ -187,6 +187,27 @@ public final class ScoringArtifactReader {
     }
 
     /**
+     * For each interface node in G5, the set of class simple names with a directed edge {@code
+     * class -> interface} (implements).
+     */
+    public Map<String, Set<String>> parseG5InterfaceImplementors(Path g5Dot) throws IOException {
+        Set<String> ifaces = parseG5EllipseInterfaces(g5Dot);
+        Map<String, Set<String>> out = new LinkedHashMap<>();
+        for (String line : Files.readAllLines(g5Dot, StandardCharsets.UTF_8)) {
+            Matcher m = EDGE.matcher(line.trim());
+            if (!m.matches()) {
+                continue;
+            }
+            String from = m.group(1);
+            String to = m.group(2);
+            if (ifaces.contains(to)) {
+                out.computeIfAbsent(to, k -> new LinkedHashSet<>()).add(from);
+            }
+        }
+        return out;
+    }
+
+    /**
      * For each client class, interfaces used as types (outgoing edges to known interface ids) from
      * {@code g6_interface_usage.dot}.
      */

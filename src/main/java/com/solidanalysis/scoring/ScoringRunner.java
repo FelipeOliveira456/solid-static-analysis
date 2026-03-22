@@ -15,10 +15,13 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -85,6 +88,8 @@ public final class ScoringRunner {
         G2AlgorithmsDocument g2 = reader.loadG2Algorithms(algorithms);
         G5AlgorithmsDocument g5 = reader.loadG5Algorithms(algorithms);
         G6AlgorithmsDocument g6 = reader.loadG6Algorithms(algorithms);
+        Map<String, Set<String>> g5IfaceImplementors =
+                reader.parseG5InterfaceImplementors(graphs.resolve("g5_interface_impl.dot"));
         Map<String, Integer> instOut = reader.parseG1InstantiationOutCounts(g1Dot);
         Map<String, String> extendsMap = reader.parseG2Extends(graphs.resolve("g2_inheritance.dot"));
         Set<String> g5IfaceNodes = reader.parseG5EllipseInterfaces(graphs.resolve("g5_interface_impl.dot"));
@@ -363,10 +368,10 @@ public final class ScoringRunner {
 
         if (g5.interfacesWithZeroInDegree != null) {
             for (String iface : g5.interfacesWithZeroInDegree) {
-                for (PlacedArtifact pa : placed) {
+                for (String sk : slotKeysForSimpleNames(Set.of(iface), placed)) {
                     add(
                             iMap,
-                            pa.slotKey(),
+                            sk,
                             IndicatorTemplate.INTERFACE_ZERO_INDEGREE_IMPL,
                             iface,
                             IndicatorTemplate.formatInterfaceZeroIndegreeImpl(iface),
@@ -378,10 +383,13 @@ public final class ScoringRunner {
         }
         if (g6.interfacesWithZeroInDegree != null) {
             for (String iface : g6.interfacesWithZeroInDegree) {
-                for (PlacedArtifact pa : placed) {
+                Set<String> involved = new LinkedHashSet<>();
+                involved.add(iface);
+                involved.addAll(g5IfaceImplementors.getOrDefault(iface, Collections.emptySet()));
+                for (String sk : slotKeysForSimpleNames(involved, placed)) {
                     add(
                             iMap,
-                            pa.slotKey(),
+                            sk,
                             IndicatorTemplate.INTERFACE_ZERO_INDEGREE_USAGE,
                             iface,
                             IndicatorTemplate.formatInterfaceZeroIndegreeUsage(iface),
@@ -429,6 +437,23 @@ public final class ScoringRunner {
             m.put(pa.slotKey(), new ArrayList<>());
         }
         return m;
+    }
+
+    /** Slot keys for every placed artifact whose primary type simple name is in {@code simpleNames}. */
+    private static Set<String> slotKeysForSimpleNames(
+            Collection<String> simpleNames, List<PlacedArtifact> placed) {
+        if (simpleNames.isEmpty()) {
+            return Set.of();
+        }
+        Set<String> want = new HashSet<>(simpleNames);
+        Set<String> keys = new LinkedHashSet<>();
+        for (PlacedArtifact pa : placed) {
+            String sn = pa.simpleTypeName();
+            if (!sn.isEmpty() && want.contains(sn)) {
+                keys.add(pa.slotKey());
+            }
+        }
+        return keys;
     }
 
     private static Path algorithmsUnderMirror(Path algorithms, Path mirror) {

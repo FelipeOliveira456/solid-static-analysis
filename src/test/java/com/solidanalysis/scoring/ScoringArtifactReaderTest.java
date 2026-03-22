@@ -64,6 +64,21 @@ class ScoringArtifactReaderTest {
     }
 
     @Test
+    void parseG5InterfaceImplementors(@TempDir Path tmp) throws Exception {
+        Path f = tmp.resolve("g5.dot");
+        Files.writeString(
+                f,
+                """
+                Iface [shape=ellipse, label="Iface"];
+                Impl -> Iface;
+                Other [shape=box];
+                """,
+                StandardCharsets.UTF_8);
+        Map<String, Set<String>> m = new ScoringArtifactReader().parseG5InterfaceImplementors(f);
+        assertEquals(Set.of("Impl"), m.get("Iface"));
+    }
+
+    @Test
     void parseG6FiltersToKnownInterfaces(@TempDir Path tmp) throws Exception {
         Path f = tmp.resolve("g6.dot");
         Files.writeString(
