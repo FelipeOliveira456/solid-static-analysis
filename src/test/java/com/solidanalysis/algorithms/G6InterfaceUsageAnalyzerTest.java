@@ -7,11 +7,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.solidanalysis.algorithms.runners.GraphAlgorithmsErrorHandler;
 import com.solidanalysis.algorithms.runners.GraphAlgorithmsRunner;
+import com.solidanalysis.fixtures.JavaFixturesGraphCache;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Objects;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -21,7 +20,7 @@ class G6InterfaceUsageAnalyzerTest {
     void g6UsesInterfacesFromG5Fixture(@TempDir Path tmp) throws Exception {
         Path graphs = tmp.resolve("graphs");
         Files.createDirectories(graphs);
-        Path fixtureBase = fixtureGraphsDir();
+        Path fixtureBase = JavaFixturesGraphCache.cachedGraphsRoot();
         Files.copy(
                 fixtureBase.resolve("g5_interface_impl.dot"),
                 graphs.resolve("g5_interface_impl.dot"),
@@ -39,11 +38,4 @@ class G6InterfaceUsageAnalyzerTest {
         assertNotNull(root.get("knownInterfacesFromG5"));
     }
 
-    private static Path fixtureGraphsDir() throws Exception {
-        var url =
-                Objects.requireNonNull(
-                        G6InterfaceUsageAnalyzerTest.class.getResource(
-                                "/java-fixtures/output/graphs/g5_interface_impl.dot"));
-        return Path.of(url.toURI()).getParent();
-    }
 }

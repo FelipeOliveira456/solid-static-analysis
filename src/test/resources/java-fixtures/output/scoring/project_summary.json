@@ -1,0 +1,58 @@
+{
+  "classificationStrategy" : "FIXED_THRESHOLD_RELAXED",
+  "mostViolatedPrinciple" : "D",
+  "principleDistribution" : {
+    "D" : {
+      "ALTO" : 3,
+      "BAIXO" : 2,
+      "MEDIO" : 1
+    },
+    "I" : {
+      "ALTO" : 0,
+      "BAIXO" : 6,
+      "MEDIO" : 0
+    },
+    "L" : {
+      "ALTO" : 0,
+      "BAIXO" : 6,
+      "MEDIO" : 0
+    },
+    "O" : {
+      "ALTO" : 0,
+      "BAIXO" : 6,
+      "MEDIO" : 0
+    },
+    "S" : {
+      "ALTO" : 3,
+      "BAIXO" : 2,
+      "MEDIO" : 1
+    }
+  },
+  "projectPath" : "/home/felipe/Documents/AS/solid-static-analysis/src/test/resources/java-fixtures/output",
+  "ranking" : [ {
+    "class" : "ContaBancaria",
+    "overall" : "ALTO",
+    "worst" : "S"
+  }, {
+    "class" : "ContaCorrente",
+    "overall" : "ALTO",
+    "worst" : "D"
+  }, {
+    "class" : "ContaPoupanca",
+    "overall" : "ALTO",
+    "worst" : "D"
+  }, {
+    "class" : "GerenciadorContas",
+    "overall" : "ALTO",
+    "worst" : "D"
+  }, {
+    "class" : "Tributavel",
+    "overall" : "ALTO",
+    "worst" : "S"
+  }, {
+    "class" : "Relatorio",
+    "overall" : "MEDIO",
+    "worst" : "D"
+  } ],
+  "relaxFactor" : 0.5454545454545454
+}

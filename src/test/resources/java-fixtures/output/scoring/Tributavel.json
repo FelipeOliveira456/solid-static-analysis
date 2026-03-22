@@ -1,0 +1,65 @@
+{
+  "class" : "Tributavel",
+  "classificationStrategy" : "FIXED_THRESHOLD_RELAXED",
+  "overall" : "ALTO",
+  "projectPath" : "/home/felipe/Documents/AS/solid-static-analysis/src/test/resources/java-fixtures/output",
+  "relaxFactor" : 0.5454545454545454,
+  "scores" : {
+    "D" : {
+      "indicators" : [ {
+        "detail" : "não instancia classes concretas via new",
+        "templateId" : "INSTANTIATION_COUNT",
+        "value" : 0
+      }, {
+        "detail" : "depende de 0 de 6 classes do projeto (0%) — baixo espalhamento de dependências",
+        "templateId" : "OUT_DEGREE_NORMALIZED",
+        "value" : 0.0
+      }, {
+        "detail" : "sem dependências de saída para medir razão entre concreto e abstração",
+        "templateId" : "CONCRETE_DEPENDENCY_RATIO",
+        "value" : 0.0
+      }, {
+        "detail" : "out-centrality 0 — baixo alcance de dependências",
+        "templateId" : "G1_OUT_CENTRALITY",
+        "value" : 0.0
+      } ],
+      "score" : "BAIXO"
+    },
+    "I" : {
+      "indicators" : [ {
+        "detail" : "implementa 0 interfaces — escopo enxuto",
+        "templateId" : "IMPLEMENTS_COUNT",
+        "value" : 0
+      } ],
+      "score" : "BAIXO"
+    },
+    "L" : {
+      "indicators" : [ {
+        "detail" : "profundidade de herança da classe Tributavel: 0",
+        "templateId" : "INHERITANCE_DEPTH",
+        "value" : 0
+      } ],
+      "score" : "BAIXO"
+    },
+    "O" : {
+      "indicators" : [ ],
+      "score" : "BAIXO"
+    },
+    "S" : {
+      "indicators" : [ {
+        "detail" : "LCOM 0 — 0% dos pares de métodos sem atributo em comum",
+        "templateId" : "LCOM_VALUE",
+        "value" : 0.0
+      }, {
+        "detail" : "0 clusters de métodos na projeção — baixa evidência de responsabilidades separadas",
+        "templateId" : "PROJECTION_CLUSTERS",
+        "value" : 0
+      }, {
+        "detail" : "2 de 2 métodos isolados (100%) — sem colaboração interna",
+        "templateId" : "ISOLATED_METHODS_RATIO",
+        "value" : 1.0
+      } ],
+      "score" : "ALTO"
+    }
+  }
+}

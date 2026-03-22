@@ -1,5 +1,5 @@
 {
-  "sourceFile" : "/home/felipe/Documents/AS/solid-static-analysis/target/test-classes/java-fixtures/ContaBancaria.java",
+  "sourceFile" : "/home/felipe/Documents/AS/solid-static-analysis/src/test/resources/java-fixtures/ContaBancaria.java",
   "primaryType" : {
     "kind" : "class",
     "name" : "ContaBancaria",

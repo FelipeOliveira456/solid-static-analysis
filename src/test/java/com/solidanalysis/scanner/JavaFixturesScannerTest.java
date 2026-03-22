@@ -21,13 +21,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  * Integração com fontes de teste em {@code src/test/resources/java-fixtures/} (herança, switch,
  * while, foreach, else if, campos).
  *
- * <p>Após {@code mvn test}, o scan das fontes gera JSON em {@code
- * src/test/resources/java-fixtures/output/} (ver {@link #geraArtefactosJsonNoOutputDosFixtures()}).
+ * <p>O teste {@link #geraArtefactosJsonNoOutputDosFixtures} materializa JSON num diretório
+ * temporário (o diretório {@code java-fixtures/output} no repo fica vazio / só README).
  */
 class JavaFixturesScannerTest {
 
@@ -55,12 +56,8 @@ class JavaFixturesScannerTest {
     }
 
     @Test
-    void geraArtefactosJsonNoOutputDosFixtures() throws Exception {
-        Path outDir =
-                Path.of(System.getProperty("user.dir", "."))
-                        .toAbsolutePath()
-                        .normalize()
-                        .resolve("src/test/resources/java-fixtures/output");
+    void geraArtefactosJsonNoOutputDosFixtures(@TempDir Path tempOut) throws Exception {
+        Path outDir = tempOut.resolve("scanner-out");
         Files.createDirectories(outDir);
         JavaParserFacade facade = new JavaParserFacade(fixtureRoot);
         ProjectScanner scanner =

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.solidanalysis.SolidAnalysisCli;
+import com.solidanalysis.fixtures.JavaFixturesPipeline;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -91,5 +92,32 @@ class GraphAlgorithmsPipelineSmokeTest {
                         .readTree(tmp.resolve("algorithms/g1_algorithms.json").toFile());
         assertTrue(root.get("clusters").isArray());
         assertTrue(root.get("clusters").size() >= 2);
+    }
+
+    @Test
+    void allWithClusteringPopulatesLouvainOnG1(@TempDir Path tmp) throws Exception {
+        Path fixtureRoot = JavaFixturesPipeline.javaSourcesRoot().toAbsolutePath().normalize();
+        Path out = tmp.resolve("fixture-out").toAbsolutePath().normalize();
+        Files.createDirectories(out);
+        ByteArrayOutputStream berr = new ByteArrayOutputStream();
+        int code =
+                SolidAnalysisCli.run(
+                        new String[] {
+                            "--all",
+                            fixtureRoot.toString(),
+                            "--output",
+                            out.toString(),
+                            "--clustering"
+                        },
+                        new PrintStream(new ByteArrayOutputStream()),
+                        new PrintStream(berr));
+        assertEquals(SolidAnalysisCli.EXIT_OK, code, berr.toString(StandardCharsets.UTF_8));
+        var g1 =
+                new ObjectMapper()
+                        .readTree(out.resolve("algorithms/g1_algorithms.json").toFile());
+        assertTrue(g1.get("clusters").isArray());
+        assertTrue(
+                g1.get("clusters").size() >= 1,
+                "Louvain should produce at least one community on fixture G1");
     }
 }

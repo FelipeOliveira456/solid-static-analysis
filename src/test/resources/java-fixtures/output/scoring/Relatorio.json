@@ -1,0 +1,69 @@
+{
+  "class" : "Relatorio",
+  "classificationStrategy" : "FIXED_THRESHOLD_RELAXED",
+  "overall" : "MEDIO",
+  "projectPath" : "/home/felipe/Documents/AS/solid-static-analysis/src/test/resources/java-fixtures/output",
+  "relaxFactor" : 0.5454545454545454,
+  "scores" : {
+    "D" : {
+      "indicators" : [ {
+        "detail" : "não instancia classes concretas via new",
+        "templateId" : "INSTANTIATION_COUNT",
+        "value" : 0
+      }, {
+        "detail" : "depende de 3 de 6 classes do projeto (50%) — espalhamento moderado de dependências",
+        "templateId" : "OUT_DEGREE_NORMALIZED",
+        "value" : 0.5
+      }, {
+        "detail" : "50% das dependências são classes concretas — 1 de 2 (predominam dependências concretas)",
+        "templateId" : "CONCRETE_DEPENDENCY_RATIO",
+        "value" : 0.5
+      }, {
+        "detail" : "out-centrality 0.6000 — alcance moderado de dependências",
+        "templateId" : "G1_OUT_CENTRALITY",
+        "value" : 0.6
+      } ],
+      "score" : "MEDIO"
+    },
+    "I" : {
+      "indicators" : [ {
+        "detail" : "implementa 0 interfaces — escopo enxuto",
+        "templateId" : "IMPLEMENTS_COUNT",
+        "value" : 0
+      } ],
+      "score" : "BAIXO"
+    },
+    "L" : {
+      "indicators" : [ {
+        "detail" : "profundidade de herança da classe Relatorio: 0",
+        "templateId" : "INHERITANCE_DEPTH",
+        "value" : 0
+      }, {
+        "detail" : "0 referências como superclasse concreta (G2) — baixo acoplamento por herança",
+        "templateId" : "CONCRETE_CLASS_INDEGREE",
+        "value" : 0
+      } ],
+      "score" : "BAIXO"
+    },
+    "O" : {
+      "indicators" : [ ],
+      "score" : "BAIXO"
+    },
+    "S" : {
+      "indicators" : [ {
+        "detail" : "LCOM 0.2667 — 27% dos pares de métodos sem atributo em comum",
+        "templateId" : "LCOM_VALUE",
+        "value" : 0.26666666666666666
+      }, {
+        "detail" : "1 cluster de métodos na projeção — baixa evidência de responsabilidades separadas",
+        "templateId" : "PROJECTION_CLUSTERS",
+        "value" : 1
+      }, {
+        "detail" : "4 de 8 métodos isolados (50%) — sem colaboração interna",
+        "templateId" : "ISOLATED_METHODS_RATIO",
+        "value" : 0.5
+      } ],
+      "score" : "BAIXO"
+    }
+  }
+}

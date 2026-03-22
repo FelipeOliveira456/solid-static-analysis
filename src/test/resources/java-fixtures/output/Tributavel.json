@@ -1,5 +1,5 @@
 {
-  "sourceFile" : "/home/felipe/Documents/AS/solid-static-analysis/target/test-classes/java-fixtures/Tributavel.java",
+  "sourceFile" : "/home/felipe/Documents/AS/solid-static-analysis/src/test/resources/java-fixtures/Tributavel.java",
   "primaryType" : {
     "kind" : "interface",
     "name" : "Tributavel",

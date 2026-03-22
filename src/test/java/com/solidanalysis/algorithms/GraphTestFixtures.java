@@ -1,22 +1,18 @@
 package com.solidanalysis.algorithms;
 
+import com.solidanalysis.fixtures.JavaFixturesGraphCache;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Objects;
 import java.util.stream.Stream;
 
-/** Shared test resources: small graph slice for fast pipeline tests (no heavy clustering). */
+/** Shared test resources: graphs generated from {@code java-fixtures/*.java} under {@code target/}. */
 final class GraphTestFixtures {
 
     private GraphTestFixtures() {}
 
     static Path fixtureGraphsDir() throws Exception {
-        var url =
-                Objects.requireNonNull(
-                        GraphTestFixtures.class.getResource(
-                                "/java-fixtures/output/graphs/g1_dependency.dot"));
-        return Path.of(url.toURI()).getParent();
+        return JavaFixturesGraphCache.cachedGraphsRoot();
     }
 
     /**

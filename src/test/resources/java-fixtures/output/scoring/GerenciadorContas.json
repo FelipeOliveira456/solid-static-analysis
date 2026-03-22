@@ -1,0 +1,69 @@
+{
+  "class" : "GerenciadorContas",
+  "classificationStrategy" : "FIXED_THRESHOLD_RELAXED",
+  "overall" : "ALTO",
+  "projectPath" : "/home/felipe/Documents/AS/solid-static-analysis/src/test/resources/java-fixtures/output",
+  "relaxFactor" : 0.5454545454545454,
+  "scores" : {
+    "D" : {
+      "indicators" : [ {
+        "detail" : "instancia diretamente 3 classes concretas via new: ContaCorrente, ContaPoupanca, Relatorio",
+        "templateId" : "INSTANTIATION_COUNT",
+        "value" : 3
+      }, {
+        "detail" : "depende de 9 de 6 classes do projeto (150%) — alto espalhamento de dependências",
+        "templateId" : "OUT_DEGREE_NORMALIZED",
+        "value" : 1.5
+      }, {
+        "detail" : "100% das dependências são classes concretas — 3 de 3 (predominam dependências concretas)",
+        "templateId" : "CONCRETE_DEPENDENCY_RATIO",
+        "value" : 1.0
+      }, {
+        "detail" : "out-centrality 1.800 — classe conhece grande parte do projeto",
+        "templateId" : "G1_OUT_CENTRALITY",
+        "value" : 1.8
+      } ],
+      "score" : "ALTO"
+    },
+    "I" : {
+      "indicators" : [ {
+        "detail" : "implementa 0 interfaces — escopo enxuto",
+        "templateId" : "IMPLEMENTS_COUNT",
+        "value" : 0
+      } ],
+      "score" : "BAIXO"
+    },
+    "L" : {
+      "indicators" : [ {
+        "detail" : "profundidade de herança da classe GerenciadorContas: 0",
+        "templateId" : "INHERITANCE_DEPTH",
+        "value" : 0
+      }, {
+        "detail" : "0 referências como superclasse concreta (G2) — baixo acoplamento por herança",
+        "templateId" : "CONCRETE_CLASS_INDEGREE",
+        "value" : 0
+      } ],
+      "score" : "BAIXO"
+    },
+    "O" : {
+      "indicators" : [ ],
+      "score" : "BAIXO"
+    },
+    "S" : {
+      "indicators" : [ {
+        "detail" : "LCOM 0 — 0% dos pares de métodos sem atributo em comum",
+        "templateId" : "LCOM_VALUE",
+        "value" : 0.0
+      }, {
+        "detail" : "5 clusters de métodos na projeção — possível divisão de responsabilidades",
+        "templateId" : "PROJECTION_CLUSTERS",
+        "value" : 5
+      }, {
+        "detail" : "2 de 9 métodos isolados (22%) — sem colaboração interna",
+        "templateId" : "ISOLATED_METHODS_RATIO",
+        "value" : 0.2222222222222222
+      } ],
+      "score" : "ALTO"
+    }
+  }
+}

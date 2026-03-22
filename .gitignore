@@ -14,6 +14,8 @@ target/
 
 # Generated scanner output (keep directory via output/.gitkeep)
 output/*.json
+# CLI --all default layout: sanitized path under output/ (machine-specific)
+output/__*/
 
 # Speckit / Cursor tooling (not part of source tree)
 .cursor/
