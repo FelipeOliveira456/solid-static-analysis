@@ -1,7 +1,7 @@
 {
   "class" : "ContaBancaria",
   "classificationStrategy" : "FIXED_THRESHOLD_RELAXED",
-  "overall" : "ALTO",
+  "overall" : "MEDIO",
   "projectPath" : "/home/felipe/Documents/AS/solid-static-analysis/src/test/resources/java-fixtures/output",
   "relativePath" : "",
   "relaxFactor" : 1.0,
@@ -60,11 +60,12 @@
         "templateId" : "PROJECTION_CLUSTERS",
         "value" : 2.0
       }, {
-        "detail" : "8 de 8 métodos isolados (100%) — sem colaboração interna",
+        "detail" : "8 de 8 métodos isolados (100%) — sem colaboração interna — peso no score = C(8,2)/[C(8,2)+21] = 28/(28+21) (k em scoring.isolatedMethods.combinations.k); a razão bruta × este peso entra nas bandas",
+        "rawMetric" : 1.0,
         "templateId" : "ISOLATED_METHODS_RATIO",
-        "value" : 1.0
+        "value" : 0.5714285714285714
       } ],
-      "score" : "ALTO"
+      "score" : "MEDIO"
     }
   }
 }

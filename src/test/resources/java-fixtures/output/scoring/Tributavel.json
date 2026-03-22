@@ -1,7 +1,7 @@
 {
   "class" : "Tributavel",
   "classificationStrategy" : "FIXED_THRESHOLD_RELAXED",
-  "overall" : "ALTO",
+  "overall" : "BAIXO",
   "projectPath" : "/home/felipe/Documents/AS/solid-static-analysis/src/test/resources/java-fixtures/output",
   "relativePath" : "",
   "relaxFactor" : 1.0,
@@ -60,11 +60,12 @@
         "templateId" : "PROJECTION_CLUSTERS",
         "value" : 0.0
       }, {
-        "detail" : "2 de 2 métodos isolados (100%) — sem colaboração interna",
+        "detail" : "2 de 2 métodos isolados (100%) — sem colaboração interna — peso no score = C(2,2)/[C(2,2)+21] = 1/(1+21) (k em scoring.isolatedMethods.combinations.k); a razão bruta × este peso entra nas bandas",
+        "rawMetric" : 1.0,
         "templateId" : "ISOLATED_METHODS_RATIO",
-        "value" : 1.0
+        "value" : 0.045454545454545456
       } ],
-      "score" : "ALTO"
+      "score" : "BAIXO"
     }
   }
 }

@@ -11,6 +11,7 @@ import com.solidanalysis.algorithms.model.G7AlgorithmsDocument;
 import com.solidanalysis.algorithms.runners.GraphFileMapper;
 import com.solidanalysis.graphs.io.ProjectOutputLayout;
 import com.solidanalysis.graphs.model.PlacedArtifact;
+import com.solidanalysis.graphs.model.TypeSummary;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
@@ -163,15 +164,21 @@ public final class ScoringRunner {
             int isoN = g3.isolatedNodes == null ? 0 : g3.isolatedNodes.size();
             int inDegKeys = g3.inDegree == null ? 0 : g3.inDegree.size();
             double isoRatio = inDegKeys == 0 ? 0.0 : (double) isoN / inDegKeys;
-            isoV.put(sk, isoRatio);
+            double isoK = thresholds.isolatedMethodsCombinationsK();
+            double isoEffective =
+                    IsolatedMethodsRatioPolicy.effectiveRatio(isoRatio, inDegKeys, isoK);
+            isoV.put(sk, isoEffective);
             int isoPct = inDegKeys == 0 ? 0 : (int) Math.round(100.0 * isoN / inDegKeys);
-            add(
+            addIsolatedMethodsRatio(
                     sMap,
                     sk,
-                    IndicatorTemplate.ISOLATED_METHODS_RATIO,
                     isoRatio,
-                    IndicatorTemplate.formatIsolatedMethodsRatio(isoN, inDegKeys, isoPct),
-                    classifyIso(isoRatio, strategy, fixed, isoV, sk, relaxF, thresholds),
+                    isoEffective,
+                    isoN,
+                    inDegKeys,
+                    isoPct,
+                    isoK,
+                    classifyIso(isoEffective, strategy, fixed, isoV, sk, relaxF, thresholds),
                     strategy,
                     relaxF);
 
@@ -217,17 +224,44 @@ public final class ScoringRunner {
                 }
             }
             swV.put(sk, (double) swMax);
-            if (swMax > 0) {
+
+            TypeSummary primaryType = pa.artifact().primaryType();
+            DispatchAstHeuristicAnalyzer.DispatchAstParams dispatchParams =
+                    thresholds.dispatchAstParams();
+            DispatchAstHeuristicAnalyzer.Flags dispatchFlags =
+                    DispatchAstHeuristicAnalyzer.evaluate(primaryType, dispatchParams);
+            int dispatchVotes = dispatchFlags.votes();
+            if (dispatchVotes > 0) {
+                ScoreLevel dispatchLevel =
+                        dispatchVotes >= 2 ? ScoreLevel.ALTO : ScoreLevel.MEDIO;
                 add(
                         oMap,
                         sk,
-                        IndicatorTemplate.SWITCH_CASES,
-                        swMax,
-                        IndicatorTemplate.formatSwitchCases(swMax, swMethod),
-                        classifySwitch(swMax, strategy, fixed, swV, sk),
+                        IndicatorTemplate.DISPATCH_AST_HEURISTICS,
+                        dispatchVotes,
+                        IndicatorTemplate.formatDispatchAstHeuristics(
+                                dispatchVotes,
+                                dispatchFlags.h1(),
+                                dispatchFlags.h2(),
+                                dispatchParams),
+                        dispatchLevel,
                         strategy,
                         relaxF);
             }
+
+            String switchDetail =
+                    swMax > 0
+                            ? IndicatorTemplate.formatSwitchCases(swMax, swMethod)
+                            : IndicatorTemplate.formatSwitchCasesNoSwitchDetected();
+            add(
+                    oMap,
+                    sk,
+                    IndicatorTemplate.SWITCH_CASES,
+                    swMax,
+                    switchDetail,
+                    classifySwitch(swMax, strategy, fixed, swV, sk),
+                    strategy,
+                    relaxF);
 
             String parent = extendsMap.get(cn);
             if (parent != null
@@ -499,6 +533,42 @@ public final class ScoringRunner {
                 .add(new ScoredInd(new IndicatorResult(t, rawMetric, jsonValue, detail), level));
     }
 
+    /**
+     * Isolated-methods: {@code rawMetric} stays the measured ratio; {@code value} scales
+     * {@code effectiveRatio} (ratio × {@code C(n,2)/(C(n,2)+k)}) by {@code f(n)} when relaxed.
+     */
+    private static void addIsolatedMethodsRatio(
+            Map<String, List<ScoredInd>> map,
+            String slotKey,
+            double rawRatio,
+            double effectiveRatio,
+            int isolatedCount,
+            int methodCount,
+            int pct,
+            double combinationsK,
+            ScoreLevel level,
+            ScoringStrategy strategy,
+            double relaxF) {
+        Object jsonValue =
+                RelaxationValueScaling.scaledValueForJson(
+                        IndicatorTemplate.ISOLATED_METHODS_RATIO,
+                        effectiveRatio,
+                        strategy,
+                        relaxF);
+        String detail =
+                IndicatorTemplate.formatIsolatedMethodsRatio(
+                        isolatedCount, methodCount, pct, combinationsK);
+        map.get(slotKey)
+                .add(
+                        new ScoredInd(
+                                new IndicatorResult(
+                                        IndicatorTemplate.ISOLATED_METHODS_RATIO,
+                                        rawRatio,
+                                        jsonValue,
+                                        detail),
+                                level));
+    }
+
     private static ScoreLevel finishPrinciple(
             Map<String, PrincipleScore> pmap, String letter, List<ScoredInd> scored, int nClasses) {
         List<ScoredInd> adjusted = applySmallProjectPairingRule(scored, nClasses);
@@ -507,10 +577,10 @@ public final class ScoringRunner {
             return ScoreLevel.BAIXO;
         }
         ScoreLevel worst = ScoreLevel.BAIXO;
-        List<IndicatorResult> kept = new ArrayList<>();
+        List<PrincipleIndicator> kept = new ArrayList<>();
         for (ScoredInd si : adjusted) {
             worst = ScoreLevel.worst(worst, si.level);
-            kept.add(si.result);
+            kept.add(new PrincipleIndicator(si.result, si.level));
         }
         pmap.put(letter, new PrincipleScore(letter, worst, kept));
         return worst;

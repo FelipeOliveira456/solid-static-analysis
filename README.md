@@ -285,6 +285,13 @@ java -jar target/solid-static-analysis.jar --all --output /abs/pasta-saida /abs/
 - `scoring.relax.k` — inteiro \(k \ge 0\) na fórmula \(f(n)=n/(n+k)\) para projetos com **menos de 10 classes** (`FIXED_THRESHOLD_RELAXED`). Com `k=0`, o comportamento efetivo é sem escala (`f=1` conforme implementação).
 - `threshold.*` — limiares para LCOM, clusters de projeção, proporção de métodos isolados, profundidade de herança, fan-out de `switch`, grau de dependências, etc.
 
+**Métodos isolados (princípio S):** a razão “isolados / total” do G3 compara-se aos limiares **depois** de multiplicar por **C(n,2) / (C(n,2) + k)** (`IsolatedMethodsRatioPolicy`), com **n** = número de métodos da classe e **k** ajustável em **`scoring.isolatedMethods.combinations.k`** em `analysis.properties`. Poucos métodos ⇒ poucos pares possíveis ⇒ peso menor (sem corte fixo a zero para *dois* métodos: com n=2, C=1, o peso é **1/(1+k)**). Com **k = 0** e **n ≥ 2**, o peso é **1**. O `detail` do indicador mostra a fórmula; no JSON, `rawMetric` vs `value` = razão bruta vs razão efetiva (× `relaxFactor` em projetos relaxados).
+
+**Open/Closed (O)** usa **três famílias** de indicadores, cada uma com **entrada própria** no JSON e no `.txt` da classe; o **nível do princípio O** é o **pior** entre elas (`finishPrinciple`). O `project_summary.txt` resume a distribuição e lembra esta regra:
+- **`SWITCH_CASES`** — fan-out de nó `switch` no CFG **G7**; limiares **`threshold.switchCases.*`**.
+- **`EXTENDS_CONCRETE`** — classe concreta que estende superclasse concreta.
+- **`DISPATCH_AST_HEURISTICS`** — heurísticas só no AST (`DispatchAstHeuristicAnalyzer`): **H1** homogeneidade `H = 1 − d/n` (`d` = discriminantes distintos em `==` / `.equals` / `Objects.equals`, `n` = nº de `if` na cadeia); dispara se `H > scoring.dispatchAst.h1.homogeneityThreshold`. **H2** — cadeia `if`/`else if` com ≥ `scoring.dispatchAst.h2.minChainIfs` condições **ou** ≥ `scoring.dispatchAst.h2.minConsecutiveTopIfs` `if` consecutivos ao mesmo nível. **0** votos H1/H2 → sem este indicador; **1** → MEDIO; **2** → ALTO.
+
 Alterar thresholds **não** exige recompilar se usares o `analysis.properties` no `user.dir`; **exige** recompilar se mudares só o ficheiro na raiz **e** quiseres que o valor embutido no JAR mude para outros ambientes que não carreguem o ficheiro local.
 
 ---

@@ -13,6 +13,11 @@ public enum IndicatorTemplate {
     ISOLATED_METHODS_RATIO,
     G3_SCC_CYCLE,
     SWITCH_CASES,
+    /**
+     * AST voting heuristics for variant dispatch (if/else-if vs polymorphism); 1 vote → MEDIO, 2 →
+     * ALTO (see {@link DispatchAstHeuristicAnalyzer}).
+     */
+    DISPATCH_AST_HEURISTICS,
     EXTENDS_CONCRETE,
     G1_CYCLE,
     INHERITANCE_DEPTH,
@@ -46,22 +51,56 @@ public enum IndicatorTemplate {
                 + " clusters de métodos na projeção — possível divisão de responsabilidades";
     }
 
-    public static String formatIsolatedMethodsRatio(int isolated, int total, int pct) {
+    /**
+     * @param combinationsK {@code k} in {@code C(n,2)/(C(n,2)+k)} from {@code analysis.properties}
+     */
+    public static String formatIsolatedMethodsRatio(
+            int isolated, int total, int pct, double combinationsK) {
         if (total == 0) {
             return "sem métodos analisáveis para medir isolamento";
         }
-        return isolated
-                + " de "
-                + total
-                + " métodos isolados ("
-                + pct
-                + "%) — sem colaboração interna";
+        String core =
+                isolated
+                        + " de "
+                        + total
+                        + " métodos isolados ("
+                        + pct
+                        + "%) — sem colaboração interna";
+        long pairs = IsolatedMethodsRatioPolicy.methodPairCount(total);
+        String weightPart =
+                String.format(
+                        Locale.US,
+                        "peso no score = C(%d,2)/[C(%d,2)+%s] = %d/(%d+%s)",
+                        total,
+                        total,
+                        formatDouble(combinationsK),
+                        pairs,
+                        pairs,
+                        formatDouble(combinationsK));
+        if (pairs == 0) {
+            return core
+                    + " — "
+                    + weightPart
+                    + " = 0 (menos de 2 métodos — sem pares para colaboração interna)";
+        }
+        return core
+                + " — "
+                + weightPart
+                + " (k em scoring.isolatedMethods.combinations.k); a razão bruta × este peso entra nas bandas";
     }
 
     public static String formatG3SccCycle(List<String> methods) {
         return "ciclo de chamadas entre métodos: "
                 + String.join(", ", methods)
                 + " — responsabilidades entrelaçadas";
+    }
+
+    public static String formatDispatchAstHeuristics(
+            int votes,
+            boolean heuristic1,
+            boolean heuristic2,
+            DispatchAstHeuristicAnalyzer.DispatchAstParams params) {
+        return DispatchAstHeuristicAnalyzer.formatDetail(votes, heuristic1, heuristic2, params);
     }
 
     public static String formatSwitchCases(int value, String method) {
@@ -72,7 +111,23 @@ public enum IndicatorTemplate {
                         : (value <= 4
                                 ? "ramificação moderada; monitorar evolução"
                                 : "alta ramificação — candidato a polimorfismo");
-        return "switch com " + value + " " + plural(value, "case", "cases") + " em " + where + " — " + suffix;
+        return "SWITCH_CASES (CFG G7) — switch com "
+                + value
+                + " "
+                + plural(value, "case", "cases")
+                + " em "
+                + where
+                + " — "
+                + suffix;
+    }
+
+    /**
+     * Detail when no G7 CFG node qualifies as {@code switch} with positive fan-out for this class
+     * (metric {@code 0}).
+     */
+    public static String formatSwitchCasesNoSwitchDetected() {
+        return "SWITCH_CASES (CFG G7) — sem switch com fan-out detetável no CFG G7 desta classe"
+                + " — 0 cases (baixa ramificação; limiares em threshold.switchCases.*)";
     }
 
     public static String formatExtendsConcrete(String superclass) {

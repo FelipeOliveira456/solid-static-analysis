@@ -11,7 +11,7 @@ O — Open/Closed: BAIXO
 S — Single Responsibility: ALTO
   [!] LCOM 0 — 0% dos pares de métodos sem atributo em comum
   [!] 5 clusters de métodos na projeção — possível divisão de responsabilidades
-  [!] 2 de 9 métodos isolados (22%) — sem colaboração interna
+  [!] 2 de 9 métodos isolados (22%) — sem colaboração interna — peso no score = C(9,2)/[C(9,2)+21] = 36/(36+21) (k em scoring.isolatedMethods.combinations.k); a razão bruta × este peso entra nas bandas
 
 L — Liskov Substitution: BAIXO
   [ok] profundidade de herança da classe GerenciadorContas: 0

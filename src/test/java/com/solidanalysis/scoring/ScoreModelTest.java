@@ -25,15 +25,23 @@ class ScoreModelTest {
 
     @Test
     void principleScoreCopiesIndicatorsList() {
-        List<IndicatorResult> ind =
+        List<PrincipleIndicator> ind =
                 List.of(
-                        new IndicatorResult(
-                                IndicatorTemplate.LCOM_VALUE, 0.1, "detail"));
+                        new PrincipleIndicator(
+                                new IndicatorResult(
+                                        IndicatorTemplate.LCOM_VALUE, 0.1, "detail"),
+                                ScoreLevel.BAIXO));
         PrincipleScore ps = new PrincipleScore("S", ScoreLevel.BAIXO, ind);
         assertEquals(1, ps.indicators().size());
         assertThrows(
                 UnsupportedOperationException.class,
-                () -> ps.indicators().add(new IndicatorResult(IndicatorTemplate.G1_CYCLE, true, "x")));
+                () ->
+                        ps.indicators()
+                                .add(
+                                        new PrincipleIndicator(
+                                                new IndicatorResult(
+                                                        IndicatorTemplate.G1_CYCLE, true, "x"),
+                                                ScoreLevel.BAIXO)));
     }
 
     @Test

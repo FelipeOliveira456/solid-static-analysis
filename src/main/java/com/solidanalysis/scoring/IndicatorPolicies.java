@@ -10,7 +10,7 @@ public final class IndicatorPolicies {
     /** Structural / architectural signals: never threshold-relaxed; bypass n&lt;5 pairing cap. */
     public static boolean isStructuralIndicator(IndicatorTemplate t) {
         return switch (t) {
-            case G3_SCC_CYCLE, G1_CYCLE, EXTENDS_CONCRETE, SWITCH_CASES,
+            case G3_SCC_CYCLE, G1_CYCLE, EXTENDS_CONCRETE, SWITCH_CASES, DISPATCH_AST_HEURISTICS,
                     INTERFACE_ZERO_INDEGREE_IMPL, INTERFACE_ZERO_INDEGREE_USAGE -> true;
             default -> false;
         };

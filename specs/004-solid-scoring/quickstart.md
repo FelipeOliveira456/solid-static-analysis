@@ -69,6 +69,14 @@ continuous metrics use `f(n)=n/(n+k)` with `scoring.relax.k` in root
 `analysis.properties`. Set `k=0` for no scaling (`f=1`). Each JSON output
 includes `relaxFactor` (`f(n)`).
 
+Isolated methods (G3 / SRP) use `effectiveRatio = rawRatio × C(n,2)/(C(n,2)+k₂)`
+with `k₂` from `scoring.isolatedMethods.combinations.k` (larger `k₂` damps small
+classes more).
+
+`DISPATCH_AST_HEURISTICS` (OCP, AST): `scoring.dispatchAst.h1.homogeneityThreshold`
+for `H = 1 − d/n`; `scoring.dispatchAst.h2.minChainIfs` and
+`scoring.dispatchAst.h2.minConsecutiveTopIfs` for branch-volume (H2).
+
 ## Verify the Output
 
 1. Confirm that `scoring/` exists.

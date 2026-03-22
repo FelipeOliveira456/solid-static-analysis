@@ -98,6 +98,12 @@ public final class HumanReadableResultsWriter {
                         row.get("BAIXO"));
             }
             pw.println();
+            pw.println(
+                    "NOTA — Open/Closed (O): o nível O é o pior entre os indicadores da classe; cada um"
+                            + " aparece em linha própria no relatório — DISPATCH_AST_HEURISTICS (if/else-if"
+                            + " no AST, scoring.dispatchAst.*), SWITCH_CASES (switch no CFG G7,"
+                            + " threshold.switchCases.*), EXTENDS_CONCRETE. Ver cada <Classe>.txt.");
+            pw.println();
             pw.println("RANKING DE CLASSES (pior para melhor):");
             int i = 1;
             for (ProjectSummary.RankingEntry e : summary.ranking()) {
@@ -135,12 +141,11 @@ public final class HumanReadableResultsWriter {
                     continue;
                 }
                 pw.println(principleSectionHeader(letter, ps.score()));
-                String sym = riskSymbol(ps.score());
                 if (ps.indicators().isEmpty()) {
-                    pw.println("  " + sym + " sem indicadores listados");
+                    pw.println("  " + riskSymbol(ps.score()) + " sem indicadores listados");
                 } else {
-                    for (IndicatorResult ir : ps.indicators()) {
-                        pw.println("  " + sym + " " + ir.detail());
+                    for (PrincipleIndicator pi : ps.indicators()) {
+                        pw.println("  " + riskSymbol(pi.level()) + " " + pi.result().detail());
                     }
                 }
                 pw.println();
@@ -165,6 +170,9 @@ public final class HumanReadableResultsWriter {
         pw.println("[!]  ALTO  — risco elevado, requer atenção");
         pw.println("[~]  MEDIO — risco moderado, avaliar");
         pw.println("[ok] BAIXO — sem risco identificado");
+        pw.println(
+                "Em cada bloco, o símbolo por linha é o nível daquele indicador; o título do bloco"
+                        + " mostra o pior entre eles.");
     }
 
     static String principleDisplayName(String letter) {

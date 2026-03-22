@@ -44,6 +44,15 @@ public final class ThresholdConfiguration {
     private final double g1OutCentralityMedio;
     private final double g1OutCentralityAlto;
     private final int relaxK;
+    /** {@code k} in {@code C(n,2)/(C(n,2)+k)} for isolated-methods weighting (G3). */
+    private final double isolatedMethodsCombinationsK;
+    /**
+     * H1 for {@link DispatchAstHeuristicAnalyzer}: fire when homogeneity {@code H = 1 - d/n} is
+     * strictly greater than this value (0–1).
+     */
+    private final double dispatchAstH1HomogeneityThreshold;
+    private final int dispatchAstH2MinChainIfs;
+    private final int dispatchAstH2MinConsecutiveTopIfs;
 
     private ThresholdConfiguration(Builder b) {
         this.lcomMedio = b.lcomMedio;
@@ -69,6 +78,10 @@ public final class ThresholdConfiguration {
         this.g1OutCentralityMedio = b.g1OutCentralityMedio;
         this.g1OutCentralityAlto = b.g1OutCentralityAlto;
         this.relaxK = b.relaxK;
+        this.isolatedMethodsCombinationsK = b.isolatedMethodsCombinationsK;
+        this.dispatchAstH1HomogeneityThreshold = b.dispatchAstH1HomogeneityThreshold;
+        this.dispatchAstH2MinChainIfs = b.dispatchAstH2MinChainIfs;
+        this.dispatchAstH2MinConsecutiveTopIfs = b.dispatchAstH2MinConsecutiveTopIfs;
     }
 
     /** Loads bundled {@code analysis.properties} from the classpath (no workspace override). */
@@ -137,7 +150,39 @@ public final class ThresholdConfiguration {
         b.g1OutCentralityMedio = reqDouble(p, "threshold.g1OutCentrality.medio");
         b.g1OutCentralityAlto = reqDouble(p, "threshold.g1OutCentrality.alto");
         b.relaxK = reqInt(p, "scoring.relax.k");
+        b.isolatedMethodsCombinationsK = reqNonNegativeDouble(p, "scoring.isolatedMethods.combinations.k");
+        b.dispatchAstH1HomogeneityThreshold =
+                reqFractionExclusiveUpper(p, "scoring.dispatchAst.h1.homogeneityThreshold");
+        b.dispatchAstH2MinChainIfs =
+                reqIntAtLeast(p, "scoring.dispatchAst.h2.minChainIfs", 2);
+        b.dispatchAstH2MinConsecutiveTopIfs =
+                reqIntAtLeast(p, "scoring.dispatchAst.h2.minConsecutiveTopIfs", 2);
         return b.build();
+    }
+
+    private static int reqIntAtLeast(Properties p, String key, int minInclusive) {
+        int v = reqInt(p, key);
+        if (v < minInclusive) {
+            throw new IllegalArgumentException("Property must be >= " + minInclusive + ": " + key + "=" + v);
+        }
+        return v;
+    }
+
+    /** Required double in {@code [0, 1)} (upper bound exclusive for a strict {@code H > T} rule). */
+    private static double reqFractionExclusiveUpper(Properties p, String key) {
+        double v = reqDouble(p, key);
+        if (v < 0 || v >= 1.0) {
+            throw new IllegalArgumentException("Property must be in [0, 1): " + key + "=" + v);
+        }
+        return v;
+    }
+
+    private static double reqNonNegativeDouble(Properties p, String key) {
+        double v = reqDouble(p, key);
+        if (v < 0) {
+            throw new IllegalArgumentException("Property must be >= 0: " + key + "=" + v);
+        }
+        return v;
     }
 
     private static double reqDouble(Properties p, String key) {
@@ -256,6 +301,30 @@ public final class ThresholdConfiguration {
         return relaxK;
     }
 
+    public double isolatedMethodsCombinationsK() {
+        return isolatedMethodsCombinationsK;
+    }
+
+    public double dispatchAstH1HomogeneityThreshold() {
+        return dispatchAstH1HomogeneityThreshold;
+    }
+
+    public int dispatchAstH2MinChainIfs() {
+        return dispatchAstH2MinChainIfs;
+    }
+
+    public int dispatchAstH2MinConsecutiveTopIfs() {
+        return dispatchAstH2MinConsecutiveTopIfs;
+    }
+
+    /** Bundles DISPATCH_AST_HEURISTICS parameters for {@link DispatchAstHeuristicAnalyzer}. */
+    public DispatchAstHeuristicAnalyzer.DispatchAstParams dispatchAstParams() {
+        return new DispatchAstHeuristicAnalyzer.DispatchAstParams(
+                dispatchAstH1HomogeneityThreshold,
+                dispatchAstH2MinChainIfs,
+                dispatchAstH2MinConsecutiveTopIfs);
+    }
+
     private static final class Builder {
         private double lcomMedio;
         private double lcomAlto;
@@ -280,6 +349,10 @@ public final class ThresholdConfiguration {
         private double g1OutCentralityMedio;
         private double g1OutCentralityAlto;
         private int relaxK;
+        private double isolatedMethodsCombinationsK;
+        private double dispatchAstH1HomogeneityThreshold;
+        private int dispatchAstH2MinChainIfs;
+        private int dispatchAstH2MinConsecutiveTopIfs;
 
         private ThresholdConfiguration build() {
             return new ThresholdConfiguration(this);

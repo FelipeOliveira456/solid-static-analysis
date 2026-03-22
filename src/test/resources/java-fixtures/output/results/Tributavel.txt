@@ -1,17 +1,17 @@
 ================================================================================
 CLASSE: Tributavel
 PROJETO: /home/felipe/Documents/AS/solid-static-analysis/src/test/resources/java-fixtures/output
-SCORE GERAL: ALTO
+SCORE GERAL: BAIXO
 ESTRATÉGIA: FIXED_THRESHOLD_RELAXED (fator de relaxamento: 1.0000)
 ================================================================================
 
 O — Open/Closed: BAIXO
   [ok] sem indicadores listados
 
-S — Single Responsibility: ALTO
-  [!] LCOM 0 — 0% dos pares de métodos sem atributo em comum
-  [!] 0 clusters de métodos na projeção — baixa evidência de responsabilidades separadas
-  [!] 2 de 2 métodos isolados (100%) — sem colaboração interna
+S — Single Responsibility: BAIXO
+  [ok] LCOM 0 — 0% dos pares de métodos sem atributo em comum
+  [ok] 0 clusters de métodos na projeção — baixa evidência de responsabilidades separadas
+  [ok] 2 de 2 métodos isolados (100%) — sem colaboração interna — peso no score = C(2,2)/[C(2,2)+21] = 1/(1+21) (k em scoring.isolatedMethods.combinations.k); a razão bruta × este peso entra nas bandas
 
 L — Liskov Substitution: BAIXO
   [ok] profundidade de herança da classe Tributavel: 0

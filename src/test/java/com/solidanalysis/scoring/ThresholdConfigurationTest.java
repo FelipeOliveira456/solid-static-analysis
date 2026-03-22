@@ -49,4 +49,28 @@ class ThresholdConfigurationTest {
         ThresholdConfiguration c = ThresholdConfiguration.load(tmp);
         assertEquals(10, c.relaxK());
     }
+
+    @Test
+    void defaultsIncludeIsolatedCombinationsK() {
+        assertEquals(21.0, ThresholdConfiguration.defaults().isolatedMethodsCombinationsK(), 0);
+    }
+
+    @Test
+    void loadRejectsNegativeIsolatedCombinationsK(@TempDir Path tmp) throws Exception {
+        Files.writeString(
+                tmp.resolve("analysis.properties"), "scoring.isolatedMethods.combinations.k=-1\n");
+        assertThrows(IllegalArgumentException.class, () -> ThresholdConfiguration.load(tmp));
+    }
+
+    @Test
+    void defaultsIncludeDispatchAstParams() {
+        ThresholdConfiguration c = ThresholdConfiguration.defaults();
+        assertEquals(0.25, c.dispatchAstH1HomogeneityThreshold(), 0);
+        assertEquals(3, c.dispatchAstH2MinChainIfs());
+        assertEquals(3, c.dispatchAstH2MinConsecutiveTopIfs());
+        DispatchAstHeuristicAnalyzer.DispatchAstParams p = c.dispatchAstParams();
+        assertEquals(0.25, p.h1HomogeneityThreshold(), 0);
+        assertEquals(3, p.h2MinChainIfs());
+        assertEquals(3, p.h2MinConsecutiveTopIfs());
+    }
 }

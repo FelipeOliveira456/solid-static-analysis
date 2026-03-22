@@ -52,7 +52,7 @@
     },
     "O" : {
       "indicators" : [ {
-        "detail" : "switch com 1 case em resolverTaxa — baixa ramificação",
+        "detail" : "SWITCH_CASES (CFG G7) — switch com 1 case em resolverTaxa — baixa ramificação",
         "templateId" : "SWITCH_CASES",
         "value" : 1
       } ],
@@ -69,11 +69,12 @@
         "templateId" : "PROJECTION_CLUSTERS",
         "value" : 1.0
       }, {
-        "detail" : "5 de 7 métodos isolados (71%) — sem colaboração interna",
+        "detail" : "5 de 7 métodos isolados (71%) — sem colaboração interna — peso no score = C(7,2)/[C(7,2)+21] = 21/(21+21) (k em scoring.isolatedMethods.combinations.k); a razão bruta × este peso entra nas bandas",
+        "rawMetric" : 0.7142857142857143,
         "templateId" : "ISOLATED_METHODS_RATIO",
-        "value" : 0.7142857142857143
+        "value" : 0.35714285714285715
       } ],
-      "score" : "ALTO"
+      "score" : "MEDIO"
     }
   }
 }

@@ -11,7 +11,7 @@ O — Open/Closed: BAIXO
 S — Single Responsibility: MEDIO
   [~] LCOM 0.2667 — 27% dos pares de métodos sem atributo em comum
   [~] 2 clusters de métodos na projeção — possível divisão de responsabilidades
-  [~] 4 de 7 métodos isolados (57%) — sem colaboração interna
+  [~] 4 de 7 métodos isolados (57%) — sem colaboração interna — peso no score = C(7,2)/[C(7,2)+21] = 21/(21+21) (k em scoring.isolatedMethods.combinations.k); a razão bruta × este peso entra nas bandas
 
 L — Liskov Substitution: BAIXO
   [ok] profundidade de herança da classe ContaPoupanca: 1

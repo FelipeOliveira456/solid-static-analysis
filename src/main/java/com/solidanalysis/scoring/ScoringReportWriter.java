@@ -60,7 +60,8 @@ public final class ScoringReportWriter {
         Map<String, Object> m = new LinkedHashMap<>();
         m.put("score", p.score().name());
         List<Map<String, Object>> inds = new ArrayList<>();
-        for (IndicatorResult ir : p.indicators()) {
+        for (PrincipleIndicator pi : p.indicators()) {
+            IndicatorResult ir = pi.result();
             Map<String, Object> im = new LinkedHashMap<>();
             im.put("templateId", ir.templateId().jsonName());
             im.put("value", ir.value());
@@ -68,6 +69,7 @@ public final class ScoringReportWriter {
                 im.put("rawMetric", ir.rawMetric());
             }
             im.put("detail", ir.detail());
+            im.put("level", pi.level().name());
             inds.add(im);
         }
         m.put("indicators", inds);

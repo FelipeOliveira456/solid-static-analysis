@@ -65,11 +65,12 @@
         "templateId" : "PROJECTION_CLUSTERS",
         "value" : 1.0
       }, {
-        "detail" : "4 de 8 métodos isolados (50%) — sem colaboração interna",
+        "detail" : "4 de 8 métodos isolados (50%) — sem colaboração interna — peso no score = C(8,2)/[C(8,2)+21] = 28/(28+21) (k em scoring.isolatedMethods.combinations.k); a razão bruta × este peso entra nas bandas",
+        "rawMetric" : 0.5,
         "templateId" : "ISOLATED_METHODS_RATIO",
-        "value" : 0.5
+        "value" : 0.2857142857142857
       } ],
-      "score" : "MEDIO"
+      "score" : "BAIXO"
     }
   }
 }

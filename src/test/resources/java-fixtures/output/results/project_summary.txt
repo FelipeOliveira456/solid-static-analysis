@@ -5,16 +5,18 @@ PRINCÍPIO MAIS VIOLADO: D (Dependency Inversion)
 ================================================================================
 
 DISTRIBUIÇÃO POR PRINCÍPIO:
-  S — Single Responsibility:  ALTO: 4  MEDIO: 2  BAIXO: 0
+  S — Single Responsibility:  ALTO: 1  MEDIO: 3  BAIXO: 2
   O — Open/Closed:            ALTO: 0  MEDIO: 0  BAIXO: 6
   L — Liskov Substitution:    ALTO: 0  MEDIO: 0  BAIXO: 6
   I — Interface Segregation:  ALTO: 0  MEDIO: 0  BAIXO: 6
   D — Dependency Inversion:   ALTO: 4  MEDIO: 0  BAIXO: 2
 
+NOTA — Open/Closed (O): o nível O é o pior entre os indicadores da classe; cada um aparece em linha própria no relatório — DISPATCH_AST_HEURISTICS (if/else-if no AST, scoring.dispatchAst.*), SWITCH_CASES (switch no CFG G7, threshold.switchCases.*), EXTENDS_CONCRETE. Ver cada <Classe>.txt.
+
 RANKING DE CLASSES (pior para melhor):
-  1. ContaBancaria                ALTO   (pior: S — Single Responsibility)
-  2. ContaCorrente                ALTO   (pior: D — Dependency Inversion)
-  3. ContaPoupanca                ALTO   (pior: D — Dependency Inversion)
-  4. GerenciadorContas            ALTO   (pior: D — Dependency Inversion)
-  5. Relatorio                    ALTO   (pior: D — Dependency Inversion)
-  6. Tributavel                   ALTO   (pior: S — Single Responsibility)
+  1. ContaCorrente                ALTO   (pior: D — Dependency Inversion)
+  2. ContaPoupanca                ALTO   (pior: D — Dependency Inversion)
+  3. GerenciadorContas            ALTO   (pior: D — Dependency Inversion)
+  4. Relatorio                    ALTO   (pior: D — Dependency Inversion)
+  5. ContaBancaria                MEDIO  (pior: S — Single Responsibility)
+  6. Tributavel                   BAIXO  (pior: —)

@@ -10,9 +10,9 @@ public final class PrincipleScore {
 
     private final String principle;
     private final ScoreLevel score;
-    private final List<IndicatorResult> indicators;
+    private final List<PrincipleIndicator> indicators;
 
-    public PrincipleScore(String principle, ScoreLevel score, List<IndicatorResult> indicators) {
+    public PrincipleScore(String principle, ScoreLevel score, List<PrincipleIndicator> indicators) {
         this.principle = Objects.requireNonNull(principle);
         this.score = Objects.requireNonNull(score);
         this.indicators = Collections.unmodifiableList(new ArrayList<>(indicators));
@@ -26,7 +26,7 @@ public final class PrincipleScore {
         return score;
     }
 
-    public List<IndicatorResult> indicators() {
+    public List<PrincipleIndicator> indicators() {
         return indicators;
     }
 }

@@ -17,8 +17,17 @@ class IndicatorTemplateTest {
     @Test
     void formatSwitchCasesMentionsMethod() {
         String s = IndicatorTemplate.formatSwitchCases(5, "foo()");
+        assertTrue(s.contains("SWITCH_CASES"));
         assertTrue(s.contains("switch"));
         assertTrue(s.contains("foo()"));
+    }
+
+    @Test
+    void formatSwitchCasesNoSwitchDetectedMentionsG7AndThreshold() {
+        String s = IndicatorTemplate.formatSwitchCasesNoSwitchDetected();
+        assertTrue(s.contains("SWITCH_CASES"));
+        assertTrue(s.contains("CFG G7"));
+        assertTrue(s.contains("threshold.switchCases"));
     }
 
     @Test

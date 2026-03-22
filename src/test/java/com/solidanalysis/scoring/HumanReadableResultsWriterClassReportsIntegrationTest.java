@@ -90,10 +90,14 @@ class HumanReadableResultsWriterClassReportsIntegrationTest {
             if (indicators == null || !indicators.isArray() || indicators.size() == 0) {
                 continue;
             }
-            ScoreLevel level = ScoreLevel.valueOf(block.get("score").asText());
-            String sym = HumanReadableResultsWriter.riskSymbol(level);
+            ScoreLevel principleLevel = ScoreLevel.valueOf(block.get("score").asText());
             for (JsonNode ind : indicators) {
                 String detail = ind.get("detail").asText();
+                ScoreLevel indLevel =
+                        ind.hasNonNull("level")
+                                ? ScoreLevel.valueOf(ind.get("level").asText())
+                                : principleLevel;
+                String sym = HumanReadableResultsWriter.riskSymbol(indLevel);
                 assertTrue(
                         contaTxt.contains("  " + sym + " " + detail),
                         "Expected line with symbol "
